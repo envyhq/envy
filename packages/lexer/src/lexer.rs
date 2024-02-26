@@ -27,7 +27,7 @@ pub enum LexerType {
 impl Display for LexerType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            LexerType::String => write!(f, "string"),
+            LexerType::String => write!(f, "str"),
             LexerType::Int => write!(f, "int"),
         }
     }

@@ -6,7 +6,7 @@
 
 ### Character stream
 
-> var secret: string
+> var secret: str
 
 ```rs
 ["v", "a", "r", " ", "s", "e", "c", "r", "e", "t", ":", " ", "s", "t", "r", "i", "n", "g"]
@@ -16,7 +16,7 @@
 
 A grapheme is the smallest unit in language. A char to your average programming language is a single unicode character code point. The difference is that a grapheme is a single character as understood by humans. For example, an emoji like 💆🏽‍♀ is made of multiple unicode characters but understood as one. This is also true for `\r\n` for example that is 2 unicode characters that represent a single newline.
 
-> var 🔑: string
+> var 🔑: str
 
 ```rs
 ["v", "a", "r", " ", "🔑", ":", " ", "s", "t", "r", "i", "n", "g"]
@@ -24,7 +24,7 @@ A grapheme is the smallest unit in language. A char to your average programming 
 
 ### Token stream
 
-> var something: string
+> var something: str
 >
 > pub var something: int
 >
@@ -35,7 +35,7 @@ A grapheme is the smallest unit in language. A char to your average programming 
 
 ```rs
 [
-Token { kind: "VarKeyword" }, Token { kind: "Identifier", value: "something" }, Token { kind: "VarAssignmentColon" }, Token { kind: "VarType", value: "string" },
+Token { kind: "VarKeyword" }, Token { kind: "Identifier", value: "something" }, Token { kind: "VarAssignmentColon" }, Token { kind: "VarType", value: "str" },
 Token { kind: "PubKeyword" }, Token { kind: "VarKeyword" }, Token { kind: "Identifier", value: "something" }, Token { kind: "VarAssignmentColon" }, Token { kind: "VarType", value: "int" },
 Token { kind: "VarKeyword" }, Token { kind: "Identifier", value: "something" }, Token { kind: "VarAssignmentColon" }, Token { kind: "VarType", value: "url" }, Token { kind: "BlockOpenCurly" }
 Token { kind: "AttributeName", value: "description" }, Token { kind: "AttributeAssignmentEquals" }, Token { kind: "StringLiteral", value: "wow so useful, thanks!" },
@@ -46,7 +46,7 @@ Token { kind: "BlockCloseCurly" }
 
 ### Syntax tree
 
-> var secret: string
+> var secret: str
 >
 > var some_url_with_api_key: url
 >
@@ -62,7 +62,7 @@ SourceFile {
   declarations: [
     Declaration {
       identifier: Identifier { name: "secret" },
-      type: "string",
+      type: "str",
       attributes: None,
       modifiers: None,
     },

@@ -1,0 +1,11 @@
+var some_var: str
+
+var some_other_var: bool
+
+pub var some_other_other_var: nowt
+
+
+module some_module {
+    var some_module_var: int
+    var some_other_module_var: float
+}

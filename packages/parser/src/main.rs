@@ -6,7 +6,7 @@ fn main() {
 
     let args: Vec<String> = env::args().collect();
 
-    let mut input = "var my_cool_var: string\nvar my_other_var: int".to_string();
+    let mut input = "var my_cool_var: str\nvar my_other_var: int".to_string();
 
     if args[1] == "--file" && !args[2].is_empty() {
         let file = args[2].to_string();

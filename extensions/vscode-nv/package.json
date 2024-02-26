@@ -1,25 +1,39 @@
 {
-  "name": "nv",
+  "name": "vscode-nv",
   "displayName": "nv",
   "description": "Language support for the nv configration language",
   "version": "0.0.1",
+  "repository": "https://github.com/mdrxtech/nv",
   "engines": {
     "vscode": "^1.86.0"
+  },
+  "scripts": {
+    "build": "vsce package",
+    "vscode:install": "code --install-extension ./nv-0.0.1.vsix"
   },
   "categories": [
     "Programming Languages"
   ],
   "contributes": {
-    "languages": [{
-      "id": "nv",
-      "aliases": ["nv", "nv"],
-      "extensions": [".nv"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "nv",
-      "scopeName": "source.nv",
-      "path": "./syntaxes/nv.tmLanguage.json"
-    }]
+    "languages": [
+      {
+        "id": "nv",
+        "aliases": [
+          "nv",
+          "nv"
+        ],
+        "extensions": [
+          ".nv"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "nv",
+        "scopeName": "source.nv",
+        "path": "./syntaxes/nv.tmLanguage.json"
+      }
+    ]
   }
 }

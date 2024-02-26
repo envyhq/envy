@@ -76,7 +76,7 @@
       "patterns": [
         {
           "name": "entity.name.type.nv",
-          "match": "\\b(string|int|url)\\b"
+          "match": "\\b(str|int|url)\\b"
         }
       ]
     },
