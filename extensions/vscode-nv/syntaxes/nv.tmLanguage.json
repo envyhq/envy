@@ -1,0 +1,90 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "nv",
+  "patterns": [
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#booleans"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "modifiers": "#modifiers"
+    },
+    {
+      "include": "#types"
+    },
+    {
+      "include": "#identifiers"
+    }
+  ],
+  "repository": {
+    "strings": {
+      "name": "string.quoted.double.nv",
+      "begin": "\"",
+      "end": "\""
+    },
+
+    "numbers": {
+      "name": "constant.numeric.nv",
+      "patterns": [
+        {
+          "name": "constant.numeric.nv",
+          "match": "\\d"
+        }
+      ]
+    },
+
+    "booleans": {
+      "name": "constant.language.nv",
+      "patterns": [
+        {
+          "name": "constant.language.nv",
+          "match": "\\b(true|false)\\b"
+        }
+      ]
+    },
+
+    "keywords": {
+      "name": "keyword.other.nv",
+      "patterns": [
+        {
+          "name": "keyword.other.nv",
+          "match": "\\b(var|module)\\b"
+        }
+      ]
+    },
+
+    "modifiers": {
+      "name": "keyword.other.nv",
+      "patterns": [
+        {
+          "name": "keyword.other.nv",
+          "match": "\\b(pub)\\b"
+        }
+      ]
+    },
+
+    "types": {
+      "name": "entity.name.type.nv",
+      "patterns": [
+        {
+          "name": "entity.name.type.nv",
+          "match": "\\b(string|int|url)\\b"
+        }
+      ]
+    },
+
+    "identifiers": {
+      "name": "string.quoted.double.nv",
+      "match": "var \\w+:"
+    }
+  },
+  "scopeName": "source.nv"
+}

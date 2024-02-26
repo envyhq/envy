@@ -1,0 +1,9 @@
+[package]
+name = "nv-lexer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+env_logger = "0.11.2"
+log = "0.4.20"
+unicode-segmentation = "1.11.0"

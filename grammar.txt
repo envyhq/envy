@@ -1,0 +1,4 @@
+config -> variable_declaration_list EOF
+variable_declaration_list -> variable_declaration | variable_declaration_list
+variable_declaration -> [var] {identifier}: type
+type -> string | int | url

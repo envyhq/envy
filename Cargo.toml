@@ -1,0 +1,9 @@
+[workspace]
+
+members = [
+    "packages/compiler",
+    "packages/language-server",
+    "packages/lexer",
+    "examples/lexer-api",
+    "packages/parser",
+]

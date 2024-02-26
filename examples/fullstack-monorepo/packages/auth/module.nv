@@ -1,0 +1,13 @@
+
+module auth {
+    var secret: string
+    var some_url_with_api_key: url
+}
+
+module not_auth {
+    pub var some_public_value: int
+    var some_url_with_api_key_and_description: url {
+        description = "wow so useful, thanks!"
+        protocol = "https"
+    }
+}

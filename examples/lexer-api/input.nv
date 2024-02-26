@@ -1,0 +1,3 @@
+var my_cool_var: string
+var my_other_var: int
+var my_sick_var: string

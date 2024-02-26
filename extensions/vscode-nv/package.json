@@ -1,0 +1,25 @@
+{
+  "name": "nv",
+  "displayName": "nv",
+  "description": "Language support for the nv configration language",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "nv",
+      "aliases": ["nv", "nv"],
+      "extensions": [".nv"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "nv",
+      "scopeName": "source.nv",
+      "path": "./syntaxes/nv.tmLanguage.json"
+    }]
+  }
+}
