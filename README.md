@@ -2,6 +2,8 @@
 
 A language for application/program/system configs.
 
+![nv language snippet - neovim](./extensions/tree-sitter-nv/docs/assets/images/tree-sitter-nv-syntax-highlighting.png)
+
 ## Packages
 
 - Compiler - [Readme](./packages/compiler/README.md)

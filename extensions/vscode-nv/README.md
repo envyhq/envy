@@ -2,6 +2,8 @@
 
 VSCode extension for `nv` language support.
 
+![vscode-nv syntax highlighting](./docs/assets/images/vscode-nv-syntax-highlighting.png)
+
 ## Features
 
 - Syntax highlighting
@@ -11,7 +13,6 @@ VSCode extension for `nv` language support.
 ### Build and install from source
 
 ```sh
-npm run build
 npm run vscode:install
 ```
 

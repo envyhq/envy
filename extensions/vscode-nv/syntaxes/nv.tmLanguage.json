@@ -1,90 +1,116 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "nv",
+  "scopeName": "source.nv",
+
   "patterns": [
     {
-      "include": "#strings"
+      "include": "#literals"
     },
     {
-      "include": "#numbers"
+      "include": "#modifiers"
     },
     {
-      "include": "#booleans"
+      "include": "#var-declarations"
     },
     {
-      "include": "#keywords"
+      "include": "#var-attributes"
     },
     {
-      "modifiers": "#modifiers"
+      "include": "#module-declarations"
+    },
+    {
+      "include": "#storage-keywords"
     },
     {
       "include": "#types"
-    },
-    {
-      "include": "#identifiers"
     }
   ],
+
   "repository": {
+    "literals": {
+      "patterns": [
+        { "include": "#strings" },
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#booleans"
+        }
+      ]
+    },
+
     "strings": {
       "name": "string.quoted.double.nv",
       "begin": "\"",
-      "end": "\""
+      "end": "\"",
+      "patterns": [{ "name": "constant.character.escape.nv", "match": "\\\\." }]
     },
 
     "numbers": {
       "name": "constant.numeric.nv",
-      "patterns": [
-        {
-          "name": "constant.numeric.nv",
-          "match": "\\d"
-        }
-      ]
+      "match": "\\d"
     },
 
     "booleans": {
-      "name": "constant.language.nv",
-      "patterns": [
-        {
-          "name": "constant.language.nv",
-          "match": "\\b(true|false)\\b"
-        }
-      ]
-    },
-
-    "keywords": {
-      "name": "keyword.other.nv",
-      "patterns": [
-        {
-          "name": "keyword.other.nv",
-          "match": "\\b(var|module)\\b"
-        }
-      ]
+      "name": "constant.language.bool.nv",
+      "match": "\\b(true|false)\\b"
     },
 
     "modifiers": {
-      "name": "keyword.other.nv",
-      "patterns": [
-        {
-          "name": "keyword.other.nv",
-          "match": "\\b(pub)\\b"
+      "name": "storage.modifier.nv",
+      "match": "\\b(pub)\\b"
+    },
+
+    "storage-keywords": {
+      "name": "storage.type.nv",
+      "match": "\\b(var|module)\\b"
+    },
+
+    "var-declarations": {
+      "name": "meta.declarations.var.nv",
+      "match": "\\b(var)\\b\\s*([a-z_]+):?\\s*{?",
+      "patterns": [],
+      "captures": {
+        "1": {
+          "patterns": [{ "include": "#storage-keywords" }]
+        },
+        "2": {
+          "name": "entity.name.function.var_name.nv"
         }
-      ]
+      }
+    },
+
+    "var-attributes": {
+      "name": "meta.declarations.var-attributes.nv",
+      "match": "([a-z_]+)\\s=\\s(.+)",
+      "captures": {
+        "1": {
+          "name": "variable.parameter"
+        },
+        "2": {
+          "patterns": [{ "include": "#literals" }]
+        }
+      }
+    },
+
+    "module-declarations": {
+      "name": "meta.declarations.module.nv",
+      "match": "\\b(module)\\b\\s*([A-Z]{1,}[a-zA-Z]+):?\\s*{?",
+      "patterns": [{ "include": "#storage-keywords" }],
+      "captures": {
+        "1": {
+          "patterns": [{ "include": "#storage-keywords" }]
+        },
+        "2": {
+          "name": "entity.name.type.module_name.nv"
+        }
+      }
     },
 
     "types": {
-      "name": "entity.name.type.nv",
-      "patterns": [
-        {
-          "name": "entity.name.type.nv",
-          "match": "\\b(str|int|url)\\b"
-        }
-      ]
-    },
-
-    "identifiers": {
-      "name": "string.quoted.double.nv",
-      "match": "var \\w+:"
+      "name": "support.type.nv",
+      "match": "\\b(str|url|int|float|bool|nowt)\\b"
     }
-  },
-  "scopeName": "source.nv"
+  }
 }

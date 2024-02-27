@@ -12,20 +12,17 @@ const vars = {
 
   var_declaration: ($) =>
     seq(
+      optional($.var_modifier),
       $.var_keyword,
       $.var_identifier,
       ":",
-      $.type_identifier
-      // optional($.var_block),
+      $.type_identifier,
+      optional($.var_block),
     ),
 
-  // var_block: $ => seq(
-  //     '{',
-  //             $._var_attributes,
-  //     '}'
-  // ),
+  var_block: ($) => seq("{", repeat($.var_attribute), "}"),
 
-  // _var_attributes: $ => repeat($.var_attribute),
+  var_modifier: ($) => /pub/,
 
   var_attribute: ($) => seq($.attribute_identifier, "=", $._expression),
 };
@@ -39,10 +36,17 @@ const expressions = {
 };
 
 const identifiers = {
+  module_identifier: (_$) => /[A-Z][a-zA-Z]+/,
   var_identifier: (_$) => /[a-z_]+/,
-  module_identifier: (_$) => /[a-z_]+/,
   attribute_identifier: (_$) => /[a-z_]+/,
   type_identifier: (_$) => /(str|int|float|bool|url|nowt)/,
+};
+
+const strings = {
+  unescaped_string_fragment: (_) => token.immediate(prec(1, /[^"\\\r\n]+/)),
+
+  str: ($) =>
+    seq('"', repeat(choice($.unescaped_string_fragment, $.escape)), '"'),
 };
 
 const literals = {
@@ -50,9 +54,25 @@ const literals = {
 
   bool: (_$) => /\w(true|false)\w/,
   nowt: (_$) => /\w(nowt)\w/,
-  str: (_$) => /"[^"]*"/,
   float: (_$) => /\d+\.\d+/,
   int: (_$) => /\d+/,
+
+  escape: (_) =>
+    token.immediate(
+      seq(
+        "\\",
+        choice(
+          /[^xu0-7]/,
+          /[0-7]{1,3}/,
+          /x[0-9a-fA-F]{2}/,
+          /u[0-9a-fA-F]{4}/,
+          /u{[0-9a-fA-F]+}/,
+          /[\r?][\n\u2028\u2029]/,
+        ),
+      ),
+    ),
+
+  ...strings,
 };
 
 module.exports = grammar({

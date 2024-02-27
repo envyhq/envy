@@ -43,11 +43,6 @@
     }
   },
   {
-    "type": "module_identifier",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "source_file",
     "named": true,
     "fields": {},
@@ -67,6 +62,75 @@
     }
   },
   {
+    "type": "str",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "escape",
+          "named": true
+        },
+        {
+          "type": "unescaped_string_fragment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "var_attribute",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "attribute_identifier",
+          "named": true
+        },
+        {
+          "type": "bool",
+          "named": true
+        },
+        {
+          "type": "float",
+          "named": true
+        },
+        {
+          "type": "int",
+          "named": true
+        },
+        {
+          "type": "nowt",
+          "named": true
+        },
+        {
+          "type": "str",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "var_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "var_attribute",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "var_declaration",
     "named": true,
     "fields": {},
@@ -79,11 +143,19 @@
           "named": true
         },
         {
+          "type": "var_block",
+          "named": true
+        },
+        {
           "type": "var_identifier",
           "named": true
         },
         {
           "type": "var_keyword",
+          "named": true
+        },
+        {
+          "type": "var_modifier",
           "named": true
         }
       ]
@@ -93,6 +165,10 @@
     "type": "var_identifier",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "\"",
+    "named": false
   },
   {
     "type": ":",
@@ -107,11 +183,19 @@
     "named": true
   },
   {
+    "type": "escape",
+    "named": true
+  },
+  {
     "type": "float",
     "named": true
   },
   {
     "type": "int",
+    "named": true
+  },
+  {
+    "type": "module_identifier",
     "named": true
   },
   {
@@ -123,15 +207,19 @@
     "named": true
   },
   {
-    "type": "str",
-    "named": true
-  },
-  {
     "type": "type_identifier",
     "named": true
   },
   {
+    "type": "unescaped_string_fragment",
+    "named": true
+  },
+  {
     "type": "var_keyword",
+    "named": true
+  },
+  {
+    "type": "var_modifier",
     "named": true
   },
   {

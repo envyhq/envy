@@ -2,6 +2,8 @@
 
 neovim tree-sitter grammar, parser and queries for `nv` language support.
 
+![tree-sitter-nv syntax highlighting](./docs/assets/images/tree-sitter-nv-syntax-highlighting.png)
+
 ## Development
 
 ### Build and install from source

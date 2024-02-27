@@ -9,7 +9,8 @@
   },
   "scripts": {
     "build": "vsce package",
-    "vscode:install": "code --install-extension ./nv-0.0.1.vsix"
+    "vscode:uninstall": "code --uninstall-extension undefined_publisher.vscode-nv",
+    "vscode:install": "npm run vscode:uninstall; npm run build && code --install-extension ./vscode-nv-0.0.1.vsix"
   },
   "categories": [
     "Programming Languages"
@@ -25,7 +26,11 @@
         "extensions": [
           ".nv"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/nv-light.png",
+          "dark": "./icons/nv-dark.png"
+        }
       }
     ],
     "grammars": [
