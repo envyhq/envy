@@ -1,6 +1,46 @@
 [
   {
+    "type": "attribute",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "attribute_identifier",
+          "named": true
+        },
+        {
+          "type": "bool",
+          "named": true
+        },
+        {
+          "type": "float",
+          "named": true
+        },
+        {
+          "type": "int",
+          "named": true
+        },
+        {
+          "type": "nowt",
+          "named": true
+        },
+        {
+          "type": "str",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "attribute_identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "bool",
     "named": true,
     "fields": {}
   },
@@ -43,6 +83,54 @@
     }
   },
   {
+    "type": "module_identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "provider_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "attribute",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "provider_declaration",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "provider_block",
+          "named": true
+        },
+        {
+          "type": "provider_identifier",
+          "named": true
+        },
+        {
+          "type": "provider_keyword",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "provider_identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "source_file",
     "named": true,
     "fields": {},
@@ -52,6 +140,10 @@
       "types": [
         {
           "type": "module_declaration",
+          "named": true
+        },
+        {
+          "type": "provider_declaration",
           "named": true
         },
         {
@@ -81,41 +173,6 @@
     }
   },
   {
-    "type": "var_attribute",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "attribute_identifier",
-          "named": true
-        },
-        {
-          "type": "bool",
-          "named": true
-        },
-        {
-          "type": "float",
-          "named": true
-        },
-        {
-          "type": "int",
-          "named": true
-        },
-        {
-          "type": "nowt",
-          "named": true
-        },
-        {
-          "type": "str",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "var_block",
     "named": true,
     "fields": {},
@@ -124,7 +181,7 @@
       "required": false,
       "types": [
         {
-          "type": "var_attribute",
+          "type": "attribute",
           "named": true
         }
       ]
@@ -179,12 +236,12 @@
     "named": false
   },
   {
-    "type": "bool",
+    "type": "escape",
     "named": true
   },
   {
-    "type": "escape",
-    "named": true
+    "type": "false",
+    "named": false
   },
   {
     "type": "float",
@@ -195,16 +252,20 @@
     "named": true
   },
   {
-    "type": "module_identifier",
-    "named": true
-  },
-  {
     "type": "module_keyword",
     "named": true
   },
   {
     "type": "nowt",
     "named": true
+  },
+  {
+    "type": "provider_keyword",
+    "named": true
+  },
+  {
+    "type": "true",
+    "named": false
   },
   {
     "type": "type_identifier",

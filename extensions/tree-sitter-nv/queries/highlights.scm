@@ -21,10 +21,21 @@
   ]
 )
 
+; Providers
+
+(provider_declaration
+  [
+    (provider_keyword)
+    (provider_identifier)
+    (provider_block)
+  ]
+)
+
 ; Identifiers
 
 (var_identifier) @function.method
 (module_identifier) @function.builtin
+(provider_identifier) @function.builtin
 (attribute_identifier) @property
 (type_identifier) @type.builtin
 
@@ -33,6 +44,7 @@
 [
   (var_keyword)
   (module_keyword)
+  (provider_keyword)
   (var_modifier)
 ] @keyword
 

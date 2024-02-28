@@ -18,3 +18,9 @@ module SomeModule {
         protocol = "ws"
     }
 }
+
+provider Env
+
+provider Env {
+    dotenv = true
+}

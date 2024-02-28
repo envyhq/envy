@@ -29,6 +29,10 @@
         }
       ]
     },
+    "module_identifier": {
+      "type": "PATTERN",
+      "value": "[A-Z][a-zA-Z]+"
+    },
     "module_block": {
       "type": "SEQ",
       "members": [
@@ -48,6 +52,80 @@
           "value": "}"
         }
       ]
+    },
+    "provider_keyword": {
+      "type": "STRING",
+      "value": "provider"
+    },
+    "provider_declaration": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "provider_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "provider_identifier"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "provider_block"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "provider_identifier": {
+      "type": "PATTERN",
+      "value": "[A-Z][a-zA-Z]+"
+    },
+    "provider_block": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "attribute"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "attribute": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "attribute_identifier"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_expression"
+        }
+      ]
+    },
+    "attribute_identifier": {
+      "type": "PATTERN",
+      "value": "[a-z_]+"
     },
     "var_keyword": {
       "type": "STRING",
@@ -109,7 +187,7 @@
           "type": "REPEAT",
           "content": {
             "type": "SYMBOL",
-            "name": "var_attribute"
+            "name": "attribute"
           }
         },
         {
@@ -118,26 +196,13 @@
         }
       ]
     },
+    "var_identifier": {
+      "type": "PATTERN",
+      "value": "[a-z_]+"
+    },
     "var_modifier": {
       "type": "PATTERN",
       "value": "pub"
-    },
-    "var_attribute": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "attribute_identifier"
-        },
-        {
-          "type": "STRING",
-          "value": "="
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_expression"
-        }
-      ]
     },
     "_declaration": {
       "type": "CHOICE",
@@ -149,24 +214,16 @@
         {
           "type": "SYMBOL",
           "name": "var_declaration"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "provider_declaration"
         }
       ]
     },
     "_expression": {
       "type": "SYMBOL",
       "name": "_literal"
-    },
-    "module_identifier": {
-      "type": "PATTERN",
-      "value": "[A-Z][a-zA-Z]+"
-    },
-    "var_identifier": {
-      "type": "PATTERN",
-      "value": "[a-z_]+"
-    },
-    "attribute_identifier": {
-      "type": "PATTERN",
-      "value": "[a-z_]+"
     },
     "type_identifier": {
       "type": "PATTERN",
@@ -198,8 +255,17 @@
       ]
     },
     "bool": {
-      "type": "PATTERN",
-      "value": "\\w(true|false)\\w"
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "true"
+        },
+        {
+          "type": "STRING",
+          "value": "false"
+        }
+      ]
     },
     "nowt": {
       "type": "PATTERN",

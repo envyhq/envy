@@ -4,7 +4,26 @@ const modules = {
   module_declaration: ($) =>
     seq($.module_keyword, $.module_identifier, $.module_block),
 
+  module_identifier: (_$) => /[A-Z][a-zA-Z]+/,
+
   module_block: ($) => seq("{", repeat($.var_declaration), "}"),
+};
+
+const providers = {
+  provider_keyword: ($) => "provider",
+
+  provider_declaration: ($) =>
+    seq($.provider_keyword, $.provider_identifier, optional($.provider_block)),
+
+  provider_identifier: (_$) => /[A-Z][a-zA-Z]+/,
+
+  provider_block: ($) => seq("{", repeat($.attribute), "}"),
+};
+
+const attributes = {
+  attribute: ($) => seq($.attribute_identifier, "=", $._expression),
+
+  attribute_identifier: (_$) => /[a-z_]+/,
 };
 
 const vars = {
@@ -17,28 +36,26 @@ const vars = {
       $.var_identifier,
       ":",
       $.type_identifier,
-      optional($.var_block),
+      optional($.var_block)
     ),
 
-  var_block: ($) => seq("{", repeat($.var_attribute), "}"),
+  var_block: ($) => seq("{", repeat($.attribute), "}"),
+
+  var_identifier: (_$) => /[a-z_]+/,
 
   var_modifier: ($) => /pub/,
-
-  var_attribute: ($) => seq($.attribute_identifier, "=", $._expression),
 };
 
 const declarations = {
-  _declaration: ($) => choice($.module_declaration, $.var_declaration),
+  _declaration: ($) =>
+    choice($.module_declaration, $.var_declaration, $.provider_declaration),
 };
 
 const expressions = {
   _expression: ($) => $._literal,
 };
 
-const identifiers = {
-  module_identifier: (_$) => /[A-Z][a-zA-Z]+/,
-  var_identifier: (_$) => /[a-z_]+/,
-  attribute_identifier: (_$) => /[a-z_]+/,
+const types = {
   type_identifier: (_$) => /(str|int|float|bool|url|nowt)/,
 };
 
@@ -52,7 +69,7 @@ const strings = {
 const literals = {
   _literal: ($) => choice($.bool, $.str, $.float, $.int, $.nowt),
 
-  bool: (_$) => /\w(true|false)\w/,
+  bool: (_$) => choice("true", "false"),
   nowt: (_$) => /\w(nowt)\w/,
   float: (_$) => /\d+\.\d+/,
   int: (_$) => /\d+/,
@@ -67,9 +84,9 @@ const literals = {
           /x[0-9a-fA-F]{2}/,
           /u[0-9a-fA-F]{4}/,
           /u{[0-9a-fA-F]+}/,
-          /[\r?][\n\u2028\u2029]/,
-        ),
-      ),
+          /[\r?][\n\u2028\u2029]/
+        )
+      )
     ),
 
   ...strings,
@@ -82,10 +99,12 @@ module.exports = grammar({
     source_file: ($) => repeat($._declaration),
 
     ...modules,
+    ...providers,
+    ...attributes,
     ...vars,
     ...declarations,
     ...expressions,
-    ...identifiers,
+    ...types,
     ...literals,
   },
 });

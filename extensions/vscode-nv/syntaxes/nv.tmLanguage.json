@@ -14,10 +14,13 @@
       "include": "#var-declarations"
     },
     {
-      "include": "#var-attributes"
+      "include": "#attributes"
     },
     {
       "include": "#module-declarations"
+    },
+    {
+      "include": "#provider-declarations"
     },
     {
       "include": "#storage-keywords"
@@ -64,7 +67,7 @@
 
     "storage-keywords": {
       "name": "storage.type.nv",
-      "match": "\\b(var|module)\\b"
+      "match": "\\b(var|module|provider)\\b"
     },
 
     "var-declarations": {
@@ -81,8 +84,8 @@
       }
     },
 
-    "var-attributes": {
-      "name": "meta.declarations.var-attributes.nv",
+    "attributes": {
+      "name": "meta.declarations.attributes.nv",
       "match": "([a-z_]+)\\s=\\s(.+)",
       "captures": {
         "1": {
@@ -104,6 +107,20 @@
         },
         "2": {
           "name": "entity.name.type.module_name.nv"
+        }
+      }
+    },
+
+    "provider-declarations": {
+      "name": "meta.declarations.provider.nv",
+      "match": "\\b(provider)\\b\\s*([A-Z]{1,}[a-zA-Z]+):?\\s*{?",
+      "patterns": [{ "include": "#storage-keywords" }],
+      "captures": {
+        "1": {
+          "patterns": [{ "include": "#storage-keywords" }]
+        },
+        "2": {
+          "name": "entity.name.type.provider_name.nv"
         }
       }
     },
