@@ -27,10 +27,10 @@ pub enum LexerKeyword {
 impl Display for LexerKeyword {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            LexerKeyword::Pub => write!(f, "pub "),
-            LexerKeyword::Var => write!(f, "var "),
-            LexerKeyword::Module => write!(f, "module "),
-            LexerKeyword::Provider => write!(f, "provider "),
+            LexerKeyword::Pub => write!(f, "pub"),
+            LexerKeyword::Var => write!(f, "var"),
+            LexerKeyword::Module => write!(f, "module"),
+            LexerKeyword::Provider => write!(f, "provider"),
         }
     }
 }
@@ -39,6 +39,8 @@ impl Display for LexerKeyword {
 pub enum LexerSymbol {
     VarAssignmentColon,
     AttributeAssignmentEquals,
+    BlockOpenCurly,
+    BlockCloseCurly,
 }
 
 #[derive(Debug, PartialEq, Clone)]

@@ -1,7 +1,9 @@
 use crate::{
-    tokens::{LexerKeyword, LexerToken},
+    chars::LexerChar,
+    tokens::{LexerKeyword, LexerSymbol, LexerToken},
     Lexer,
 };
+use regex::Regex;
 use strum::IntoEnumIterator;
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -19,6 +21,8 @@ impl Lexer for SourceFileLexer {
         let bound_chars = self.chars.clone();
         let mut chars = bound_chars.iter().enumerate();
 
+        let whitespace_regex = Regex::new(r"\s").unwrap();
+
         if self.tokens.len() > 0 || self.buffer.len() > 0 {
             log::warn!("Lexer has already been used, clearing lexer state.");
             self.tokens = vec![];
@@ -28,7 +32,19 @@ impl Lexer for SourceFileLexer {
         while let Some((index, char)) = chars.next() {
             let char = char.to_owned();
 
+            if whitespace_regex.is_match(&char) {
+                continue;
+            }
+
             println!("char: {:?} WITH BUFFER {:?}", char, self.buffer);
+
+            let symbol = self.char_to_symbol(&char);
+
+            if symbol.is_some() {
+                self.tokens.push(LexerToken::Symbol(symbol.unwrap()));
+                self.buffer.clear();
+                continue;
+            }
 
             if let Some(token) = self.buffer_to_keyword() {
                 self.tokens.push(LexerToken::Keyword(token.clone()));
@@ -65,6 +81,10 @@ impl Lexer for SourceFileLexer {
     }
 }
 
+const LEXER_CHARS_LIST: [LexerChar; 2] = [LexerChar::BlockCloseCurly, LexerChar::BlockOpenCurly];
+const LEXER_SYMBOLS_LIST: [LexerSymbol; 2] =
+    [LexerSymbol::BlockCloseCurly, LexerSymbol::BlockOpenCurly];
+
 impl SourceFileLexer {
     pub fn new(input: String) -> Self {
         let chars = input
@@ -83,5 +103,19 @@ impl SourceFileLexer {
         let buffered = self.buffer.join("");
 
         LexerKeyword::iter().find(|keyword| keyword.to_string() == buffered)
+    }
+
+    fn char_to_symbol(&self, char: &String) -> Option<LexerSymbol> {
+        let result = LEXER_CHARS_LIST
+            .iter()
+            .map(|symbol| symbol.to_string())
+            .enumerate()
+            .find(|(_index, symbol)| symbol.to_string() == char.to_string());
+
+        if result.is_none() {
+            return None;
+        }
+
+        Some(LEXER_SYMBOLS_LIST[result.unwrap().0].clone())
     }
 }
