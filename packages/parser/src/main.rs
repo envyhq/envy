@@ -1,4 +1,4 @@
-use nv_lexer::Lexer;
+use nv_lexer::{Lexer, SourceFileLexer};
 use std::{env, fs};
 
 fn main() {
@@ -14,7 +14,7 @@ fn main() {
         input = fs::read_to_string(file).unwrap();
     }
 
-    let mut lexer = Lexer::new(input);
+    let mut lexer = SourceFileLexer::new(input);
 
     lexer.lex();
 

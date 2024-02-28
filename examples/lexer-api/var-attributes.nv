@@ -1,0 +1,9 @@
+var my_cool_var: str {
+    default = "hello"
+}
+
+var my_other_var: int {
+    min = 1
+    max = 100
+    default = 50
+}
