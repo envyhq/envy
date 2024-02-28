@@ -1,3 +1,4 @@
+use super::var_declaration_lexer::VarDeclarationLexer;
 use crate::{
     chars::LexerChar,
     tokens::{LexerKeyword, LexerSymbol, LexerToken},
@@ -6,8 +7,6 @@ use crate::{
 use regex::Regex;
 use strum::IntoEnumIterator;
 use unicode_segmentation::UnicodeSegmentation;
-
-use super::var_declaration_lexer::VarDeclarationLexer;
 
 pub struct SourceFileLexer {
     pub tokens: Vec<LexerToken>,
@@ -21,7 +20,7 @@ impl Lexer for SourceFileLexer {
         let bound_chars = self.chars.clone();
         let mut chars = bound_chars.iter().enumerate();
 
-        let whitespace_regex = Regex::new(r"\s").unwrap();
+        let whitespace_regex = Regex::new(r"\s+").unwrap();
 
         if self.tokens.len() > 0 || self.buffer.len() > 0 {
             log::warn!("Lexer has already been used, clearing lexer state.");
@@ -36,7 +35,10 @@ impl Lexer for SourceFileLexer {
                 continue;
             }
 
-            println!("char: {:?} WITH BUFFER {:?}", char, self.buffer);
+            println!(
+                "SourceFileLexer char: {:?} WITH BUFFER {:?}",
+                char, self.buffer
+            );
 
             let symbol = self.char_to_symbol(&char);
 
@@ -81,6 +83,7 @@ impl Lexer for SourceFileLexer {
     }
 }
 
+// TODO: refactor to use EnumIter
 const LEXER_CHARS_LIST: [LexerChar; 2] = [LexerChar::BlockCloseCurly, LexerChar::BlockOpenCurly];
 const LEXER_SYMBOLS_LIST: [LexerSymbol; 2] =
     [LexerSymbol::BlockCloseCurly, LexerSymbol::BlockOpenCurly];
