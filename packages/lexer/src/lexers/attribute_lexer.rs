@@ -6,30 +6,31 @@ use crate::{
 use regex::Regex;
 use strum::IntoEnumIterator;
 
-pub struct AttributeLexer {
+pub struct AttributeBlockLexer {
     pub tokens: Vec<LexerToken>,
 
     chars: Vec<String>,
     buffer: Vec<String>,
 }
 
-impl Lexer for AttributeLexer {
+impl Lexer for AttributeBlockLexer {
     fn lex(&mut self) -> usize {
         let mut chars = self.chars.iter();
         self.buffer.clear();
-        let mut chars_processed_count = 0;
+        let mut processed_count = 0;
 
         let whitespace_regex = Regex::new(r"\s+").unwrap();
 
         while let Some(char) = chars.next() {
             let char = char.to_owned();
 
+            processed_count += 1;
+
             // Terminate lexing of a single attribute but look for more attributes
             if char == LexerChar::NewLine.to_string() {
                 let literal_value = self.buffer_to_literal();
                 if let Some(literal_value) = literal_value {
                     self.tokens.push(LexerToken::Literal(literal_value));
-                    chars_processed_count += 1;
                 }
                 self.buffer.clear();
                 continue;
@@ -39,9 +40,10 @@ impl Lexer for AttributeLexer {
                 continue;
             }
 
-            println!(
-                "AttributeLexer char: {:?} WITH BUFFER {:?}",
-                char, self.buffer
+            log::debug!(
+                "AttributeBlockLexer char: {:?} | buffer: {:?}",
+                char,
+                self.buffer
             );
 
             if char == LexerChar::AttributeAssignmentEquals.to_string() {
@@ -49,15 +51,12 @@ impl Lexer for AttributeLexer {
                 let buffered = self.buffer.join("");
                 if buffered.len() > 0 {
                     self.tokens.push(LexerToken::Identifier(buffered));
-                    chars_processed_count += self.buffer.len();
                 } else {
                     panic!("Expected attribute identifier before equals")
                 }
                 self.tokens
                     .push(LexerToken::Symbol(LexerSymbol::AttributeAssignmentEquals));
                 self.buffer.clear();
-                chars_processed_count += self.buffer.len() + 1;
-                chars.nth(0);
                 continue;
             }
 
@@ -66,14 +65,12 @@ impl Lexer for AttributeLexer {
                 let literal_value = self.buffer_to_literal();
                 if let Some(literal_value) = literal_value {
                     self.tokens.push(LexerToken::Literal(literal_value));
-                    chars_processed_count += self.buffer.len() + 1;
-                    chars.nth(0);
                 }
 
                 self.tokens
                     .push(LexerToken::Symbol(LexerSymbol::BlockCloseCurly));
 
-                return chars_processed_count;
+                return processed_count;
             }
 
             self.buffer.push(char);
@@ -83,14 +80,13 @@ impl Lexer for AttributeLexer {
         let literal_value = self.buffer_to_literal();
         if let Some(literal_value) = literal_value {
             self.tokens.push(LexerToken::Literal(literal_value));
-            chars_processed_count += 1;
         }
 
-        chars_processed_count
+        processed_count
     }
 }
 
-impl AttributeLexer {
+impl AttributeBlockLexer {
     pub fn new(chars: Vec<String>) -> Self {
         Self {
             chars,

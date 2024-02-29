@@ -1,4 +1,4 @@
-use super::attribute_lexer::AttributeLexer;
+use super::attribute_lexer::AttributeBlockLexer;
 use crate::{
     chars::LexerChar,
     tokens::{LexerSymbol, LexerToken, LexerType},
@@ -23,16 +23,19 @@ impl Lexer for VarDeclarationLexer {
         let bound_chars = self.chars.clone();
         let mut chars = bound_chars.iter().enumerate();
         self.buffer.clear();
-        let mut chars_processed_count = 0;
+        let mut processed_count = 0;
 
         let whitespace_regex = Regex::new(r"\s+").unwrap();
 
         while let Some((index, char)) = chars.next() {
             let char = char.to_owned();
 
-            println!(
-                "VarDeclarationLexer char: {:?} WITH BUFFER {:?}",
-                char, self.buffer
+            processed_count += 1;
+
+            log::debug!(
+                "VarDeclarationLexer char: {:?} | buffer: {:?}",
+                char,
+                self.buffer
             );
 
             if char == LexerChar::VarAssignmentColon.to_string() {
@@ -40,31 +43,34 @@ impl Lexer for VarDeclarationLexer {
                 let buffered = self.buffer.join("");
                 if buffered.len() > 0 {
                     self.tokens.push(LexerToken::Identifier(buffered));
-                    chars_processed_count += self.buffer.len();
                 } else {
                     panic!("Expected variable declaration identifier before colon")
                 }
                 self.tokens
                     .push(LexerToken::Symbol(LexerSymbol::VarAssignmentColon));
                 self.buffer.clear();
-                chars_processed_count += self.buffer.len() + 1;
-                chars.nth(0);
                 continue;
             }
 
             if char == LexerChar::BlockOpenCurly.to_string() {
-                // If we reach a block open curly, we will continue to lex for attributes
+                // If we reach a block open curly, store check current buffer and continue to lex for attributes
+                let type_value = self.buffer_to_type();
+                if let Some(type_value) = type_value {
+                    self.tokens.push(LexerToken::Type(type_value));
+                }
+
                 self.tokens
                     .push(LexerToken::Symbol(LexerSymbol::BlockOpenCurly));
                 let sub_chars = &bound_chars[(index + 1)..].to_vec();
                 let sub_chars = sub_chars.to_vec();
 
-                let mut attribute_lexer = AttributeLexer::new(sub_chars);
-                chars_processed_count += attribute_lexer.lex();
+                let mut block_lexer = AttributeBlockLexer::new(sub_chars);
 
-                self.tokens.append(&mut attribute_lexer.tokens);
+                processed_count += block_lexer.lex();
 
-                return chars_processed_count;
+                self.tokens.append(&mut block_lexer.tokens);
+
+                return processed_count;
             }
 
             // Terminate lexing of variable declaration if we encounter a newline
@@ -72,10 +78,8 @@ impl Lexer for VarDeclarationLexer {
                 let type_value = self.buffer_to_type();
                 if let Some(type_value) = type_value {
                     self.tokens.push(LexerToken::Type(type_value));
-                    chars_processed_count += self.buffer.len() + 1;
-                    chars.nth(0);
                 }
-                return chars_processed_count;
+                return processed_count;
             }
 
             if whitespace_regex.is_match(&char) {
@@ -89,10 +93,9 @@ impl Lexer for VarDeclarationLexer {
         let type_value = self.buffer_to_type();
         if let Some(type_value) = type_value {
             self.tokens.push(LexerToken::Type(type_value));
-            chars_processed_count += 1;
         }
 
-        chars_processed_count
+        processed_count
     }
 }
 

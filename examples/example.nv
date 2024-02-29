@@ -19,8 +19,6 @@ module SomeModule {
     }
 }
 
-provider Env
-
 provider Env {
     dotenv = true
 }

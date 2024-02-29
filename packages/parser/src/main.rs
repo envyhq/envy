@@ -18,5 +18,5 @@ fn main() {
 
     lexer.lex();
 
-    println!("{:#?}", lexer.tokens);
+    log::info!("{:#?}", lexer.tokens);
 }

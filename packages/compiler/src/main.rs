@@ -1,3 +1,3 @@
 fn main() {
-    println!("Hello, world!");
+    log::info!("Hello, nv compiler!");
 }

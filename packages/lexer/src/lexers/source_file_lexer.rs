@@ -1,7 +1,8 @@
 use super::var_declaration_lexer::VarDeclarationLexer;
 use crate::{
-    chars::LexerChar,
-    tokens::{LexerKeyword, LexerSymbol, LexerToken},
+    lexer::LexerResult,
+    lexers::module_declaration_lexer::ModuleDeclarationLexer,
+    tokens::{LexerKeyword, LexerToken},
     Lexer,
 };
 use regex::Regex;
@@ -28,65 +29,80 @@ impl Lexer for SourceFileLexer {
             self.buffer = vec![];
         }
 
+        let mut processed_count = 0;
+
         while let Some((index, char)) = chars.next() {
             let char = char.to_owned();
+
+            processed_count += 1;
 
             if whitespace_regex.is_match(&char) {
                 continue;
             }
 
-            println!(
-                "SourceFileLexer char: {:?} WITH BUFFER {:?}",
-                char, self.buffer
+            log::debug!(
+                "SourceFileLexer char: {:?} | buffer: {:?}",
+                char,
+                self.buffer
             );
-
-            let symbol = self.char_to_symbol(&char);
-
-            if symbol.is_some() {
-                self.tokens.push(LexerToken::Symbol(symbol.unwrap()));
-                self.buffer.clear();
-                continue;
-            }
 
             if let Some(token) = self.buffer_to_keyword() {
                 self.tokens.push(LexerToken::Keyword(token.clone()));
                 let sub_chars = &bound_chars[index..].to_vec();
                 let sub_chars = sub_chars.to_vec();
 
-                let mut lexer = match token {
-                    LexerKeyword::Var => VarDeclarationLexer::new(sub_chars),
-                    LexerKeyword::Module => VarDeclarationLexer::new(sub_chars),
-                    LexerKeyword::Provider => VarDeclarationLexer::new(sub_chars),
+                let result: LexerResult = match token {
+                    LexerKeyword::Var => {
+                        let mut lexer = VarDeclarationLexer::new(sub_chars);
+                        let count = lexer.lex();
+
+                        LexerResult {
+                            processed_count: count,
+                            tokens: lexer.tokens,
+                        }
+                    }
+                    LexerKeyword::Module => {
+                        let mut lexer = ModuleDeclarationLexer::new(sub_chars);
+                        let count = lexer.lex();
+
+                        LexerResult {
+                            processed_count: count,
+                            tokens: lexer.tokens,
+                        }
+                    }
+                    LexerKeyword::Provider => {
+                        let mut lexer = ModuleDeclarationLexer::new(sub_chars);
+                        let count = lexer.lex();
+
+                        LexerResult {
+                            processed_count: count,
+                            tokens: lexer.tokens,
+                        }
+                    }
                     _ => {
                         self.buffer.clear();
                         self.buffer.push(char);
+
                         continue;
                     }
                 };
 
-                let skip_count = lexer.lex();
-
-                self.tokens.append(&mut lexer.tokens);
-
-                if skip_count > 0 {
-                    chars.nth(skip_count - 1);
+                self.tokens.append(&mut result.tokens.clone());
+                processed_count += result.processed_count;
+                if result.processed_count > 0 {
+                    chars.nth(result.processed_count - 1);
                 }
-
                 self.buffer.clear();
+
                 continue;
             }
 
             self.buffer.push(char);
         }
 
-        self.chars.len()
+        processed_count
     }
 }
-
-// TODO: refactor to use EnumIter
-const LEXER_CHARS_LIST: [LexerChar; 2] = [LexerChar::BlockCloseCurly, LexerChar::BlockOpenCurly];
-const LEXER_SYMBOLS_LIST: [LexerSymbol; 2] =
-    [LexerSymbol::BlockCloseCurly, LexerSymbol::BlockOpenCurly];
 
 impl SourceFileLexer {
     pub fn new(input: String) -> Self {
@@ -106,19 +122,5 @@ impl SourceFileLexer {
         let buffered = self.buffer.join("");
 
         LexerKeyword::iter().find(|keyword| keyword.to_string() == buffered)
-    }
-
-    fn char_to_symbol(&self, char: &String) -> Option<LexerSymbol> {
-        let result = LEXER_CHARS_LIST
-            .iter()
-            .map(|symbol| symbol.to_string())
-            .enumerate()
-            .find(|(_index, symbol)| symbol.to_string() == char.to_string());
-
-        if result.is_none() {
-            return None;
-        }
-
-        Some(LEXER_SYMBOLS_LIST[result.unwrap().0].clone())
     }
 }

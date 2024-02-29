@@ -1,0 +1,5 @@
+module MyCoolModule {
+    var my_cool_var: str {
+        default = "hello"
+    }
+}
