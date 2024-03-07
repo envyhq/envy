@@ -112,15 +112,18 @@
     },
 
     "provider-declarations": {
-      "name": "meta.declarations.provider.nv",
-      "match": "\\b(provider)\\b\\s*([A-Z]{1,}[a-zA-Z]+):?\\s*{?",
-      "patterns": [{ "include": "#storage-keywords" }],
+      "name": "meta.declarations.var.nv",
+      "match": "\\b(provider)\\b\\s*([A-Z]{1,}[a-zA-Z]+):?\\s*([a-z_]+)s*{?",
+      "patterns": [],
       "captures": {
         "1": {
           "patterns": [{ "include": "#storage-keywords" }]
         },
         "2": {
-          "name": "entity.name.type.provider_name.nv"
+          "name": "entity.name.function.provider_name.nv"
+        },
+        "3": {
+          "name": "support.type.provider_type.nv"
         }
       }
     },

@@ -3,6 +3,7 @@ use std::fmt::Display;
 pub enum LexerChar {
     Space,
     VarAssignmentColon,
+    ProviderAssignmentColon,
     NewLine,
     AttributeAssignmentEquals,
     BlockOpenCurly,
@@ -14,6 +15,7 @@ impl Display for LexerChar {
         match self {
             LexerChar::Space => write!(f, " "),
             LexerChar::VarAssignmentColon => write!(f, ":"),
+            LexerChar::ProviderAssignmentColon => write!(f, ":"),
             LexerChar::NewLine => write!(f, "\n"),
             LexerChar::AttributeAssignmentEquals => write!(f, "="),
             LexerChar::BlockOpenCurly => write!(f, "{{"),

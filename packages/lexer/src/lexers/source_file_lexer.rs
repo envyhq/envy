@@ -1,7 +1,10 @@
 use super::var_declaration_lexer::VarDeclarationLexer;
 use crate::{
     lexer::LexerResult,
-    lexers::module_declaration_lexer::ModuleDeclarationLexer,
+    lexers::{
+        module_declaration_lexer::ModuleDeclarationLexer,
+        provider_declaration_lexer::ProviderDeclarationLexer,
+    },
     tokens::{LexerKeyword, LexerToken},
     Lexer,
 };
@@ -71,7 +74,7 @@ impl Lexer for SourceFileLexer {
                         }
                     }
                     LexerKeyword::Provider => {
-                        let mut lexer = ModuleDeclarationLexer::new(sub_chars);
+                        let mut lexer = ProviderDeclarationLexer::new(sub_chars);
                         let count = lexer.lex();
 
                         LexerResult {

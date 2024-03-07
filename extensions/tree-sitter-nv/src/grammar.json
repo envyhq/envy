@@ -69,6 +69,14 @@
           "name": "provider_identifier"
         },
         {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "provider_type_identifier"
+        },
+        {
           "type": "CHOICE",
           "members": [
             {
@@ -81,6 +89,10 @@
           ]
         }
       ]
+    },
+    "provider_type_identifier": {
+      "type": "PATTERN",
+      "value": "[a-z_]+"
     },
     "provider_identifier": {
       "type": "PATTERN",

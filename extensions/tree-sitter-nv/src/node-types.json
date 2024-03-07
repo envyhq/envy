@@ -121,12 +121,21 @@
         {
           "type": "provider_keyword",
           "named": true
+        },
+        {
+          "type": "provider_type_identifier",
+          "named": true
         }
       ]
     }
   },
   {
     "type": "provider_identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "provider_type_identifier",
     "named": true,
     "fields": {}
   },

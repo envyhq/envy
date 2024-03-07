@@ -10,6 +10,7 @@
     (var_block)
   ]
 )
+(var_identifier) @function.method
 
 ; Modules
 
@@ -20,6 +21,7 @@
     (module_block)
   ]
 )
+(module_identifier) @function.builtin
 
 ; Providers
 
@@ -27,15 +29,16 @@
   [
     (provider_keyword)
     (provider_identifier)
+    ":"
+    (provider_type_identifier)
     (provider_block)
   ]
 )
+(provider_identifier) @function.builtin
+(provider_type_identifier) @type.builtin
 
 ; Identifiers
 
-(var_identifier) @function.method
-(module_identifier) @function.builtin
-(provider_identifier) @function.builtin
 (attribute_identifier) @property
 (type_identifier) @type.builtin
 

@@ -63,6 +63,7 @@ impl Display for LexerKeyword {
 #[derive(Debug, PartialEq, Clone)]
 pub enum LexerSymbol {
     VarAssignmentColon,
+    ProviderAssignmentColon,
     AttributeAssignmentEquals,
     BlockOpenCurly,
     BlockCloseCurly,
@@ -75,4 +76,5 @@ pub enum LexerToken {
     Symbol(LexerSymbol),
     Type(LexerType),
     Literal(LexerLiteral),
+    ProviderType(String),
 }

@@ -3,3 +3,9 @@ module MyCoolModule {
         default = "hello"
     }
 }
+
+module MyOtherCoolModule {
+    var my_other_cool_var: int {
+        default = 4
+    }
+}

@@ -13,7 +13,15 @@ const providers = {
   provider_keyword: ($) => "provider",
 
   provider_declaration: ($) =>
-    seq($.provider_keyword, $.provider_identifier, optional($.provider_block)),
+    seq(
+      $.provider_keyword,
+      $.provider_identifier,
+      ":",
+      $.provider_type_identifier,
+      optional($.provider_block)
+    ),
+
+  provider_type_identifier: (_$) => /[a-z_]+/,
 
   provider_identifier: (_$) => /[A-Z][a-zA-Z]+/,
 
