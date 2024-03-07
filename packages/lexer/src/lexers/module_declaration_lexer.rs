@@ -1,8 +1,11 @@
 use crate::{
+    buffers::identifiers::buffer_to_keyword,
     chars::LexerChar,
     lexer::LexerResult,
     lexers::var_declaration_lexer::VarDeclarationLexer,
-    tokens::{LexerKeyword, LexerSymbol, LexerToken},
+    tokens::{
+        LexerDeclarationKeyword, LexerKeyword, LexerSymbol, LexerToken, LexerVarModifierKeyword,
+    },
     Lexer,
 };
 use regex::Regex;
@@ -62,7 +65,7 @@ impl Lexer for ModuleDeclarationLexer {
                 let sub_chars = sub_chars.to_vec();
 
                 let mut result: LexerResult = match token {
-                    LexerKeyword::Var => {
+                    LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Var) => {
                         let mut lexer = VarDeclarationLexer::new(sub_chars);
                         let count = lexer.lex();
 
@@ -76,10 +79,10 @@ impl Lexer for ModuleDeclarationLexer {
                             "Unimplemented module declaration lexer for token: {:?}",
                             token
                         );
-                        LexerResult {
-                            processed_count: 0,
-                            tokens: vec![],
-                        }
+                        self.buffer.clear();
+                        self.buffer.push(char);
+
+                        continue;
                     }
                 };
 
@@ -125,8 +128,6 @@ impl ModuleDeclarationLexer {
     }
 
     fn buffer_to_keyword(&self) -> Option<LexerKeyword> {
-        let buffered = self.buffer.join("");
-
-        LexerKeyword::iter().find(|keyword| keyword.to_string() == buffered)
+        buffer_to_keyword(&self.buffer)
     }
 }

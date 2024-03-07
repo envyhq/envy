@@ -1,4 +1,4 @@
 config -> variable_declaration_list EOF
 variable_declaration_list -> variable_declaration | variable_declaration_list
 variable_declaration -> {modifier} [var_keyword] (identifier): type_identifier
-type_identifier -> str | int | url
+type_identifier -> str | int | float | url

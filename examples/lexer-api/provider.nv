@@ -1,3 +1,0 @@
-provider Env: env {
-    dotenv = "./.env"
-}

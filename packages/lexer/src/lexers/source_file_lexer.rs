@@ -1,15 +1,15 @@
 use super::var_declaration_lexer::VarDeclarationLexer;
 use crate::{
+    buffers::identifiers::buffer_to_keyword,
     lexer::LexerResult,
     lexers::{
         module_declaration_lexer::ModuleDeclarationLexer,
         provider_declaration_lexer::ProviderDeclarationLexer,
     },
-    tokens::{LexerKeyword, LexerToken},
+    tokens::{LexerDeclarationKeyword, LexerKeyword, LexerToken},
     Lexer,
 };
 use regex::Regex;
-use strum::IntoEnumIterator;
 use unicode_segmentation::UnicodeSegmentation;
 
 pub struct SourceFileLexer {
@@ -55,7 +55,7 @@ impl Lexer for SourceFileLexer {
                 let sub_chars = sub_chars.to_vec();
 
                 let result: LexerResult = match token {
-                    LexerKeyword::Var => {
+                    LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Var) => {
                         let mut lexer = VarDeclarationLexer::new(sub_chars);
                         let count = lexer.lex();
 
@@ -64,7 +64,7 @@ impl Lexer for SourceFileLexer {
                             tokens: lexer.tokens,
                         }
                     }
-                    LexerKeyword::Module => {
+                    LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Module) => {
                         let mut lexer = ModuleDeclarationLexer::new(sub_chars);
                         let count = lexer.lex();
 
@@ -73,7 +73,7 @@ impl Lexer for SourceFileLexer {
                             tokens: lexer.tokens,
                         }
                     }
-                    LexerKeyword::Provider => {
+                    LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Provider) => {
                         let mut lexer = ProviderDeclarationLexer::new(sub_chars);
                         let count = lexer.lex();
 
@@ -120,10 +120,7 @@ impl SourceFileLexer {
             buffer: vec![],
         }
     }
-
     fn buffer_to_keyword(&self) -> Option<LexerKeyword> {
-        let buffered = self.buffer.join("");
-
-        LexerKeyword::iter().find(|keyword| keyword.to_string() == buffered)
+        buffer_to_keyword(&self.buffer)
     }
 }

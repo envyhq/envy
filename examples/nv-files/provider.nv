@@ -1,0 +1,7 @@
+provider Env: env {
+    dotenv = "./.env"
+}
+
+provider OtherEnv: env {
+    dotenv = "./.env.other"
+}

@@ -5,6 +5,7 @@ use crate::{
     Lexer,
 };
 use regex::Regex;
+use std::str::FromStr;
 use strum::IntoEnumIterator;
 
 pub struct VarDeclarationLexer {
@@ -22,7 +23,9 @@ impl Lexer for VarDeclarationLexer {
     fn lex(&mut self) -> usize {
         let bound_chars = self.chars.clone();
         let mut chars = bound_chars.iter().enumerate();
+
         self.buffer.clear();
+
         let mut processed_count = 0;
 
         let whitespace_regex = Regex::new(r"\s+").unwrap();
@@ -38,55 +41,54 @@ impl Lexer for VarDeclarationLexer {
                 self.buffer
             );
 
-            if char == LexerChar::VarAssignmentColon.to_string() {
-                // When we reach the colon, lex the var idenitifier and push it to the tokens before the colon
-                let buffered = self.buffer.join("");
-                if buffered.len() > 0 {
-                    self.tokens.push(LexerToken::Identifier(buffered));
-                } else {
-                    panic!("Expected variable declaration identifier before colon")
+            match LexerChar::from_str(&char) {
+                Ok(LexerChar::VarAssignmentColon) => {
+                    // When we reach the colon, lex the var idenitifier and push it to the tokens before the colon
+                    let buffered = self.buffer.join("");
+                    if buffered.len() > 0 {
+                        self.tokens.push(LexerToken::Identifier(buffered));
+                    } else {
+                        panic!("Expected variable declaration identifier before colon")
+                    }
+                    self.tokens
+                        .push(LexerToken::Symbol(LexerSymbol::VarAssignmentColon));
+                    self.buffer.clear();
+                    continue;
                 }
-                self.tokens
-                    .push(LexerToken::Symbol(LexerSymbol::VarAssignmentColon));
-                self.buffer.clear();
-                continue;
-            }
+                Ok(LexerChar::BlockOpenCurly) => {
+                    // If we reach a block open curly, store check current buffer and continue to lex for attributes
+                    let type_value = self.buffer_to_type();
+                    if let Some(type_value) = type_value {
+                        self.tokens.push(LexerToken::Type(type_value));
+                    }
 
-            if char == LexerChar::BlockOpenCurly.to_string() {
-                // If we reach a block open curly, store check current buffer and continue to lex for attributes
-                let type_value = self.buffer_to_type();
-                if let Some(type_value) = type_value {
-                    self.tokens.push(LexerToken::Type(type_value));
+                    self.tokens
+                        .push(LexerToken::Symbol(LexerSymbol::BlockOpenCurly));
+                    let sub_chars = &bound_chars[(index + 1)..].to_vec();
+                    let sub_chars = sub_chars.to_vec();
+
+                    let mut block_lexer = AttributeBlockLexer::new(sub_chars);
+
+                    processed_count += block_lexer.lex();
+
+                    self.tokens.append(&mut block_lexer.tokens);
+
+                    return processed_count;
                 }
-
-                self.tokens
-                    .push(LexerToken::Symbol(LexerSymbol::BlockOpenCurly));
-                let sub_chars = &bound_chars[(index + 1)..].to_vec();
-                let sub_chars = sub_chars.to_vec();
-
-                let mut block_lexer = AttributeBlockLexer::new(sub_chars);
-
-                processed_count += block_lexer.lex();
-
-                self.tokens.append(&mut block_lexer.tokens);
-
-                return processed_count;
-            }
-
-            // Terminate lexing of variable declaration if we encounter a newline
-            if char == LexerChar::NewLine.to_string() {
-                let type_value = self.buffer_to_type();
-                if let Some(type_value) = type_value {
-                    self.tokens.push(LexerToken::Type(type_value));
+                Ok(LexerChar::NewLine) => {
+                    let type_value = self.buffer_to_type();
+                    if let Some(type_value) = type_value {
+                        self.tokens.push(LexerToken::Type(type_value));
+                    }
+                    return processed_count;
                 }
-                return processed_count;
+                _ if whitespace_regex.is_match(&char) => {
+                    continue;
+                }
+                _ => {
+                    self.buffer.push(char);
+                }
             }
-
-            if whitespace_regex.is_match(&char) {
-                continue;
-            }
-
-            self.buffer.push(char);
         }
 
         // If we haven't returned already, we reached the end of the input. Check the buffer for any remaining token.

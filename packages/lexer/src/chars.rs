@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, str::FromStr};
 
 pub enum LexerChar {
     Space,
@@ -8,6 +8,22 @@ pub enum LexerChar {
     AttributeAssignmentEquals,
     BlockOpenCurly,
     BlockCloseCurly,
+}
+
+impl FromStr for LexerChar {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            " " => Ok(LexerChar::Space),
+            ":" => Ok(LexerChar::VarAssignmentColon),
+            "=" => Ok(LexerChar::AttributeAssignmentEquals),
+            "{" => Ok(LexerChar::BlockOpenCurly),
+            "}" => Ok(LexerChar::BlockCloseCurly),
+            "\n" => Ok(LexerChar::NewLine),
+            _ => Err(()),
+        }
+    }
 }
 
 impl Display for LexerChar {

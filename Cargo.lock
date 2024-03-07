@@ -129,6 +129,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "nv-examples_parser-api"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "log",
+ "nv-parser",
+]
+
+[[package]]
 name = "nv-language-server"
 version = "0.1.0"
 dependencies = [
@@ -147,7 +156,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "parser"
+name = "nv-parser"
 version = "0.1.0"
 dependencies = [
  "env_logger",

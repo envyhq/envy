@@ -2,8 +2,11 @@
 
 members = [
     "packages/compiler",
-    "packages/language-server",
-    "packages/lexer",
-    "examples/lexer-api",
     "packages/parser",
+    "packages/lexer",
+    
+    "packages/language-server",
+
+    "examples/lexer-api",
+    "examples/parser-api",
 ]

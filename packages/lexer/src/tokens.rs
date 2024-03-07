@@ -1,5 +1,5 @@
-use std::fmt::Display;
-use strum::EnumIter;
+use std::{default, fmt::Display};
+use strum::{Display, EnumIter};
 
 #[derive(Debug, PartialEq, Clone, EnumIter)]
 pub enum LexerLiteralBuiltin {
@@ -30,6 +30,7 @@ pub enum LexerLiteral {
 pub enum LexerType {
     String,
     Int,
+    Float,
 }
 
 impl Display for LexerType {
@@ -37,27 +38,45 @@ impl Display for LexerType {
         match self {
             LexerType::String => write!(f, "str"),
             LexerType::Int => write!(f, "int"),
+            LexerType::Float => write!(f, "float"),
         }
     }
 }
 
 #[derive(Debug, PartialEq, Clone, EnumIter)]
-pub enum LexerKeyword {
+pub enum LexerVarModifierKeyword {
     Pub,
+}
+
+impl Display for LexerVarModifierKeyword {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            &LexerVarModifierKeyword::Pub => write!(f, "pub"),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Clone, EnumIter)]
+pub enum LexerDeclarationKeyword {
     Var,
     Module,
     Provider,
 }
 
-impl Display for LexerKeyword {
+impl Display for LexerDeclarationKeyword {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            LexerKeyword::Pub => write!(f, "pub"),
-            LexerKeyword::Var => write!(f, "var"),
-            LexerKeyword::Module => write!(f, "module"),
-            LexerKeyword::Provider => write!(f, "provider"),
+            LexerDeclarationKeyword::Var => write!(f, "var"),
+            LexerDeclarationKeyword::Module => write!(f, "module"),
+            LexerDeclarationKeyword::Provider => write!(f, "provider"),
         }
     }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum LexerKeyword {
+    VarModifierKeyword(LexerVarModifierKeyword),
+    DeclarationKeyword(LexerDeclarationKeyword),
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -69,7 +88,7 @@ pub enum LexerSymbol {
     BlockCloseCurly,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Display)]
 pub enum LexerToken {
     Identifier(String),
     Keyword(LexerKeyword),

@@ -5,7 +5,7 @@ module MyCoolModule {
 }
 
 module MyOtherCoolModule {
-    var my_other_cool_var: int {
+    pub var my_other_cool_var: int {
         default = 4
     }
 }

@@ -1,5 +1,5 @@
 [package]
-name = "parser"
+name = "nv-parser"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,4 +8,4 @@ edition = "2021"
 [dependencies]
 env_logger = "0.11.2"
 log = "0.4.20"
-nv-lexer = { path = "../../packages/lexer" }
+nv-lexer = { path = "../lexer" }
