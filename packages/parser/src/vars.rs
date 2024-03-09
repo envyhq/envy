@@ -18,22 +18,22 @@ pub struct PartialVarDeclarationNode {
     pub attributes: Vec<PartialAttributeDeclarationNode>,
 }
 
-impl TryInto<VarDeclarationNode> for PartialVarDeclarationNode {
+impl TryFrom<PartialVarDeclarationNode> for VarDeclarationNode {
     type Error = ();
 
-    fn try_into(self) -> Result<VarDeclarationNode, Self::Error> {
-        if self.identifier.is_none() || self.type_value.is_none() {
+    fn try_from(partial: PartialVarDeclarationNode) -> Result<Self, Self::Error> {
+        if partial.identifier.is_none() || partial.type_value.is_none() {
             return Err(());
         }
 
         Ok(VarDeclarationNode {
-            identifier: self.identifier.unwrap(),
-            type_value: self.type_value.unwrap(),
-            modifier: self.modifier,
-            attributes: self
+            identifier: partial.identifier.unwrap(),
+            type_value: partial.type_value.unwrap(),
+            modifier: partial.modifier,
+            attributes: partial
                 .attributes
                 .into_iter()
-                .map(|attr| attr.try_into().unwrap())
+                .filter_map(|attribute| attribute.try_into().map_or(None, |a| Some(a)))
                 .collect(),
         })
     }

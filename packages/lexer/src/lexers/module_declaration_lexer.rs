@@ -66,10 +66,6 @@ impl Lexer for ModuleDeclarationLexer {
                         }
                     }
                     _ => {
-                        log::warn!(
-                            "Unimplemented module declaration lexer for token: {:?}",
-                            token
-                        );
                         self.buffer.clear();
                         self.buffer.push(char);
 

@@ -1,3 +1,3 @@
 fn main() {
-    log::debug!("Hello, nv LSP!");
+    log::debug!("Hello, nv-language-server!");
 }

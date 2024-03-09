@@ -1,7 +1,6 @@
 use crate::{
     abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode},
-    attributes::PartialAttributeDeclarationNode,
-    parsers::attribute_parser::AttributeBlockParser,
+    parsers::attribute_block_parser::AttributeBlockParser,
     vars::{PartialVarDeclarationNode, VarDeclarationNode},
     Parser,
 };
@@ -62,15 +61,7 @@ impl Parser for VarDeclarationParser {
                     partial_declaration.attributes = parser
                         .ast_block
                         .iter()
-                        .filter_map(|f| match f {
-                            AbstractSyntaxNode::Declaration(
-                                DeclarationNode::AttributeDeclaration(attribute),
-                            ) => Some(PartialAttributeDeclarationNode {
-                                identifier: Some(attribute.clone().identifier),
-                                value: Some(attribute.clone().value),
-                            }),
-                            _ => None,
-                        })
+                        .map(|attribute| attribute.clone().into())
                         .collect();
 
                     processed_count += count;
@@ -78,10 +69,8 @@ impl Parser for VarDeclarationParser {
                         tokens.nth(count - 1);
                     }
 
-                    let declaration: Result<
-                        VarDeclarationNode,
-                        <PartialVarDeclarationNode as TryInto<VarDeclarationNode>>::Error,
-                    > = partial_declaration.clone().try_into();
+                    let declaration: Result<VarDeclarationNode, _> =
+                        partial_declaration.clone().try_into();
 
                     if declaration.is_ok() {
                         self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
@@ -93,10 +82,8 @@ impl Parser for VarDeclarationParser {
                     continue;
                 }
                 LexerToken::Symbol(LexerSymbol::Whitespace) => {
-                    let declaration: Result<
-                        VarDeclarationNode,
-                        <PartialVarDeclarationNode as TryInto<VarDeclarationNode>>::Error,
-                    > = partial_declaration.clone().try_into();
+                    let declaration: Result<VarDeclarationNode, _> =
+                        partial_declaration.clone().try_into();
 
                     if declaration.is_ok() {
                         self.ast_fragment = Some(AbstractSyntaxNode::Declaration(

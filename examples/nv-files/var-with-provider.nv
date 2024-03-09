@@ -1,0 +1,9 @@
+provider OurEnv: env {
+    dotenv = "./.env"
+}
+
+pub var my_pub_var: int
+
+var my_other_var: str {
+    default = "wowowowow"
+}

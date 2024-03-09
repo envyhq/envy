@@ -46,10 +46,8 @@ impl Parser for AttributeBlockParser {
                 }
             };
 
-            let declaration: Result<
-                AttributeDeclarationNode,
-                <PartialAttributeDeclarationNode as TryInto<AttributeDeclarationNode>>::Error,
-            > = partial_declaration.clone().try_into();
+            let declaration: Result<AttributeDeclarationNode, _> =
+                partial_declaration.clone().try_into();
 
             if declaration.is_ok() {
                 self.ast_block.push(AbstractSyntaxNode::Declaration(

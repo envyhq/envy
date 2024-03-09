@@ -27,7 +27,6 @@ impl Lexer for SourceFileLexer {
         let whitespace_regex = Regex::new(r"\s+").unwrap();
 
         if self.tokens.len() > 0 || self.buffer.len() > 0 {
-            log::warn!("Lexer has already been used, clearing lexer state.");
             self.tokens = vec![];
             self.buffer = vec![];
         }

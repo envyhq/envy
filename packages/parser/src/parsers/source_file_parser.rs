@@ -9,6 +9,11 @@ use nv_lexer::{
     SourceFileLexer,
 };
 
+use super::{
+    module_declaration_parser::ModuleDeclarationParser,
+    provider_declaration_parser::ProviderDeclarationParser,
+};
+
 #[derive(Debug)]
 pub struct SourceFileParser {
     pub ast: AbstractSyntaxTree,
@@ -45,6 +50,33 @@ impl Parser for SourceFileParser {
                     ParserResult {
                         processed_count: count,
                         ast_fragment: parser.ast_fragment,
+                    }
+                }
+                LexerToken::Keyword(LexerKeyword::DeclarationKeyword(keyword)) => {
+                    match keyword {
+                        LexerDeclarationKeyword::Provider => {
+                            let mut parser = ProviderDeclarationParser::new(sub_tokens.clone());
+                            // -1 to avoid double counting the leading token (var or pub)
+                            let count = parser.parse() - 1;
+
+                            ParserResult {
+                                processed_count: count,
+                                ast_fragment: parser.ast_fragment,
+                            }
+                        }
+                        LexerDeclarationKeyword::Module => {
+                            let mut parser = ModuleDeclarationParser::new(sub_tokens.clone());
+                            // -1 to avoid double counting the leading token (var or pub)
+                            let count = parser.parse() - 1;
+
+                            ParserResult {
+                                processed_count: count,
+                                ast_fragment: parser.ast_fragment,
+                            }
+                        }
+                        _ => {
+                            continue;
+                        }
                     }
                 }
                 _ => {

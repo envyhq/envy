@@ -10,7 +10,6 @@ fn main() {
 
     if args.len() > 1 && args[1] == "--file" && !args[2].is_empty() {
         let file = args[2].to_string();
-        log::warn!("Reading from file! {}", file);
         input = fs::read_to_string(file).unwrap();
     }
 

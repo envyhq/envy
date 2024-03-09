@@ -1,3 +1,3 @@
 fn main() {
-    log::info!("Hello, nv compiler!");
+    log::info!("Hello, nv-compiler!");
 }
