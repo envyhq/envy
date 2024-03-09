@@ -18,5 +18,9 @@ fn main() {
 
     let processed_count = parser.parse();
 
-    log::info!("{:#?} - {}", parser.ast, processed_count);
+    log::info!(
+        "ast: {:#?} - processed_count: {}",
+        parser.ast,
+        processed_count
+    );
 }

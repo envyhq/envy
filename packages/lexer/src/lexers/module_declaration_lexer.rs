@@ -3,13 +3,10 @@ use crate::{
     chars::LexerChar,
     lexer::LexerResult,
     lexers::var_declaration_lexer::VarDeclarationLexer,
-    tokens::{
-        LexerDeclarationKeyword, LexerKeyword, LexerSymbol, LexerToken, LexerVarModifierKeyword,
-    },
+    tokens::{LexerDeclarationKeyword, LexerKeyword, LexerSymbol, LexerToken},
     Lexer,
 };
 use regex::Regex;
-use strum::IntoEnumIterator;
 
 pub struct ModuleDeclarationLexer {
     pub tokens: Vec<LexerToken>,
@@ -35,12 +32,6 @@ impl Lexer for ModuleDeclarationLexer {
             if whitespace_regex.is_match(&char) {
                 continue;
             }
-
-            log::debug!(
-                "ModuleDeclarationLexer char: {:?} | buffer: {:?}",
-                char,
-                self.buffer
-            );
 
             if char == LexerChar::BlockOpenCurly.to_string() {
                 // If we reach a block open curly, we will continue to lex for var declarations, taking everything before the block as the identifier

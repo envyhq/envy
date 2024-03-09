@@ -27,12 +27,6 @@ impl Lexer for ProviderDeclarationLexer {
 
             processed_count += 1;
 
-            log::debug!(
-                "ProviderDeclarationLexer char: {:?} | buffer: {:?}",
-                char,
-                self.buffer
-            );
-
             if char == LexerChar::ProviderAssignmentColon.to_string() {
                 // When we reach the colon, lex the var idenitifier and push it to the tokens before the colon
                 let buffered = self.buffer.join("");
@@ -68,12 +62,16 @@ impl Lexer for ProviderDeclarationLexer {
                 return processed_count;
             }
 
-            // Terminate lexing of variable declaration if we encounter a newline
+            // Terminate lexing of provider declaration if we encounter a newline
             if char == LexerChar::NewLine.to_string() {
                 let type_value = self.buffer_to_type();
                 if type_value.len() > 0 {
                     self.tokens.push(LexerToken::ProviderType(type_value));
                 }
+
+                self.tokens
+                    .push(LexerToken::Symbol(LexerSymbol::Whitespace));
+
                 return processed_count;
             }
 

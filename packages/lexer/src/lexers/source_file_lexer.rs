@@ -43,12 +43,6 @@ impl Lexer for SourceFileLexer {
                 continue;
             }
 
-            log::debug!(
-                "SourceFileLexer char: {:?} | buffer: {:?}",
-                char,
-                self.buffer
-            );
-
             if let Some(token) = self.buffer_to_keyword() {
                 self.tokens.push(LexerToken::Keyword(token.clone()));
                 let sub_chars = &bound_chars[index..].to_vec();

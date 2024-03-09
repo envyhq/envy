@@ -1,4 +1,4 @@
-use crate::parsers::source_file_parser::AbstractSyntaxNode;
+use crate::abstract_syntax_tree::AbstractSyntaxNode;
 
 pub trait Parser {
     fn parse(&mut self) -> usize;

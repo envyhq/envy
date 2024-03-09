@@ -32,6 +32,8 @@ impl Lexer for AttributeBlockLexer {
                 if let Some(literal_value) = literal_value {
                     self.tokens.push(LexerToken::Literal(literal_value));
                 }
+                self.tokens
+                    .push(LexerToken::Symbol(LexerSymbol::Whitespace));
                 self.buffer.clear();
                 continue;
             }
@@ -39,12 +41,6 @@ impl Lexer for AttributeBlockLexer {
             if whitespace_regex.is_match(&char) {
                 continue;
             }
-
-            log::debug!(
-                "AttributeBlockLexer char: {:?} | buffer: {:?}",
-                char,
-                self.buffer
-            );
 
             if char == LexerChar::AttributeAssignmentEquals.to_string() {
                 // When we reach the equals, lex the attribute idenitifier and push it to the tokens before the equals

@@ -35,12 +35,6 @@ impl Lexer for VarDeclarationLexer {
 
             processed_count += 1;
 
-            log::debug!(
-                "VarDeclarationLexer char: {:?} | buffer: {:?}",
-                char,
-                self.buffer
-            );
-
             match LexerChar::from_str(&char) {
                 Ok(LexerChar::VarAssignmentColon) => {
                     // When we reach the colon, lex the var idenitifier and push it to the tokens before the colon
@@ -80,6 +74,10 @@ impl Lexer for VarDeclarationLexer {
                     if let Some(type_value) = type_value {
                         self.tokens.push(LexerToken::Type(type_value));
                     }
+
+                    self.tokens
+                        .push(LexerToken::Symbol(LexerSymbol::Whitespace));
+
                     return processed_count;
                 }
                 _ if whitespace_regex.is_match(&char) => {

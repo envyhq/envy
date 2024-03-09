@@ -1,4 +1,4 @@
-use std::{default, fmt::Display};
+use std::fmt::Display;
 use strum::{Display, EnumIter};
 
 #[derive(Debug, PartialEq, Clone, EnumIter)]
@@ -86,6 +86,7 @@ pub enum LexerSymbol {
     AttributeAssignmentEquals,
     BlockOpenCurly,
     BlockCloseCurly,
+    Whitespace,
 }
 
 #[derive(Debug, PartialEq, Clone, Display)]

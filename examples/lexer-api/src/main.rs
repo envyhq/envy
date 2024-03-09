@@ -18,5 +18,9 @@ fn main() {
 
     let processed_count = lexer.lex();
 
-    log::info!("{:#?} - {}", lexer.tokens, processed_count);
+    log::info!(
+        "tokens: {:#?} - processed_count: {}",
+        lexer.tokens,
+        processed_count
+    );
 }

@@ -1,14 +1,11 @@
-use std::convert::Infallible;
-
-use log::debug;
-use nv_lexer::{tokens::LexerSymbol, LexerKeyword, LexerToken, LexerVarModifierKeyword};
-
 use crate::{
-    parsers::source_file_parser::{DeclarationNode, PartialVarDeclarationNode, VarDeclarationNode},
+    abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode},
+    attributes::PartialAttributeDeclarationNode,
+    parsers::attribute_parser::AttributeBlockParser,
+    vars::{PartialVarDeclarationNode, VarDeclarationNode},
     Parser,
 };
-
-use super::source_file_parser::AbstractSyntaxNode;
+use nv_lexer::{tokens::LexerSymbol, LexerKeyword, LexerToken};
 
 pub struct VarDeclarationParser {
     pub ast_fragment: Option<AbstractSyntaxNode>,
@@ -30,6 +27,7 @@ impl Parser for VarDeclarationParser {
             identifier: None,
             type_value: None,
             modifier: None,
+            attributes: vec![],
         };
 
         while let Some((index, token)) = tokens.next() {
@@ -37,49 +35,85 @@ impl Parser for VarDeclarationParser {
 
             processed_count += 1;
 
-            log::debug!(
-                "VarDeclarationParser token: {:?} -  buffer: {:?} - index: {}",
-                token,
-                self.buffer,
-                index
-            );
+            let sub_tokens = &bound_tokens[index..].to_vec();
+            let sub_tokens = sub_tokens.to_vec();
 
             match token {
                 LexerToken::Identifier(identifier) => {
                     partial_declaration.identifier = Some(identifier);
+
+                    continue;
                 }
                 LexerToken::Type(type_value) => {
                     partial_declaration.type_value = Some(type_value);
+
+                    continue;
                 }
                 LexerToken::Keyword(LexerKeyword::VarModifierKeyword(modifier)) => {
                     partial_declaration.modifier = Some(modifier);
+
+                    continue;
+                }
+                LexerToken::Symbol(LexerSymbol::BlockOpenCurly) => {
+                    let mut parser = AttributeBlockParser::new(sub_tokens.clone());
+                    // -1 because we dont want to double count the block open curly
+                    let count = parser.parse() - 1;
+
+                    partial_declaration.attributes = parser
+                        .ast_block
+                        .iter()
+                        .filter_map(|f| match f {
+                            AbstractSyntaxNode::Declaration(
+                                DeclarationNode::AttributeDeclaration(attribute),
+                            ) => Some(PartialAttributeDeclarationNode {
+                                identifier: Some(attribute.clone().identifier),
+                                value: Some(attribute.clone().value),
+                            }),
+                            _ => None,
+                        })
+                        .collect();
+
+                    processed_count += count;
+                    if count > 0 {
+                        tokens.nth(count - 1);
+                    }
+
+                    let declaration: Result<
+                        VarDeclarationNode,
+                        <PartialVarDeclarationNode as TryInto<VarDeclarationNode>>::Error,
+                    > = partial_declaration.clone().try_into();
+
+                    if declaration.is_ok() {
+                        self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
+                            DeclarationNode::VarDeclaration(declaration.unwrap().clone()),
+                        ));
+                        return processed_count;
+                    }
+
+                    continue;
+                }
+                LexerToken::Symbol(LexerSymbol::Whitespace) => {
+                    let declaration: Result<
+                        VarDeclarationNode,
+                        <PartialVarDeclarationNode as TryInto<VarDeclarationNode>>::Error,
+                    > = partial_declaration.clone().try_into();
+
+                    if declaration.is_ok() {
+                        self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
+                            DeclarationNode::VarDeclaration(declaration.unwrap().clone()),
+                        ));
+
+                        return processed_count;
+                    }
+
+                    continue;
                 }
                 _ => {
-                    log::debug!("VarDeclarationParser skipping token: {:?}", token);
                     self.buffer.push(token);
+                    continue;
                 }
             };
-
-            let dec: Result<
-                VarDeclarationNode,
-                <PartialVarDeclarationNode as TryInto<VarDeclarationNode>>::Error,
-            > = partial_declaration.clone().try_into();
-
-            if dec.is_ok() {
-                self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
-                    DeclarationNode::VarDeclaration(dec.unwrap()),
-                ));
-                return processed_count;
-            } else {
-                self.ast_fragment = None
-            }
         }
-
-        log::debug!(
-            "VarDeclarationParser result: - processed_count: {} - ast_fragment: {:?}",
-            processed_count,
-            self.ast_fragment
-        );
 
         processed_count
     }
