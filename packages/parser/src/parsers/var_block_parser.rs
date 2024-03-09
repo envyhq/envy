@@ -28,13 +28,6 @@ impl Parser for VarBlockParser {
 
         let mut processed_count = 0;
 
-        let mut partial_declaration = PartialVarDeclarationNode {
-            identifier: None,
-            type_value: None,
-            modifier: None,
-            attributes: vec![],
-        };
-
         while let Some((index, token)) = tokens.next() {
             processed_count += 1;
             let sub_tokens = &bound_tokens[index..].to_vec();
@@ -51,6 +44,10 @@ impl Parser for VarBlockParser {
                     // -1 to avoid double counting the leading token (var or pub)
                     let count = parser.parse() - 1;
 
+                    if let Some(ast_fragment) = parser.ast_fragment.clone() {
+                        self.ast_block.push(ast_fragment);
+                    }
+
                     ParserResult {
                         processed_count: count,
                         ast_fragment: parser.ast_fragment,
@@ -60,22 +57,6 @@ impl Parser for VarBlockParser {
                     continue;
                 }
             };
-
-            let declaration: Result<VarDeclarationNode, _> = partial_declaration.clone().try_into();
-
-            if declaration.is_ok() {
-                self.ast_block.push(AbstractSyntaxNode::Declaration(
-                    DeclarationNode::VarDeclaration(declaration.unwrap().clone()),
-                ));
-                partial_declaration = PartialVarDeclarationNode {
-                    identifier: None,
-                    type_value: None,
-                    modifier: None,
-                    attributes: vec![],
-                };
-
-                continue;
-            }
 
             processed_count += result.processed_count;
             if result.processed_count > 0 {

@@ -1,0 +1,17 @@
+provider OurEnv: env {
+    dotenv = "./.env"
+}
+
+var my_other_var: str {
+    default = "wowowowow"
+}
+
+module MyOtherCoolModule {
+    var some_module_var: str {
+        default = "cocococo"
+    }
+
+    pub var my_other_cool_var: int {
+        default = 4
+    }
+}
