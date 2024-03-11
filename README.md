@@ -10,9 +10,12 @@ A language for application/program/system configs.
 - Lexer - [Source](./packages/lexer/src/lexer.rs)
 - Parser - [Source](./packages/parser/src/main.rs)
 - Language Server - **TODO**
+- Code Generation
+  - WASM - [Source](./packages/code-generation/src/main.rs)
 
 ### Client libraries
 
+- WASM - **WIP**
 - Rust - **WIP**
 - TypeScript/JavaScript - **WIP**
 - Python - **TODO**
@@ -27,4 +30,6 @@ A language for application/program/system configs.
 ## Examples
 
 - [fullstack-monorepo](./examples/fullstack-monorepo/) - Example use of nv in a monorepo
-- [lexer-api](./examples/lexer-api/) - Example use of the nv lexer API
+- [lexer-api](./examples/lexer-api/) - example use of the nv lexer api
+- [parser-api](./examples/parser-api/) - example use of the nv parser api
+- [nv-files](./examples/nv-files/) - example .nv files of varying complexity
