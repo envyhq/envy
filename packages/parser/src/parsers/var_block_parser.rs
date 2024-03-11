@@ -1,11 +1,4 @@
-use std::vec;
-
-use crate::{
-    abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode},
-    parser::ParserResult,
-    vars::{PartialVarDeclarationNode, VarDeclarationNode},
-    Parser,
-};
+use crate::{abstract_syntax_tree::AbstractSyntaxNode, parser::ParserResult, Parser};
 use nv_lexer::{
     tokens::LexerDeclarationKeyword, LexerKeyword, LexerToken, LexerVarModifierKeyword,
 };

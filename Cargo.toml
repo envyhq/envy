@@ -4,6 +4,8 @@ members = [
     "packages/compiler",
     "packages/parser",
     "packages/lexer",
+
+    "packages/code-generation/wasm",
     
     "packages/language-server",
 
