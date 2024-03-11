@@ -2,7 +2,7 @@
 
 A language for application/program/system configs.
 
-![nv language snippet - neovim](./extensions/tree-sitter-nv/docs/assets/images/tree-sitter-nv-syntax-highlighting.png)
+![nv language snippet - neovim](./extensions/vscode-nv/docs/assets/images/vscode-nv-syntax-highlighting.png)
 
 ## Packages
 

@@ -1,6 +1,12 @@
 # nv compiler
 
+## Variable times
+
+![NV Variable Times](./docs/assets/images/variable-times.png)
+
 ## Compilation flow
+
+![NV Compilation Flow](./docs/assets/images/compilation-flow.png)
 
 > Character stream -> grapheme stream -> Token stream -> Syntax tree -> Client code
 
@@ -102,6 +108,8 @@ SourceFile {
 ```
 
 ### Client code
+
+![NV Source Code Generation](./docs/assets/images/source-code-generation.png)
 
 `nv` aims to compile into multiple target languages to make integration easy and to allow nv to be opinionated (and useful) throughout the development lifecycle.
 
