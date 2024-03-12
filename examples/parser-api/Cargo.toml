@@ -1,5 +1,5 @@
 [package]
-name = "nv-examples_parser-api"
+name = "nv-examples-parser-api"
 version = "0.1.0"
 edition = "2021"
 

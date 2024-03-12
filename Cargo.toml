@@ -4,11 +4,10 @@ members = [
     "packages/compiler",
     "packages/parser",
     "packages/lexer",
-
-    "packages/code-generation/wasm",
-    
+    "packages/code-generation/webassembly",
     "packages/language-server",
 
     "examples/lexer-api",
     "examples/parser-api",
+    "examples/code-generation/webassembly/rust",
 ]
