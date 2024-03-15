@@ -1,7 +1,7 @@
 use walrus::{ir::*, ActiveData, ActiveDataLocation, DataKind, InitExpr};
 use walrus::{Module, ModuleConfig, ValType};
 
-fn main() -> walrus::Result<()> {
+pub fn generate_webassembly_source() -> walrus::Result<()> {
     let config = ModuleConfig::new();
     let mut root_module = Module::with_config(config.clone());
 
