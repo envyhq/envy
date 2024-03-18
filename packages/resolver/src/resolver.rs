@@ -53,7 +53,6 @@ impl TreeResolver for Resolver {
                 .flatten()
                 .collect(),
             AbstractSyntaxNode::Declaration(declaration) => self.resolve_declaration(declaration),
-            _ => unimplemented!(),
         }
     }
 
