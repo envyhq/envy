@@ -1,5 +1,5 @@
 [package]
-name = "nv-examples-codegen-webassembly-rust"
+name = "nv-examples-client-integration-webassembly-rust"
 version = "0.1.0"
 edition = "2021"
 

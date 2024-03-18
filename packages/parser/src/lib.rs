@@ -1,4 +1,5 @@
-mod abstract_syntax_tree;
+pub mod abstract_syntax_tree;
+
 mod attributes;
 mod modules;
 mod parser;
@@ -10,3 +11,4 @@ pub use abstract_syntax_tree::{AbstractSyntaxNode, AbstractSyntaxTree, Declarati
 pub use modules::ModuleDeclarationNode;
 pub use parser::Parser;
 pub use parsers::source_file_parser::SourceFileParser;
+pub use vars::VarDeclarationNode;

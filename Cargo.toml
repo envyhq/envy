@@ -7,9 +7,14 @@ members = [
     "packages/language-server",
     "packages/code-generation/webassembly",
     "packages/code-generation/javascript",
+    "packages/resolver",
+    "packages/provider/core",
+    "packages/provider/env",
 
     "examples/lexer-api",
     "examples/parser-api",
-    "examples/code-generation/webassembly/rust",
+    "examples/resolver-api",
+    "examples/code-generation/webassembly",
     "examples/code-generation/javascript",
+    "examples/client-integration/webassembly/rust",
 ]

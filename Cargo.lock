@@ -698,6 +698,7 @@ dependencies = [
 name = "nv-codegen-webassembly"
 version = "0.1.0"
 dependencies = [
+ "nv-parser",
  "walrus",
 ]
 
@@ -706,6 +707,14 @@ name = "nv-compiler"
 version = "0.1.0"
 dependencies = [
  "log",
+]
+
+[[package]]
+name = "nv-examples-client-integration-webassembly-rust"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "wasmer",
 ]
 
 [[package]]
@@ -719,11 +728,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "nv-examples-codegen-webassembly-rust"
+name = "nv-examples-codegen-webassembly"
 version = "0.1.0"
 dependencies = [
- "anyhow",
- "wasmer",
+ "env_logger",
+ "log",
+ "nv-codegen-webassembly",
+ "nv-parser",
 ]
 
 [[package]]
@@ -742,6 +753,17 @@ dependencies = [
  "env_logger",
  "log",
  "nv-parser",
+]
+
+[[package]]
+name = "nv-examples-resolver-api"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "log",
+ "nv-parser",
+ "nv-provider-env",
+ "nv-resolver",
 ]
 
 [[package]]
@@ -769,6 +791,29 @@ dependencies = [
  "env_logger",
  "log",
  "nv-lexer",
+]
+
+[[package]]
+name = "nv-provider-core"
+version = "0.1.0"
+dependencies = [
+ "log",
+]
+
+[[package]]
+name = "nv-provider-env"
+version = "0.1.0"
+dependencies = [
+ "nv-provider-core",
+]
+
+[[package]]
+name = "nv-resolver"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "nv-parser",
+ "nv-provider-core",
 ]
 
 [[package]]
