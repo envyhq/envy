@@ -4,7 +4,7 @@ A language for configuration.
 
 ![nv language snippet - neovim](./extensions/vscode-nv/docs/assets/images/vscode-nv-syntax-highlighting.png)
 
-[https://www.figma.com/file/YLWiYaLvchfUlrbmr4P0M2/NV-Discovery?type=whiteboard&node-id=0%3A1&t=7aag2YKaHTLDS4lW-1](nv FigJam discovery board)
+[nv FigJam discovery board](https://www.figma.com/file/YLWiYaLvchfUlrbmr4P0M2/NV-Discovery?type=whiteboard&node-id=0%3A1&t=7aag2YKaHTLDS4lW-1)
 
 ## Packages
 
