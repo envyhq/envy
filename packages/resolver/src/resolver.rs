@@ -23,7 +23,7 @@ impl TreeResolver for Resolver {
     fn resolve_var(&self, node: VarDeclarationNode) -> ResolvedValue {
         let provider = self.providers.iter().find(|p| p.name() == "env").unwrap();
 
-        let value = provider.get_value(node.identifier.clone());
+        let value = provider.get_value(&node.identifier.clone());
 
         ResolvedValue {
             key: node.identifier,

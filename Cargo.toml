@@ -1,20 +1,21 @@
 [workspace]
+resolver = "2"
 
 members = [
     "packages/compiler",
     "packages/parser",
     "packages/lexer",
     "packages/language-server",
-    "packages/code-generation/webassembly",
     "packages/code-generation/javascript",
     "packages/resolver",
     "packages/provider/core",
-    "packages/provider/env",
+    "packages/provider/providers/env",
+    "packages/provider/providers/aws-secrets-manager",
 
     "examples/lexer-api",
     "examples/parser-api",
     "examples/resolver-api",
-    "examples/code-generation/webassembly",
     "examples/code-generation/javascript",
-    "examples/client-integration/webassembly/rust",
+    "examples/provider/env",
+    "examples/provider/aws-secrets-manager",
 ]

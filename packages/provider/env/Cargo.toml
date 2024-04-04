@@ -1,7 +1,0 @@
-[package]
-name = "nv-provider-env"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-nv-provider-core = { path = "../core" }

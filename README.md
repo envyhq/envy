@@ -11,11 +11,9 @@ A language for application/program/system configs.
 - Parser - [Source](./packages/parser/src/main.rs)
 - Language Server - **TODO**
 - Code Generation
-  - WASM - [Source](./packages/code-generation/src/main.rs)
 
 ### Client libraries
 
-- WASM - **WIP**
 - Rust - **WIP**
 - TypeScript/JavaScript - **WIP**
 - Python - **TODO**

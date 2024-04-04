@@ -1,8 +1,0 @@
-[package]
-name = "nv-examples-client-integration-webassembly-rust"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-anyhow = "1.0.81"
-wasmer = "4.2.6"
