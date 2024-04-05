@@ -3,10 +3,11 @@ pub struct ProviderValueError {
     pub message: Option<String>,
 }
 
-pub trait Provider {
+#[async_trait::async_trait]
+pub trait Provider: Sync {
     fn initialize(&self) -> ();
     fn destroy(&self) -> ();
     fn name(&self) -> &'static str;
 
-    fn get_value(&self, key: &str) -> Result<String, ProviderValueError>;
+    async fn get_value(&self, key: &str) -> Result<String, ProviderValueError>;
 }

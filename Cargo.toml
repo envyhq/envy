@@ -3,19 +3,26 @@ resolver = "2"
 
 members = [
     "packages/compiler",
-    "packages/parser",
-    "packages/lexer",
-    "packages/language-server",
-    "packages/code-generation/javascript",
-    "packages/resolver",
-    "packages/provider/core",
-    "packages/provider/providers/env",
-    "packages/provider/providers/aws-secrets-manager",
 
-    "examples/lexer-api",
-    "examples/parser-api",
-    "examples/resolver-api",
-    "examples/code-generation/javascript",
-    "examples/provider/env",
-    "examples/provider/aws-secrets-manager",
+    "packages/parser",
+    "packages/parser/examples",
+
+    "packages/lexer",
+    "packages/lexer/examples",
+
+    "packages/resolver",
+    "packages/resolver/examples",
+
+    "packages/language-server",
+
+    "packages/code-generation/javascript",
+    "packages/code-generation/javascript/examples",
+
+    "packages/provider/core",
+
+    "packages/provider/providers/env",
+    "packages/provider/providers/env/examples",
+
+    "packages/provider/providers/aws-secrets-manager",
+    "packages/provider/providers/aws-secrets-manager/examples",
 ]

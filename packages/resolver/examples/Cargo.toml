@@ -1,0 +1,12 @@
+[package]
+name = "nv-examples-resolver-api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+env_logger = "0.11.2"
+log = "0.4.20"
+nv-parser = { path = "../../parser" }
+nv-resolver = { path = "../" }
+nv-provider-env = { path = "../../provider/providers/env" }
+tokio = { version = "1.37.0", features = ["macros", "rt-multi-thread"] }

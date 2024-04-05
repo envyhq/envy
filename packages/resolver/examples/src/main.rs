@@ -3,7 +3,8 @@ use nv_provider_env::EnvProvider;
 use nv_resolver::{Resolver, TreeResolver};
 use std::{env, fs};
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), ()> {
     env_logger::init();
 
     let args: Vec<String> = env::args().collect();
@@ -25,7 +26,9 @@ fn main() {
         providers: vec![Box::new(EnvProvider {})],
     };
 
-    let resolved = resolver.resolve(parser.ast);
+    let resolved = resolver.resolve(parser.ast).await;
 
-    println!("resolver resolved: {:?}", resolved)
+    println!("resolver resolved: {:#?}", resolved);
+
+    Ok(())
 }

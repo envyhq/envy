@@ -1,7 +1,0 @@
-[package]
-name = "nv-codegen-json"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-nv-parser = { path = "../../parser" }

@@ -1,68 +1,117 @@
+use async_trait::async_trait;
+use futures::{stream, StreamExt};
 use nv_parser::{AbstractSyntaxNode, AbstractSyntaxTree, DeclarationNode, VarDeclarationNode};
-
 pub use nv_provider_core::Provider;
 
 #[derive(Debug)]
+pub enum ResolutionError {
+    ProviderError,
+}
+
+#[derive(Debug, Clone)]
 pub struct ResolvedValue {
     pub key: String,
     pub value: Option<String>,
 }
 
+#[async_trait]
 pub trait TreeResolver {
-    fn resolve_var(&self, ast: VarDeclarationNode) -> ResolvedValue;
-    fn resolve_declaration(&self, ast: DeclarationNode) -> Vec<ResolvedValue>;
-    fn resolve_node(&self, ast: AbstractSyntaxNode) -> Vec<ResolvedValue>;
-    fn resolve(&self, ast: AbstractSyntaxTree) -> Vec<ResolvedValue>;
+    async fn resolve_var(&self, ast: VarDeclarationNode) -> Result<ResolvedValue, ResolutionError>;
+    async fn resolve_declaration(
+        &self,
+        ast: DeclarationNode,
+    ) -> Result<Vec<ResolvedValue>, ResolutionError>;
+    async fn resolve_node(
+        &self,
+        ast: AbstractSyntaxNode,
+    ) -> Result<Vec<ResolvedValue>, ResolutionError>;
+    async fn resolve(&self, ast: AbstractSyntaxTree)
+        -> Result<Vec<ResolvedValue>, ResolutionError>;
 }
 
 pub struct Resolver {
-    pub providers: Vec<Box<dyn Provider>>,
+    pub providers: Vec<Box<dyn Provider + Sync>>,
 }
 
+#[async_trait]
 impl TreeResolver for Resolver {
-    fn resolve_var(&self, node: VarDeclarationNode) -> ResolvedValue {
+    async fn resolve_var(
+        &self,
+        node: VarDeclarationNode,
+    ) -> Result<ResolvedValue, ResolutionError> {
         let provider = self.providers.iter().find(|p| p.name() == "env").unwrap();
 
-        let value = provider.get_value(&node.identifier.clone());
+        let value = provider.get_value(&node.identifier.clone()).await;
 
-        ResolvedValue {
+        Ok(ResolvedValue {
             key: node.identifier,
             value: value.ok(),
-        }
+        })
     }
 
-    fn resolve_declaration(&self, node: DeclarationNode) -> Vec<ResolvedValue> {
+    async fn resolve_declaration(
+        &self,
+        node: DeclarationNode,
+    ) -> Result<Vec<ResolvedValue>, ResolutionError> {
         match node {
-            DeclarationNode::VarDeclaration(var) => vec![self.resolve_var(var)],
-            DeclarationNode::ModuleDeclaration(module) => module
-                .declarations
+            DeclarationNode::VarDeclaration(var) => Ok(vec![self.resolve_var(var).await?]),
+            DeclarationNode::ModuleDeclaration(module) => Ok(stream::iter(module.declarations)
+                .map(|d| async move { self.resolve_declaration(d.clone()).await })
+                .buffer_unordered(5)
+                .collect::<Vec<_>>()
+                .await
                 .iter()
-                .map(|d| self.resolve_declaration(d.clone()))
+                .filter_map(|d| {
+                    if d.is_ok() {
+                        Some(d.as_ref().unwrap().clone())
+                    } else {
+                        None
+                    }
+                })
                 .flatten()
-                .collect(),
+                .collect::<Vec<_>>()),
             _ => unimplemented!(),
         }
     }
 
-    fn resolve_node(&self, node: AbstractSyntaxNode) -> Vec<ResolvedValue> {
+    async fn resolve_node(
+        &self,
+        node: AbstractSyntaxNode,
+    ) -> Result<Vec<ResolvedValue>, ResolutionError> {
         match node {
-            AbstractSyntaxNode::SourceFile(source_file) => source_file
-                .declarations
-                .iter()
-                .map(|d| self.resolve_declaration(d.clone()))
-                .flatten()
-                .collect(),
-            AbstractSyntaxNode::Declaration(declaration) => self.resolve_declaration(declaration),
+            AbstractSyntaxNode::SourceFile(source_file) => {
+                Ok(stream::iter(source_file.declarations)
+                    .map(|d| async move { self.resolve_declaration(d.clone()).await })
+                    .buffer_unordered(5)
+                    .collect::<Vec<_>>()
+                    .await
+                    .iter()
+                    .filter_map(|d| {
+                        if d.is_ok() {
+                            Some(d.as_ref().unwrap().clone())
+                        } else {
+                            None
+                        }
+                    })
+                    .flatten()
+                    .collect::<Vec<_>>())
+            }
+            AbstractSyntaxNode::Declaration(declaration) => {
+                self.resolve_declaration(declaration).await
+            }
         }
     }
 
-    fn resolve(&self, ast: AbstractSyntaxTree) -> Vec<ResolvedValue> {
+    async fn resolve(
+        &self,
+        ast: AbstractSyntaxTree,
+    ) -> Result<Vec<ResolvedValue>, ResolutionError> {
         let mut resolved_values = vec![];
 
         if let Some(root) = ast.root {
-            resolved_values = self.resolve_node(root);
+            resolved_values = self.resolve_node(root).await?;
         }
 
-        resolved_values
+        Ok(resolved_values)
     }
 }

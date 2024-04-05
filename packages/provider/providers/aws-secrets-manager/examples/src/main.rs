@@ -1,11 +1,12 @@
 use nv_provider_aws_secrets_manager::{AwsSecretsManagerProvider, Provider};
 
-fn main() {
+#[tokio::main]
+async fn main() {
     env_logger::init();
 
     let provider = AwsSecretsManagerProvider {};
 
-    let value = provider.get_value("TEST_SECRET");
+    let value = provider.get_value("TEST_SECRET").await;
 
     println!("provider value: {:#?}", value);
 }
