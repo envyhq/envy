@@ -1,7 +1,7 @@
+use futures::executor;
 use nv_provider_aws_secrets_manager::{AwsSecretsManagerProvider, Provider};
 
-#[tokio::main]
-async fn main() {
+async fn async_main() {
     env_logger::init();
 
     let provider = AwsSecretsManagerProvider {};
@@ -9,4 +9,8 @@ async fn main() {
     let value = provider.get_value("TEST_SECRET").await;
 
     log::debug!("provider value: {:#?}", value);
+}
+
+fn main() {
+    executor::block_on(async_main());
 }

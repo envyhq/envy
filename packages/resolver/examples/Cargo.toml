@@ -10,4 +10,4 @@ nv-parser = { path = "../../parser" }
 nv-resolver = { path = "../" }
 nv-provider-env = { path = "../../provider/providers/env" }
 nv-provider-aws-secrets-manager = { path = "../../provider/providers/aws-secrets-manager" }
-tokio = { version = "1.37.0", features = ["macros", "rt-multi-thread"] }
+futures = "0.3.30"

@@ -7,6 +7,5 @@ edition = "2021"
 log = "0.4.21"
 nv-provider-core = { path = "../provider/core" }
 nv-parser = { path = "../parser" }
-tokio = { version = "1.37.0", features = ["macros"] }
 futures = "0.3.30"
 async-trait = "0.1.79"

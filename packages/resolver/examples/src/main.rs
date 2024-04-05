@@ -1,11 +1,11 @@
+use futures::executor;
 use nv_parser::{Parser, SourceFileParser};
 use nv_provider_aws_secrets_manager::AwsSecretsManagerProvider;
 use nv_provider_env::EnvProvider;
 use nv_resolver::{Resolver, ResolverProvider, TreeResolver};
 use std::{collections::HashMap, env, fs, sync::Arc};
 
-#[tokio::main]
-async fn main() -> Result<(), ()> {
+async fn async_main() -> Result<(), ()> {
     env_logger::init();
 
     let args: Vec<String> = env::args().collect();
@@ -64,4 +64,8 @@ async fn main() -> Result<(), ()> {
     println!("{:#?}", resolved);
 
     Ok(())
+}
+
+fn main() {
+    let _ = executor::block_on(async_main());
 }

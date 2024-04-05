@@ -1,7 +1,7 @@
+use futures::executor;
 use nv_provider_env::{EnvProvider, Provider};
 
-#[tokio::main]
-async fn main() -> Result<(), ()> {
+async fn async_main() -> Result<(), ()> {
     env_logger::init();
 
     let provider = EnvProvider {};
@@ -11,4 +11,8 @@ async fn main() -> Result<(), ()> {
     log::debug!("provider value: {:#?}", value);
 
     Ok(())
+}
+
+fn main() {
+    let _ = executor::block_on(async_main());
 }

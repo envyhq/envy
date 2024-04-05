@@ -83,11 +83,6 @@
     }
   },
   {
-    "type": "module_identifier",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "provider_block",
     "named": true,
     "fields": {},
@@ -128,11 +123,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "provider_identifier",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "provider_type_identifier",
@@ -228,11 +218,6 @@
     }
   },
   {
-    "type": "var_identifier",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "\"",
     "named": false
   },
@@ -261,11 +246,19 @@
     "named": true
   },
   {
+    "type": "module_identifier",
+    "named": true
+  },
+  {
     "type": "module_keyword",
     "named": true
   },
   {
     "type": "nowt",
+    "named": true
+  },
+  {
+    "type": "provider_identifier",
     "named": true
   },
   {
@@ -282,6 +275,10 @@
   },
   {
     "type": "unescaped_string_fragment",
+    "named": true
+  },
+  {
+    "type": "var_identifier",
     "named": true
   },
   {
