@@ -1,8 +1,10 @@
 # nv
 
-A language for application/program/system configs.
+A language for configuration.
 
 ![nv language snippet - neovim](./extensions/vscode-nv/docs/assets/images/vscode-nv-syntax-highlighting.png)
+
+[nv FigJam discovery board](https://www.figma.com/file/YLWiYaLvchfUlrbmr4P0M2/NV-Discovery?type=whiteboard&node-id=0%3A1&t=7aag2YKaHTLDS4lW-1)
 
 ## Packages
 
@@ -10,14 +12,29 @@ A language for application/program/system configs.
 - Lexer - [Source](./packages/lexer/src/lexer.rs)
 - Parser - [Source](./packages/parser/src/main.rs)
 - Language Server - **TODO**
-- Code Generation
+- Code Generation - **WIP**
+- Code Formatter - **TODO**
+- Providers
+  - Env [Source]
+  - AWS Secrets Manager [Source]
+  - AWS KMS - **TODO**
+  - GCP Secret Manager - **TODO**
+  - Azure Key Vault - **TODO**
+  - HasiCorp Vault - **TODO**
+- Provider Registry - **TBD**
+- Config Registry - **TBD**
+- Cloud Service - **TBD**
 
 ### Client libraries
 
 - Rust - **WIP**
 - TypeScript/JavaScript - **WIP**
 - Python - **TODO**
-- Go - **TODO**
+- Go - **WIP**
+- C - **TODO**
+- C++ - **TODO**
+- SWIFT - **TODO**
+- CSS - **TBD**
 
 ## Extensions
 
