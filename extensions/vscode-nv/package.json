@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "vsce package",
+    "dev:install": "pnpm build && pnpm vscode:install",
     "vscode:uninstall": "code --uninstall-extension undefined_publisher.vscode-nv",
     "vscode:install": "npm run vscode:uninstall; npm run build && code --install-extension ./vscode-nv-0.0.1.vsix"
   },

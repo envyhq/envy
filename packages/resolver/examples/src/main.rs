@@ -1,7 +1,7 @@
 use nv_parser::{Parser, SourceFileParser};
 use nv_provider_env::EnvProvider;
-use nv_resolver::{Resolver, TreeResolver};
-use std::{env, fs};
+use nv_resolver::{Resolver, ResolverProvider, TreeResolver};
+use std::{collections::HashMap, env, fs, sync::Arc};
 
 #[tokio::main]
 async fn main() -> Result<(), ()> {
@@ -22,9 +22,35 @@ async fn main() -> Result<(), ()> {
 
     log::info!("ast processed_count: {}", processed_count);
 
-    let resolver = Resolver {
-        providers: vec![Box::new(EnvProvider {})],
-    };
+    let env: ResolverProvider = Arc::new(EnvProvider {});
+
+    let mut available_providers: HashMap<String, ResolverProvider> = HashMap::new();
+    available_providers.insert("env".to_string(), env);
+
+    let providers: Vec<ResolverProvider> =
+        if let Some(nv_parser::AbstractSyntaxNode::SourceFile(source)) = parser.ast.clone().root {
+            source
+                .declarations
+                .iter()
+                .filter_map(|d| match d {
+                    nv_parser::DeclarationNode::ProviderDeclaration(declaration)
+                        if available_providers.contains_key(declaration.type_value.as_str()) =>
+                    {
+                        let provider: ResolverProvider = available_providers
+                            .get(declaration.type_value.as_str())
+                            .unwrap()
+                            .clone();
+
+                        Some(provider)
+                    }
+                    _ => None,
+                })
+                .collect::<Vec<ResolverProvider>>()
+        } else {
+            vec![]
+        };
+
+    let resolver = Resolver { providers };
 
     let resolved = resolver.resolve(parser.ast).await;
 

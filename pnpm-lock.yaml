@@ -1,0 +1,42 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .: {}
+
+  extensions/tree-sitter-nv:
+    dependencies:
+      nan:
+        specifier: ^2.18.0
+        version: 2.19.0
+    devDependencies:
+      prettier:
+        specifier: ^3.2.5
+        version: 3.2.5
+      tree-sitter-cli:
+        specifier: ^0.21.0
+        version: 0.21.0
+
+  extensions/vscode-nv: {}
+
+packages:
+
+  /nan@2.19.0:
+    resolution: {integrity: sha512-nO1xXxfh/RWNxfd/XPfbIfFk5vgLsAxUR9y5O0cHMJu/AW9U95JLXqthYHjEp+8gQ5p96K9jUp8nbVOxCdRbtw==}
+    dev: false
+
+  /prettier@3.2.5:
+    resolution: {integrity: sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: true
+
+  /tree-sitter-cli@0.21.0:
+    resolution: {integrity: sha512-wA7wT5724fNQW82XDH6zT6ZcYonjrAKLCHHuhLsPcAKULrhp3rNuMvlgBdB5FUBvmjHNhtTZF/qpHenMoRJPBw==}
+    hasBin: true
+    requiresBuild: true
+    dev: true

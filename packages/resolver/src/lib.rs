@@ -1,3 +1,3 @@
 mod resolver;
 
-pub use resolver::{Resolver, TreeResolver};
+pub use resolver::{Resolver, ResolverProvider, TreeResolver};

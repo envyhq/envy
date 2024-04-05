@@ -5,6 +5,7 @@
   "main": "bindings/node",
   "scripts": {
     "build": "tree-sitter generate",
+    "dev:install": "echo dev:install not implemented for tree-sitter-nv",
     "parse": "npm run build && tree-sitter parse",
     "highlight": "npm run build && tree-sitter highlight",
     "test": "npm run build && npm run test:example",

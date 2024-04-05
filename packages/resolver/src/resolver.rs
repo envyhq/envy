@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use futures::{stream, StreamExt};
 use nv_parser::{AbstractSyntaxNode, AbstractSyntaxTree, DeclarationNode, VarDeclarationNode};
@@ -29,8 +31,10 @@ pub trait TreeResolver {
         -> Result<Vec<ResolvedValue>, ResolutionError>;
 }
 
+pub type ResolverProvider = Arc<dyn Provider + Sync + Send>;
+
 pub struct Resolver {
-    pub providers: Vec<Box<dyn Provider + Sync>>,
+    pub providers: Vec<ResolverProvider>,
 }
 
 #[async_trait]

@@ -39,7 +39,7 @@ pub enum AbstractSyntaxNode {
     Declaration(DeclarationNode),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct AbstractSyntaxTree {
     pub root: Option<AbstractSyntaxNode>,
 }

@@ -210,7 +210,7 @@
     },
     "var_identifier": {
       "type": "PATTERN",
-      "value": "[a-z_]+"
+      "value": "[a-zA-Z_]+"
     },
     "var_modifier": {
       "type": "PATTERN",
