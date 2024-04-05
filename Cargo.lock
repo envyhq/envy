@@ -1015,6 +1015,7 @@ dependencies = [
  "env_logger",
  "log",
  "nv-parser",
+ "nv-provider-aws-secrets-manager",
  "nv-provider-env",
  "nv-resolver",
  "tokio",

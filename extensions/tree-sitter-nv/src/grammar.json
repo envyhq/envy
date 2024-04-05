@@ -96,7 +96,7 @@
     },
     "provider_identifier": {
       "type": "PATTERN",
-      "value": "[A-Z][a-zA-Z]+"
+      "value": "[a-zA-Z_]+"
     },
     "provider_block": {
       "type": "SEQ",

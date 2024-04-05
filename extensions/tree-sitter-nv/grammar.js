@@ -23,7 +23,7 @@ const providers = {
 
   provider_type_identifier: (_$) => /[a-z_]+/,
 
-  provider_identifier: (_$) => /[A-Z][a-zA-Z]+/,
+  provider_identifier: (_$) => /[a-zA-Z_]+/,
 
   provider_block: ($) => seq("{", repeat($.attribute), "}"),
 };

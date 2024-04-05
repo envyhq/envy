@@ -1,0 +1,9 @@
+provider env: env
+
+provider aws_sm: aws_sm
+
+var EDITOR: str
+var USER: str
+var TEST_SECRET: str
+
+@env var AWS_ACCESS_KEY_ID: str

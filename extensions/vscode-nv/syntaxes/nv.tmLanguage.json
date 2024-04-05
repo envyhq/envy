@@ -113,7 +113,7 @@
 
     "provider-declarations": {
       "name": "meta.declarations.var.nv",
-      "match": "\\b(provider)\\b\\s*([A-Z]{1,}[a-zA-Z]+):?\\s*([a-z_]+)s*{?",
+      "match": "\\b(provider)\\b\\s*([a-zA-Z_]+):?\\s*([a-z_]+)s*{?",
       "patterns": [],
       "captures": {
         "1": {

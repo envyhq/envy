@@ -1,4 +1,5 @@
 use nv_parser::{Parser, SourceFileParser};
+use nv_provider_aws_secrets_manager::AwsSecretsManagerProvider;
 use nv_provider_env::EnvProvider;
 use nv_resolver::{Resolver, ResolverProvider, TreeResolver};
 use std::{collections::HashMap, env, fs, sync::Arc};
@@ -22,10 +23,14 @@ async fn main() -> Result<(), ()> {
 
     log::info!("ast processed_count: {}", processed_count);
 
+    println!("{:#?}", parser.ast.clone());
+
     let env: ResolverProvider = Arc::new(EnvProvider {});
+    let aws_sm: ResolverProvider = Arc::new(AwsSecretsManagerProvider {});
 
     let mut available_providers: HashMap<String, ResolverProvider> = HashMap::new();
     available_providers.insert("env".to_string(), env);
+    available_providers.insert("aws_sm".to_string(), aws_sm);
 
     let providers: Vec<ResolverProvider> =
         if let Some(nv_parser::AbstractSyntaxNode::SourceFile(source)) = parser.ast.clone().root {
@@ -50,9 +55,13 @@ async fn main() -> Result<(), ()> {
             vec![]
         };
 
+    println!("{:#?}", providers);
+
     let resolver = Resolver { providers };
 
     let resolved = resolver.resolve(parser.ast).await;
+
+    println!("{:#?}", resolved);
 
     Ok(())
 }

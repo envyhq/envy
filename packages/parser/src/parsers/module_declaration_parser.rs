@@ -91,6 +91,16 @@ impl Parser for ModuleDeclarationParser {
             };
         }
 
+        let declaration: Result<ModuleDeclarationNode, _> = partial_declaration.clone().try_into();
+
+        if declaration.is_ok() {
+            self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
+                DeclarationNode::ModuleDeclaration(declaration.unwrap().clone()),
+            ));
+
+            return processed_count;
+        }
+
         processed_count
     }
 }

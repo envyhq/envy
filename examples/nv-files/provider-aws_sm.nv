@@ -1,0 +1,5 @@
+provider Aws: aws_sm
+var EDITOR: str
+var USER: str
+var TEST_SECRET: str
+var AWS_ACCESS_KEY_ID: str
