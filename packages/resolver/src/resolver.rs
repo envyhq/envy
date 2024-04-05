@@ -43,7 +43,7 @@ impl TreeResolver for Resolver {
         &self,
         node: VarDeclarationNode,
     ) -> Result<ResolvedValue, ResolutionError> {
-        let provider = self.providers.iter().find(|p| p.name() == "env").unwrap();
+        let provider = self.providers.first().unwrap();
 
         let value = provider.get_value(&node.identifier.clone()).await;
 
@@ -74,7 +74,7 @@ impl TreeResolver for Resolver {
                 })
                 .flatten()
                 .collect::<Vec<_>>()),
-            _ => unimplemented!(),
+            _ => Err(ResolutionError::ProviderError),
         }
     }
 

@@ -53,7 +53,7 @@ impl Lexer for SourceFileLexer {
                         let count = lexer.lex();
 
                         LexerResult {
-                            processed_count: count,
+                            processed_count: count - 1,
                             tokens: lexer.tokens,
                         }
                     }
@@ -62,7 +62,7 @@ impl Lexer for SourceFileLexer {
                         let count = lexer.lex();
 
                         LexerResult {
-                            processed_count: count,
+                            processed_count: count - 1,
                             tokens: lexer.tokens,
                         }
                     }
@@ -71,7 +71,7 @@ impl Lexer for SourceFileLexer {
                         let count = lexer.lex();
 
                         LexerResult {
-                            processed_count: count,
+                            processed_count: count - 1,
                             tokens: lexer.tokens,
                         }
                     }

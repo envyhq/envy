@@ -72,7 +72,7 @@
 
     "var-declarations": {
       "name": "meta.declarations.var.nv",
-      "match": "\\b(var)\\b\\s*([a-zA-Z_]+):?\\s*{?",
+      "match": "\\b(var)\\b\\s*([a-zA-Z0-9_]+):?\\s*{?",
       "patterns": [],
       "captures": {
         "1": {

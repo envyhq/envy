@@ -49,7 +49,7 @@ const vars = {
 
   var_block: ($) => seq("{", repeat($.attribute), "}"),
 
-  var_identifier: (_$) => /[a-zA-Z_]+/,
+  var_identifier: (_$) => /[a-zA-Z0-9_]+/,
 
   var_modifier: ($) => /pub/,
 };

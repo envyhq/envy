@@ -45,10 +45,10 @@ impl Parser for SourceFileParser {
                 )) => {
                     let mut parser = VarDeclarationParser::new(sub_tokens.clone());
                     // -1 to avoid double counting the leading token (var or pub)
-                    let count = parser.parse() - 1;
+                    let count = parser.parse();
 
                     ParserResult {
-                        processed_count: count,
+                        processed_count: count - 1,
                         ast_fragment: parser.ast_fragment,
                     }
                 }
@@ -57,20 +57,20 @@ impl Parser for SourceFileParser {
                         LexerDeclarationKeyword::Provider => {
                             let mut parser = ProviderDeclarationParser::new(sub_tokens.clone());
                             // -1 to avoid double counting the leading token (var or pub)
-                            let count = parser.parse() - 1;
+                            let count = parser.parse();
 
                             ParserResult {
-                                processed_count: count,
+                                processed_count: count - 1,
                                 ast_fragment: parser.ast_fragment,
                             }
                         }
                         LexerDeclarationKeyword::Module => {
                             let mut parser = ModuleDeclarationParser::new(sub_tokens.clone());
                             // -1 to avoid double counting the leading token (var or pub)
-                            let count = parser.parse() - 1;
+                            let count = parser.parse();
 
                             ParserResult {
-                                processed_count: count,
+                                processed_count: count - 1,
                                 ast_fragment: parser.ast_fragment,
                             }
                         }

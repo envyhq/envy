@@ -102,6 +102,16 @@ impl Parser for VarDeclarationParser {
             };
         }
 
+        let declaration: Result<VarDeclarationNode, _> = partial_declaration.clone().try_into();
+
+        if declaration.is_ok() {
+            self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
+                DeclarationNode::VarDeclaration(declaration.unwrap().clone()),
+            ));
+
+            return processed_count;
+        }
+
         processed_count
     }
 }

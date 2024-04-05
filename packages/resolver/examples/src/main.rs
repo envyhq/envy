@@ -54,7 +54,5 @@ async fn main() -> Result<(), ()> {
 
     let resolved = resolver.resolve(parser.ast).await;
 
-    println!("resolver resolved: {:#?}", resolved);
-
     Ok(())
 }

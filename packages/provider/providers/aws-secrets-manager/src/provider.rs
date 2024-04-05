@@ -1,6 +1,7 @@
 use nv_provider_core::Provider;
 use nv_provider_core::ProviderValueError;
 
+#[derive(Debug)]
 pub struct AwsSecretsManagerProvider {}
 
 #[async_trait::async_trait]
@@ -13,8 +14,6 @@ impl Provider for AwsSecretsManagerProvider {
     fn destroy(&self) -> () {}
 
     async fn get_value(&self, key: &str) -> Result<String, ProviderValueError> {
-        println!("Getting value for key: {}", key);
-
         let config = aws_config::load_from_env().await;
 
         let value = aws_sdk_secretsmanager::Client::new(&config)

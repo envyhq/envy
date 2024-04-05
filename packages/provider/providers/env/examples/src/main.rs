@@ -8,7 +8,7 @@ async fn main() -> Result<(), ()> {
 
     let value = provider.get_value("HOME").await;
 
-    println!("provider value: {:#?}", value);
+    log::debug!("provider value: {:#?}", value);
 
     Ok(())
 }

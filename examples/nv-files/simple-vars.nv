@@ -1,5 +1,3 @@
 var my_cool_var: str
 
 var my_other_var: int
-
-var HOME: str
