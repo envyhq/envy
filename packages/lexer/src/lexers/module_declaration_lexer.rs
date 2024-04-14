@@ -1,47 +1,95 @@
+use super::{
+    attribute_lexer::lookbehind_raw_token,
+    utils::{is_newline, is_whitespace},
+};
 use crate::{
     buffers::identifiers::buffer_to_keyword,
     chars::LexerChar,
     lexer::LexerResult,
     lexers::var_declaration_lexer::VarDeclarationLexer,
-    tokens::{LexerDeclarationKeyword, LexerKeyword, LexerSymbol, LexerToken},
+    tokens::{
+        LexerDeclarationKeyword, LexerKeyword, LexerSymbol, LexerToken, LexerTokenKind,
+        TokenPosition,
+    },
     Lexer,
 };
-use regex::Regex;
 
 pub struct ModuleDeclarationLexer {
     pub tokens: Vec<LexerToken>,
 
     chars: Vec<String>,
     buffer: Vec<String>,
+
+    start_position: TokenPosition,
+}
+
+impl ModuleDeclarationLexer {
+    pub fn new(chars: Vec<String>, start_position: TokenPosition) -> Self {
+        Self {
+            chars,
+            tokens: vec![],
+            buffer: vec![],
+            start_position,
+        }
+    }
+
+    fn buffer_to_keyword(&self, buffer: &Option<Vec<String>>) -> Option<LexerKeyword> {
+        buffer_to_keyword(&buffer.clone().unwrap_or(self.buffer.clone()))
+    }
 }
 
 impl Lexer for ModuleDeclarationLexer {
-    fn lex(&mut self) -> usize {
+    fn lex(&mut self) -> (usize, TokenPosition) {
         let bound_chars = self.chars.clone();
         let mut chars = bound_chars.iter().enumerate();
-        self.buffer.clear();
-        let mut processed_count = 0;
 
-        let whitespace_regex = Regex::new(r"\s+").unwrap();
+        self.buffer.clear();
+
+        let mut processed_count = 0;
+        let mut current_position = self.start_position.clone();
 
         while let Some((index, char)) = chars.next() {
             let char = char.to_owned();
 
             processed_count += 1;
+            current_position.column += 1;
 
-            if whitespace_regex.is_match(&char) {
+            self.buffer.push(char.clone());
+
+            if is_newline(&char) {
+                self.tokens.push(LexerToken::new(
+                    LexerTokenKind::Symbol(LexerSymbol::Newline),
+                    current_position.clone(),
+                    current_position.clone(),
+                ));
+
+                current_position.line += 1;
+                current_position.column = 0;
+                continue;
+            }
+
+            if is_whitespace(&char) {
                 continue;
             }
 
             if char == LexerChar::BlockOpenCurly.to_string() {
                 // If we reach a block open curly, we will continue to lex for var declarations, taking everything before the block as the identifier
-                if self.buffer.len() > 0 {
-                    self.tokens
-                        .push(LexerToken::Identifier(self.buffer.join("")));
-                }
+                let (buffer, from, to) = lookbehind_raw_token(
+                    &current_position,
+                    &self.buffer,
+                    Some(LexerChar::BlockOpenCurly),
+                );
+                self.tokens.push(LexerToken::new(
+                    LexerTokenKind::Identifier(buffer.join("")),
+                    from,
+                    to,
+                ));
 
-                self.tokens
-                    .push(LexerToken::Symbol(LexerSymbol::BlockOpenCurly));
+                self.tokens.push(LexerToken::new(
+                    LexerTokenKind::Symbol(LexerSymbol::BlockOpenCurly),
+                    current_position.clone(),
+                    current_position.clone(),
+                ));
 
                 self.buffer.clear();
                 continue;
@@ -50,24 +98,30 @@ impl Lexer for ModuleDeclarationLexer {
             // We do a very similar operation to SourceFileLexer here, lexing until we find a keyword and then passing the rest of the input to the appropriate lexer
             // The difference with modules is that they only contain var declarations as children
             // TODO: There is a way to re-use this util in both lexers
-            if let Some(token) = self.buffer_to_keyword() {
-                self.tokens.push(LexerToken::Keyword(token.clone()));
-                let sub_chars = &bound_chars[index..].to_vec();
+            let (buffer, from, to) = lookbehind_raw_token(&current_position, &self.buffer, None);
+            if let Some(token) = self.buffer_to_keyword(&Some(buffer)) {
+                self.tokens.push(LexerToken::new(
+                    LexerTokenKind::Keyword(token.clone()),
+                    from,
+                    to,
+                ));
+                let sub_chars = &bound_chars[(index + 1)..].to_vec();
                 let sub_chars = sub_chars.to_vec();
 
                 let mut result: LexerResult = match token {
                     LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Var) => {
-                        let mut lexer = VarDeclarationLexer::new(sub_chars);
-                        let count = lexer.lex();
+                        let mut lexer =
+                            VarDeclarationLexer::new(sub_chars, current_position.clone());
+                        let (count, final_position) = lexer.lex();
 
                         LexerResult {
                             processed_count: count,
                             tokens: lexer.tokens,
+                            final_position,
                         }
                     }
                     _ => {
                         self.buffer.clear();
-                        self.buffer.push(char);
 
                         continue;
                     }
@@ -80,41 +134,34 @@ impl Lexer for ModuleDeclarationLexer {
                     chars.nth(result.processed_count - 1);
                 }
                 self.buffer.clear();
+                current_position = result.final_position.clone();
 
                 continue;
             }
 
             if char == LexerChar::BlockCloseCurly.to_string() {
                 // Terminate lexing if we reach a block close curly
-                self.tokens
-                    .push(LexerToken::Symbol(LexerSymbol::BlockCloseCurly));
+                self.tokens.push(LexerToken::new(
+                    LexerTokenKind::Symbol(LexerSymbol::BlockCloseCurly),
+                    current_position.clone(),
+                    current_position.clone(),
+                ));
 
-                return processed_count;
+                println!("EARLY EXIT MOD DEC");
+
+                return (processed_count, current_position);
             }
-
-            self.buffer.push(char);
         }
 
         // If we haven't returned already, we reached the end of the input. Check the buffer for any remaining token, which can only be an identifier.
         if self.buffer.len() > 0 {
-            self.tokens
-                .push(LexerToken::Identifier(self.buffer.join("")));
+            self.tokens.push(LexerToken::new(
+                LexerTokenKind::Identifier(self.buffer.join("")),
+                current_position.clone(),
+                current_position.clone(),
+            ));
         }
 
-        processed_count
-    }
-}
-
-impl ModuleDeclarationLexer {
-    pub fn new(chars: Vec<String>) -> Self {
-        Self {
-            chars,
-            tokens: vec![],
-            buffer: vec![],
-        }
-    }
-
-    fn buffer_to_keyword(&self) -> Option<LexerKeyword> {
-        buffer_to_keyword(&self.buffer)
+        (processed_count, current_position)
     }
 }

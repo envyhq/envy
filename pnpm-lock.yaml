@@ -21,8 +21,6 @@ importers:
         specifier: ^0.21.0
         version: 0.21.0
 
-  extensions/vscode-nv: {}
-
 packages:
 
   /nan@2.19.0:

@@ -5,11 +5,14 @@ use crate::{
     lexers::{
         module_declaration_lexer::ModuleDeclarationLexer,
         provider_declaration_lexer::ProviderDeclarationLexer,
+        utils::{is_newline, is_whitespace},
     },
-    tokens::{LexerDeclarationKeyword, LexerKeyword, LexerToken},
+    tokens::{
+        LexerDeclarationKeyword, LexerKeyword, LexerSymbol, LexerToken, LexerTokenKind,
+        TokenPosition,
+    },
     Lexer,
 };
-use regex::Regex;
 use unicode_segmentation::UnicodeSegmentation;
 
 pub struct SourceFileLexer {
@@ -19,89 +22,8 @@ pub struct SourceFileLexer {
     buffer: Vec<String>,
 }
 
-impl Lexer for SourceFileLexer {
-    fn lex(&mut self) -> usize {
-        let bound_chars = self.chars.clone();
-        let mut chars = bound_chars.iter().enumerate();
-
-        let whitespace_regex = Regex::new(r"\s+").unwrap();
-
-        if self.tokens.len() > 0 || self.buffer.len() > 0 {
-            self.tokens = vec![];
-            self.buffer = vec![];
-        }
-
-        let mut processed_count = 0;
-
-        while let Some((index, char)) = chars.next() {
-            let char = char.to_owned();
-
-            processed_count += 1;
-
-            if whitespace_regex.is_match(&char) {
-                continue;
-            }
-
-            if let Some(token) = self.buffer_to_keyword() {
-                self.tokens.push(LexerToken::Keyword(token.clone()));
-                let sub_chars = &bound_chars[index..].to_vec();
-                let sub_chars = sub_chars.to_vec();
-
-                let result: LexerResult = match token {
-                    LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Var) => {
-                        let mut lexer = VarDeclarationLexer::new(sub_chars);
-                        let count = lexer.lex();
-
-                        LexerResult {
-                            processed_count: count - 1,
-                            tokens: lexer.tokens,
-                        }
-                    }
-                    LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Module) => {
-                        let mut lexer = ModuleDeclarationLexer::new(sub_chars);
-                        let count = lexer.lex();
-
-                        LexerResult {
-                            processed_count: count - 1,
-                            tokens: lexer.tokens,
-                        }
-                    }
-                    LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Provider) => {
-                        let mut lexer = ProviderDeclarationLexer::new(sub_chars);
-                        let count = lexer.lex();
-
-                        LexerResult {
-                            processed_count: count - 1,
-                            tokens: lexer.tokens,
-                        }
-                    }
-                    _ => {
-                        self.buffer.clear();
-                        self.buffer.push(char);
-
-                        continue;
-                    }
-                };
-
-                self.tokens.append(&mut result.tokens.clone());
-                processed_count += result.processed_count;
-                if result.processed_count > 0 {
-                    chars.nth(result.processed_count - 1);
-                }
-                self.buffer.clear();
-
-                continue;
-            }
-
-            self.buffer.push(char);
-        }
-
-        processed_count
-    }
-}
-
 impl SourceFileLexer {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let chars = input
             .graphemes(true)
             .map(|char| char.to_owned())
@@ -115,5 +37,114 @@ impl SourceFileLexer {
     }
     fn buffer_to_keyword(&self) -> Option<LexerKeyword> {
         buffer_to_keyword(&self.buffer)
+    }
+}
+
+impl Lexer for SourceFileLexer {
+    fn lex(&mut self) -> (usize, TokenPosition) {
+        let bound_chars = self.chars.clone();
+        let mut chars = bound_chars.iter().enumerate();
+
+        if self.tokens.len() > 0 || self.buffer.len() > 0 {
+            self.tokens = vec![];
+            self.buffer = vec![];
+        }
+
+        let mut processed_count = 0;
+        let mut current_position = TokenPosition::new(1, 0);
+
+        while let Some((index, char)) = chars.next() {
+            let char = char.to_owned();
+
+            processed_count += 1;
+            current_position.column += 1;
+
+            if is_newline(&char) {
+                self.tokens.push(LexerToken::new(
+                    LexerTokenKind::Symbol(LexerSymbol::Newline),
+                    current_position.clone(),
+                    current_position.clone(),
+                ));
+                current_position.line += 1;
+                current_position.column = 0;
+                continue;
+            }
+
+            if is_whitespace(&char) {
+                continue;
+            }
+
+            self.buffer.push(char.clone());
+
+            println!("{:?}", self.buffer);
+
+            if let Some(token) = self.buffer_to_keyword() {
+                self.tokens.push(LexerToken::new(
+                    LexerTokenKind::Keyword(token.clone()),
+                    TokenPosition {
+                        line: current_position.line,
+                        column: current_position
+                            .column
+                            .saturating_sub(token.to_string().len() - 1),
+                    },
+                    current_position.clone(),
+                ));
+                self.buffer.clear();
+                let sub_chars = &bound_chars[(index + 1)..].to_vec();
+                let sub_chars = sub_chars.to_vec();
+
+                let result: LexerResult = match token {
+                    LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Var) => {
+                        let mut lexer =
+                            VarDeclarationLexer::new(sub_chars, current_position.clone());
+                        let (count, final_position) = lexer.lex();
+
+                        LexerResult {
+                            processed_count: count,
+                            tokens: lexer.tokens,
+                            final_position,
+                        }
+                    }
+                    LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Module) => {
+                        let mut lexer =
+                            ModuleDeclarationLexer::new(sub_chars, current_position.clone());
+                        let (count, final_position) = lexer.lex();
+
+                        LexerResult {
+                            processed_count: count,
+                            tokens: lexer.tokens,
+                            final_position,
+                        }
+                    }
+                    LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Provider) => {
+                        let mut lexer =
+                            ProviderDeclarationLexer::new(sub_chars, current_position.clone());
+                        let (count, final_position) = lexer.lex();
+
+                        LexerResult {
+                            processed_count: count,
+                            tokens: lexer.tokens,
+                            final_position,
+                        }
+                    }
+                    _ => {
+                        continue;
+                    }
+                };
+
+                self.tokens.append(&mut result.tokens.clone());
+
+                processed_count += result.processed_count;
+                if result.processed_count > 0 {
+                    chars.nth(result.processed_count - 1);
+                }
+                current_position = result.final_position;
+                self.buffer.clear();
+
+                continue;
+            }
+        }
+
+        (processed_count, current_position)
     }
 }

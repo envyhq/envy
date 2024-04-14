@@ -4,13 +4,13 @@ use crate::{
     vars::{PartialVarDeclarationNode, VarDeclarationNode},
     Parser,
 };
-use nv_lexer::{tokens::LexerSymbol, LexerKeyword, LexerToken};
+use nv_lexer::{tokens::LexerSymbol, LexerKeyword, LexerTokenKind};
 
 pub struct VarDeclarationParser {
     pub ast_fragment: Option<AbstractSyntaxNode>,
-    pub tokens: Vec<LexerToken>,
+    pub tokens: Vec<LexerTokenKind>,
 
-    buffer: Vec<LexerToken>,
+    buffer: Vec<LexerTokenKind>,
 }
 
 impl Parser for VarDeclarationParser {
@@ -38,22 +38,22 @@ impl Parser for VarDeclarationParser {
             let sub_tokens = sub_tokens.to_vec();
 
             match token {
-                LexerToken::Identifier(identifier) => {
+                LexerTokenKind::Identifier(identifier) => {
                     partial_declaration.identifier = Some(identifier);
 
                     continue;
                 }
-                LexerToken::Type(type_value) => {
+                LexerTokenKind::Type(type_value) => {
                     partial_declaration.type_value = Some(type_value);
 
                     continue;
                 }
-                LexerToken::Keyword(LexerKeyword::VarModifierKeyword(modifier)) => {
+                LexerTokenKind::Keyword(LexerKeyword::VarModifierKeyword(modifier)) => {
                     partial_declaration.modifier = Some(modifier);
 
                     continue;
                 }
-                LexerToken::Symbol(LexerSymbol::BlockOpenCurly) => {
+                LexerTokenKind::Symbol(LexerSymbol::BlockOpenCurly) => {
                     let mut parser = AttributeBlockParser::new(sub_tokens.clone());
                     // -1 because we dont want to double count the block open curly
                     let count = parser.parse() - 1;
@@ -81,7 +81,7 @@ impl Parser for VarDeclarationParser {
 
                     continue;
                 }
-                LexerToken::Symbol(LexerSymbol::Whitespace) => {
+                LexerTokenKind::Symbol(LexerSymbol::Newline) => {
                     let declaration: Result<VarDeclarationNode, _> =
                         partial_declaration.clone().try_into();
 
@@ -117,7 +117,7 @@ impl Parser for VarDeclarationParser {
 }
 
 impl VarDeclarationParser {
-    pub fn new(tokens: Vec<LexerToken>) -> Self {
+    pub fn new(tokens: Vec<LexerTokenKind>) -> Self {
         Self {
             ast_fragment: None,
             tokens,

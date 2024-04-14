@@ -86,7 +86,7 @@
 
     "attributes": {
       "name": "meta.declarations.attributes.nv",
-      "match": "([a-z_]+)\\s=\\s(.+)",
+      "match": "([a-z_]+)\\s*=\\s*(.+)",
       "captures": {
         "1": {
           "name": "variable.parameter"

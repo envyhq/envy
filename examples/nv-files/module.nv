@@ -4,8 +4,8 @@ module MyCoolModule {
     }
 }
 
-module MyOtherCoolModule {
-    pub var my_other_cool_var: int {
-        default = 4
+module OtherMyCoolModule {
+    var other_my_cool_var: str {
+        other_default = "other_hello"
     }
 }

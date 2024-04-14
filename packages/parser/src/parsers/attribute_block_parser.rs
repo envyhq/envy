@@ -3,13 +3,13 @@ use crate::{
     attributes::{AttributeDeclarationNode, PartialAttributeDeclarationNode},
     Parser,
 };
-use nv_lexer::{tokens::LexerSymbol, LexerToken};
+use nv_lexer::{tokens::LexerSymbol, LexerTokenKind};
 
 pub struct AttributeBlockParser {
     pub ast_block: Vec<AbstractSyntaxNode>,
-    pub tokens: Vec<LexerToken>,
+    pub tokens: Vec<LexerTokenKind>,
 
-    buffer: Vec<LexerToken>,
+    buffer: Vec<LexerTokenKind>,
 }
 
 impl Parser for AttributeBlockParser {
@@ -32,13 +32,13 @@ impl Parser for AttributeBlockParser {
             processed_count += 1;
 
             match token {
-                LexerToken::Identifier(identifier) => {
+                LexerTokenKind::Identifier(identifier) => {
                     partial_declaration.identifier = Some(identifier);
                 }
-                LexerToken::Literal(value) => {
+                LexerTokenKind::Literal(value) => {
                     partial_declaration.value = Some(value);
                 }
-                LexerToken::Symbol(LexerSymbol::BlockCloseCurly) => {
+                LexerTokenKind::Symbol(LexerSymbol::BlockCloseCurly) => {
                     break;
                 }
                 _ => {
@@ -67,7 +67,7 @@ impl Parser for AttributeBlockParser {
 }
 
 impl AttributeBlockParser {
-    pub fn new(tokens: Vec<LexerToken>) -> Self {
+    pub fn new(tokens: Vec<LexerTokenKind>) -> Self {
         Self {
             ast_block: vec![],
             tokens,

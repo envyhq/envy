@@ -1,15 +1,15 @@
 use crate::{abstract_syntax_tree::AbstractSyntaxNode, parser::ParserResult, Parser};
 use nv_lexer::{
-    tokens::LexerDeclarationKeyword, LexerKeyword, LexerToken, LexerVarModifierKeyword,
+    tokens::LexerDeclarationKeyword, LexerKeyword, LexerTokenKind, LexerVarModifierKeyword,
 };
 
 use super::var_declaration_parser::VarDeclarationParser;
 
 pub struct VarBlockParser {
     pub ast_block: Vec<AbstractSyntaxNode>,
-    pub tokens: Vec<LexerToken>,
+    pub tokens: Vec<LexerTokenKind>,
 
-    buffer: Vec<LexerToken>,
+    buffer: Vec<LexerTokenKind>,
 }
 
 impl Parser for VarBlockParser {
@@ -27,10 +27,10 @@ impl Parser for VarBlockParser {
             let sub_tokens = sub_tokens.to_vec();
 
             let result = match token {
-                LexerToken::Keyword(LexerKeyword::VarModifierKeyword(
+                LexerTokenKind::Keyword(LexerKeyword::VarModifierKeyword(
                     LexerVarModifierKeyword::Pub,
                 ))
-                | LexerToken::Keyword(LexerKeyword::DeclarationKeyword(
+                | LexerTokenKind::Keyword(LexerKeyword::DeclarationKeyword(
                     LexerDeclarationKeyword::Var,
                 )) => {
                     let mut parser = VarDeclarationParser::new(sub_tokens.clone());
@@ -62,7 +62,7 @@ impl Parser for VarBlockParser {
 }
 
 impl VarBlockParser {
-    pub fn new(tokens: Vec<LexerToken>) -> Self {
+    pub fn new(tokens: Vec<LexerTokenKind>) -> Self {
         Self {
             ast_block: vec![],
             tokens,

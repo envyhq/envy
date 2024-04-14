@@ -26,6 +26,17 @@ pub enum LexerLiteral {
     Integer(u64),
 }
 
+impl Display for LexerLiteral {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LexerLiteral::Builtin(builtin) => write!(f, "{}", builtin),
+            LexerLiteral::String(string) => write!(f, "\"{}\"", string),
+            LexerLiteral::Float(float) => write!(f, "{}", float),
+            LexerLiteral::Integer(integer) => write!(f, "{}", integer),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Clone, EnumIter)]
 pub enum LexerType {
     String,
@@ -79,6 +90,15 @@ pub enum LexerKeyword {
     DeclarationKeyword(LexerDeclarationKeyword),
 }
 
+impl Display for LexerKeyword {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LexerKeyword::VarModifierKeyword(keyword) => write!(f, "{}", keyword),
+            LexerKeyword::DeclarationKeyword(keyword) => write!(f, "{}", keyword),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum LexerSymbol {
     VarAssignmentColon,
@@ -86,11 +106,50 @@ pub enum LexerSymbol {
     AttributeAssignmentEquals,
     BlockOpenCurly,
     BlockCloseCurly,
-    Whitespace,
+    Newline,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct TokenPosition {
+    pub line: usize,
+    pub column: usize,
+}
+
+impl TokenPosition {
+    pub fn new(line: usize, column: usize) -> Self {
+        Self { line, column }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct TokenRange {
+    pub from: TokenPosition,
+    pub to: TokenPosition,
+}
+
+impl TokenRange {
+    pub fn new(from: TokenPosition, to: TokenPosition) -> Self {
+        Self { from, to }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct LexerToken {
+    pub kind: LexerTokenKind,
+    pub range: TokenRange,
+}
+
+impl LexerToken {
+    pub fn new(kind: LexerTokenKind, from: TokenPosition, to: TokenPosition) -> Self {
+        Self {
+            kind,
+            range: TokenRange::new(from, to),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Clone, Display)]
-pub enum LexerToken {
+pub enum LexerTokenKind {
     Identifier(String),
     Keyword(LexerKeyword),
     Symbol(LexerSymbol),

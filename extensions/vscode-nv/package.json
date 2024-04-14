@@ -7,9 +7,16 @@
   "engines": {
     "vscode": "^1.86.0"
   },
+  "activationEvents": [
+    "onLanguage:plaintext"
+  ],
+  "main": "./dist/extension",
   "scripts": {
+    "vscode:prepublish": "npm run compile",
     "build": "vsce package",
-    "dev:install": "pnpm build && pnpm vscode:install",
+    "compile": "npm run clean && tsc -b",
+    "clean": "rm -rf language-server-client/dist",
+    "dev:install": "npm run build && npm run vscode:install",
     "vscode:uninstall": "code --uninstall-extension undefined_publisher.vscode-nv",
     "vscode:install": "npm run vscode:uninstall; npm run build && code --install-extension ./vscode-nv-0.0.1.vsix"
   },
@@ -40,6 +47,37 @@
         "scopeName": "source.nv",
         "path": "./syntaxes/nv.tmLanguage.json"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "nv language server config",
+      "properties": {
+        "nvLanguageServer.maxNumberOfProblems": {
+          "scope": "resource",
+          "type": "number",
+          "default": 100,
+          "description": "Controls the maximum number of problems produced by the nv language server."
+        },
+        "nvLanguageServer.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the nv language server."
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.4",
+    "@types/vscode": "^1.86.0",
+    "typescript": "^5.4.4"
   }
 }

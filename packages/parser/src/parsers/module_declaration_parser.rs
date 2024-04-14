@@ -3,15 +3,15 @@ use crate::{
     modules::{ModuleDeclarationNode, PartialModuleDeclarationNode},
     Parser,
 };
-use nv_lexer::{tokens::LexerSymbol, LexerToken};
+use nv_lexer::{tokens::LexerSymbol, LexerTokenKind};
 
 use super::var_block_parser::VarBlockParser;
 
 pub struct ModuleDeclarationParser {
     pub ast_fragment: Option<AbstractSyntaxNode>,
-    pub tokens: Vec<LexerToken>,
+    pub tokens: Vec<LexerTokenKind>,
 
-    buffer: Vec<LexerToken>,
+    buffer: Vec<LexerTokenKind>,
 }
 
 impl Parser for ModuleDeclarationParser {
@@ -37,12 +37,12 @@ impl Parser for ModuleDeclarationParser {
             let sub_tokens = sub_tokens.to_vec();
 
             match token {
-                LexerToken::Identifier(identifier) => {
+                LexerTokenKind::Identifier(identifier) => {
                     partial_declaration.identifier = Some(identifier);
 
                     continue;
                 }
-                LexerToken::Symbol(LexerSymbol::BlockOpenCurly) => {
+                LexerTokenKind::Symbol(LexerSymbol::BlockOpenCurly) => {
                     let mut parser = VarBlockParser::new(sub_tokens.clone());
                     // -1 because we dont want to double count the block open curly
                     let count = parser.parse() - 1;
@@ -70,7 +70,7 @@ impl Parser for ModuleDeclarationParser {
 
                     continue;
                 }
-                LexerToken::Symbol(LexerSymbol::Whitespace) => {
+                LexerTokenKind::Symbol(LexerSymbol::Newline) => {
                     let declaration: Result<ModuleDeclarationNode, _> =
                         partial_declaration.clone().try_into();
 
@@ -106,7 +106,7 @@ impl Parser for ModuleDeclarationParser {
 }
 
 impl ModuleDeclarationParser {
-    pub fn new(tokens: Vec<LexerToken>) -> Self {
+    pub fn new(tokens: Vec<LexerTokenKind>) -> Self {
         Self {
             ast_fragment: None,
             tokens,

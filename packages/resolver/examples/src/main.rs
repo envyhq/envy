@@ -23,8 +23,6 @@ async fn async_main() -> Result<(), ()> {
 
     log::info!("ast processed_count: {}", processed_count);
 
-    println!("{:#?}", parser.ast.clone());
-
     let env: ResolverProvider = Arc::new(EnvProvider {});
     let aws_sm: ResolverProvider = Arc::new(AwsSecretsManagerProvider {});
 
@@ -55,13 +53,11 @@ async fn async_main() -> Result<(), ()> {
             vec![]
         };
 
-    println!("{:#?}", providers);
-
     let resolver = Resolver { providers };
 
     let resolved = resolver.resolve(parser.ast).await;
 
-    println!("{:#?}", resolved);
+    log::info!("{:#?}", resolved);
 
     Ok(())
 }

@@ -1,0 +1,9 @@
+var my_cool_var: str {
+    default = "hello"
+
+    not_default = "not_hello"
+}
+
+var other_my_cool_var: str {
+    other_default = "other_hello"
+}

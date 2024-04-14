@@ -5,7 +5,7 @@ use crate::{
     Parser,
 };
 use nv_lexer::{
-    tokens::LexerDeclarationKeyword, Lexer, LexerKeyword, LexerToken, LexerVarModifierKeyword,
+    tokens::LexerDeclarationKeyword, Lexer, LexerKeyword, LexerTokenKind, LexerVarModifierKeyword,
     SourceFileLexer,
 };
 
@@ -17,7 +17,7 @@ use super::{
 #[derive(Debug)]
 pub struct SourceFileParser {
     pub ast: AbstractSyntaxTree,
-    pub tokens: Vec<LexerToken>,
+    pub tokens: Vec<LexerTokenKind>,
 }
 
 impl Parser for SourceFileParser {
@@ -37,10 +37,10 @@ impl Parser for SourceFileParser {
             let sub_tokens = sub_tokens.to_vec();
 
             let result = match token {
-                LexerToken::Keyword(LexerKeyword::VarModifierKeyword(
+                LexerTokenKind::Keyword(LexerKeyword::VarModifierKeyword(
                     LexerVarModifierKeyword::Pub,
                 ))
-                | LexerToken::Keyword(LexerKeyword::DeclarationKeyword(
+                | LexerTokenKind::Keyword(LexerKeyword::DeclarationKeyword(
                     LexerDeclarationKeyword::Var,
                 )) => {
                     let mut parser = VarDeclarationParser::new(sub_tokens.clone());
@@ -52,7 +52,7 @@ impl Parser for SourceFileParser {
                         ast_fragment: parser.ast_fragment,
                     }
                 }
-                LexerToken::Keyword(LexerKeyword::DeclarationKeyword(keyword)) => {
+                LexerTokenKind::Keyword(LexerKeyword::DeclarationKeyword(keyword)) => {
                     match keyword {
                         LexerDeclarationKeyword::Provider => {
                             let mut parser = ProviderDeclarationParser::new(sub_tokens.clone());
@@ -105,7 +105,7 @@ impl Parser for SourceFileParser {
 }
 
 impl SourceFileParser {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut lexer = SourceFileLexer::new(input);
         lexer.lex();
 

@@ -2,8 +2,6 @@
 resolver = "2"
 
 members = [
-    "packages/compiler",
-
     "packages/parser",
     "packages/parser/examples",
 

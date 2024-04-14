@@ -4,13 +4,13 @@ use crate::{
     providers::{PartialProviderDeclarationNode, ProviderDeclarationNode},
     Parser,
 };
-use nv_lexer::{tokens::LexerSymbol, LexerToken};
+use nv_lexer::{tokens::LexerSymbol, LexerTokenKind};
 
 pub struct ProviderDeclarationParser {
     pub ast_fragment: Option<AbstractSyntaxNode>,
-    pub tokens: Vec<LexerToken>,
+    pub tokens: Vec<LexerTokenKind>,
 
-    buffer: Vec<LexerToken>,
+    buffer: Vec<LexerTokenKind>,
 }
 
 impl Parser for ProviderDeclarationParser {
@@ -37,17 +37,17 @@ impl Parser for ProviderDeclarationParser {
             let sub_tokens = sub_tokens.to_vec();
 
             match token {
-                LexerToken::Identifier(identifier) => {
+                LexerTokenKind::Identifier(identifier) => {
                     partial_declaration.identifier = Some(identifier);
 
                     continue;
                 }
-                LexerToken::ProviderType(type_value) => {
+                LexerTokenKind::ProviderType(type_value) => {
                     partial_declaration.type_value = Some(type_value);
 
                     continue;
                 }
-                LexerToken::Symbol(LexerSymbol::BlockOpenCurly) => {
+                LexerTokenKind::Symbol(LexerSymbol::BlockOpenCurly) => {
                     let mut parser = AttributeBlockParser::new(sub_tokens.clone());
                     // -1 because we dont want to double count the block open curly
                     let count = parser.parse() - 1;
@@ -75,7 +75,7 @@ impl Parser for ProviderDeclarationParser {
 
                     continue;
                 }
-                LexerToken::Symbol(LexerSymbol::Whitespace) => {
+                LexerTokenKind::Symbol(LexerSymbol::Newline) => {
                     let declaration: Result<ProviderDeclarationNode, _> =
                         partial_declaration.clone().try_into();
 
@@ -112,7 +112,7 @@ impl Parser for ProviderDeclarationParser {
 }
 
 impl ProviderDeclarationParser {
-    pub fn new(tokens: Vec<LexerToken>) -> Self {
+    pub fn new(tokens: Vec<LexerTokenKind>) -> Self {
         Self {
             ast_fragment: None,
             tokens,
