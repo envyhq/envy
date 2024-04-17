@@ -36,7 +36,7 @@ async fn handle_connection(mut socket: UnixStream) -> Result<(), anyhow::Error> 
     loop {
         let mut reader = BufReader::new(&mut socket);
         let mut content_length_str = String::new();
-        let file_store = FileStore::new();
+        let file_store = FileStore::default();
 
         while let Ok(bytes_read) = reader.read_line(&mut content_length_str).await {
             if bytes_read == 0 || content_length_str.starts_with("Content-Length:") {

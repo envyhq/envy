@@ -1,55 +1,52 @@
 use nv_parser::{AbstractSyntaxNode, DeclarationNode, TokenPosition};
-use std::{collections::HashMap, sync::Weak};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Weak},
+};
 
 pub type PositionIndex = HashMap<TokenPosition, Weak<AbstractSyntaxNode>>;
 
-pub struct Indexer;
+// This is an experimental token position indexer.
+// It creates a hash map of all possible cursor positions to the AST node that exists there.
+// This is used by the language server to very quickly deliver results based on queries including
+// the position of the cursor. For example, hovering a variable name.
+// It is an abuse of RAM for large projects but I'd like to benchmark it.
+#[derive(Debug, Clone, Default)]
+pub struct Indexer {
+    pub position_index: PositionIndex,
+}
 
 impl Indexer {
-    pub fn index_node(node: Weak<AbstractSyntaxNode>) -> PositionIndex {
-        let mut index = HashMap::new();
+    pub fn node_at(&self, position: &TokenPosition) -> Option<&Weak<AbstractSyntaxNode>> {
+        self.position_index.get(position)
+    }
 
-        let node_val = node.upgrade().unwrap();
+    pub fn index(&mut self, node: &Arc<AbstractSyntaxNode>) {
+        self.position_index = HashMap::new();
 
-        println!("index node: {:#?}", node_val);
-
-        match node_val.as_ref() {
-            AbstractSyntaxNode::SourceFile(source) => {
-                println!(
-                    "wowow source {:#?}",
-                    source.declarations.lock().unwrap().len()
-                );
-                source
-                    .declarations
-                    .lock()
-                    .unwrap()
-                    .iter()
-                    .for_each(|declaration| match declaration.as_ref() {
-                        DeclarationNode::VarDeclaration(var) => {
-                            println!("index var 1: {:#?}", var);
-                            for pos in
-                                var.identifier.range.from.column..var.identifier.range.to.column
-                            {
-                                index.insert(
-                                    TokenPosition::new(var.identifier.range.from.line, pos),
-                                    node.clone(),
-                                );
-                            }
+        match node.as_ref() {
+            AbstractSyntaxNode::SourceFile(source) => source
+                .declarations
+                .lock()
+                .unwrap()
+                .iter()
+                .for_each(|declaration| {
+                    if let DeclarationNode::VarDeclaration(var) = declaration.as_ref() {
+                        for pos in var.identifier.range.from.column..var.identifier.range.to.column
+                        {
+                            self.position_index.insert(
+                                TokenPosition::new(var.identifier.range.from.line, pos),
+                                Arc::downgrade(node),
+                            );
                         }
-                        _ => {}
-                    })
-            }
-            AbstractSyntaxNode::Declaration(declaration) => match declaration {
-                DeclarationNode::VarDeclaration(var) => {
-                    println!("index var 2: {:#?}", var);
-                    index.insert(var.identifier.range.from.clone(), node.clone());
+                    }
+                }),
+            AbstractSyntaxNode::Declaration(declaration) => {
+                if let DeclarationNode::VarDeclaration(var) = declaration {
+                    self.position_index
+                        .insert(var.identifier.range.from.clone(), Arc::downgrade(node));
                 }
-                _ => {}
-            },
-        }
-
-        println!("indexing finnnnn {:#?}", index);
-
-        index
+            }
+        };
     }
 }

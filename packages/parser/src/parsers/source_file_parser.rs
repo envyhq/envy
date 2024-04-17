@@ -18,7 +18,7 @@ use std::sync::{Arc, Mutex};
 pub struct SourceFileParser;
 
 impl SourceFileParser {
-    pub fn parse(tokens: &Vec<LexerToken>) -> (usize, Arc<AbstractSyntaxNode>) {
+    pub fn parse(tokens: &[LexerToken]) -> (usize, Arc<AbstractSyntaxNode>) {
         let root = Arc::new(AbstractSyntaxNode::SourceFile(Arc::new(SourceFileNode {
             declarations: Mutex::new(vec![]),
         })));
@@ -75,15 +75,13 @@ impl SourceFileParser {
                 }
             };
 
-            if let Some(ast_fragment) = result.ast_fragment {
-                if let AbstractSyntaxNode::Declaration(declaration) = ast_fragment {
-                    if let AbstractSyntaxNode::SourceFile(source_node) = root.as_ref() {
-                        source_node
-                            .declarations
-                            .lock()
-                            .unwrap()
-                            .push(Arc::new(declaration));
-                    }
+            if let Some(AbstractSyntaxNode::Declaration(declaration)) = result.ast_fragment {
+                if let AbstractSyntaxNode::SourceFile(source_node) = root.as_ref() {
+                    source_node
+                        .declarations
+                        .lock()
+                        .unwrap()
+                        .push(Arc::new(declaration));
                 }
             }
 

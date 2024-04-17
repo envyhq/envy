@@ -1,8 +1,11 @@
+use std::{error::Error, fmt};
+
 use crate::{
     store::FileStore,
     types::{Initialize, LspNotification, LspRequest, TextDocumentHover},
     visitor::LspMessage,
 };
+use nv_lexer::TokenPosition;
 use serde_json::{json, Value};
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;
@@ -12,13 +15,13 @@ pub enum TextDocumentSyncKind {
 }
 
 pub trait Handler<T> {
-    fn handle(&mut self, request: T) -> Value;
+    fn handle(&mut self, request: T) -> Option<Value>;
 }
 
 pub struct InitializeHandler;
 impl Handler<Initialize> for InitializeHandler {
-    fn handle(&mut self, req: Initialize) -> Value {
-        json!({
+    fn handle(&mut self, req: Initialize) -> Option<Value> {
+        Some(json!({
             "jsonrpc": "2.0",
             "id": req.base.id,
             "result": {
@@ -27,7 +30,7 @@ impl Handler<Initialize> for InitializeHandler {
                     "hoverProvider": true
                 }
             }
-        })
+        }))
     }
 }
 
@@ -37,19 +40,27 @@ pub struct TextDocumentHoverHandler {
 }
 
 impl Handler<TextDocumentHover> for TextDocumentHoverHandler {
-    fn handle(&mut self, req: TextDocumentHover) -> Value {
+    fn handle(&mut self, req: TextDocumentHover) -> Option<Value> {
         let file = self.file_store.get(&self.file_path).unwrap();
-        let root = file.root.clone();
 
-        println!(
-            "stored file: {:?} ---- root ast: {:?} ------------------- pos index: {:?} . len: {}",
-            file,
-            root,
-            file.position_index,
-            file.position_index.len()
-        );
+        let cursor_position = TokenPosition {
+            line: req.params.position.line as usize + 1,
+            column: req.params.position.character as usize + 1,
+        };
 
-        json!({
+        let node = file.position_indexer.node_at(&cursor_position);
+
+        if node.is_none() {
+            return None;
+        }
+
+        let node = node.unwrap().upgrade();
+
+        if node.is_none() {
+            return None;
+        }
+
+        Some(json!({
             "jsonrpc": "2.0",
             "id": req.base.id,
             "result": {
@@ -57,7 +68,18 @@ impl Handler<TextDocumentHover> for TextDocumentHoverHandler {
 |---|---|---|
 |[some_provider]|[some_key]|[some_value]|"
             }
-        })
+        }))
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct LspRequestError;
+
+impl Error for LspRequestError {}
+
+impl fmt::Display for LspRequestError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "invalid first item to double")
     }
 }
 
@@ -65,7 +87,7 @@ pub struct LspRequestHandler {
     pub file_store: FileStore,
 }
 impl LspRequestHandler {
-    async fn handle(&self, req: LspRequest) -> Result<Value, anyhow::Error> {
+    async fn handle(&self, req: LspRequest) -> Result<Value, LspRequestError> {
         let result = match req {
             LspRequest::Initialize(req) => InitializeHandler.handle(req),
             LspRequest::TextDocumentHover(req) => TextDocumentHoverHandler {
@@ -78,7 +100,7 @@ impl LspRequestHandler {
             }
         };
 
-        Ok(result)
+        result.ok_or(LspRequestError)
     }
 }
 
