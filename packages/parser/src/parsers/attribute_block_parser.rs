@@ -19,7 +19,7 @@ impl Parser<Vec<AbstractSyntaxNode>> for AttributeBlockParser {
         let mut buffer = vec![];
         let mut ast_block: Vec<AbstractSyntaxNode> = vec![];
         let bound_tokens = tokens.clone();
-        let mut tokens = bound_tokens.iter().enumerate();
+        let tokens = bound_tokens.iter().enumerate();
 
         let mut processed_count = 0;
 
@@ -28,7 +28,7 @@ impl Parser<Vec<AbstractSyntaxNode>> for AttributeBlockParser {
             value: None,
         };
 
-        while let Some((_index, token)) = tokens.next() {
+        for (_index, token) in tokens {
             let token = token.to_owned();
 
             processed_count += 1;
@@ -56,6 +56,11 @@ impl Parser<Vec<AbstractSyntaxNode>> for AttributeBlockParser {
                 ast_block.push(AbstractSyntaxNode::Declaration(
                     DeclarationNode::AttributeDeclaration(declaration),
                 ));
+
+                partial_declaration = PartialAttributeDeclarationNode {
+                    identifier: None,
+                    value: None,
+                };
 
                 continue;
             }

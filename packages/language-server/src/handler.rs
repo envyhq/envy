@@ -54,10 +54,10 @@ impl Handler<TextDocumentHover> for TextDocumentHoverHandler {
 
         if let Some(node) = node {
             if let Some(node) = node.upgrade() {
-                println!("THE NODE IS:     {:?}", node);
                 let resolve_node =
                     AbstractSyntaxNode::Declaration(DeclarationNode::VarDeclaration(node));
                 let resolved = file.resolver.resolve(&resolve_node).await?;
+                let resolved = resolved.first().unwrap();
 
                 return Ok(json!({
                     "jsonrpc": "2.0",
@@ -65,7 +65,8 @@ impl Handler<TextDocumentHover> for TextDocumentHoverHandler {
                     "result": {
                         "contents": format!("|Provider|Key|Value|
 |---|---|---|
-|[some_provider]|[some_key]|{}|", resolved.first().unwrap().value.clone().unwrap())
+|{}|{}|{}|", resolved.provider, resolved.key, resolved.value.clone().unwrap_or("Not set".to_owned()))
+
                 }
                 }));
             }

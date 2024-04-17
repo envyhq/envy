@@ -14,6 +14,7 @@ pub enum ResolutionError {
 pub struct ResolvedValue {
     pub key: String,
     pub value: Option<String>,
+    pub provider: String,
 }
 
 impl Error for ResolutionError {}
@@ -62,6 +63,7 @@ impl TreeResolver for Resolver {
         Ok(ResolvedValue {
             key: node.identifier.value.clone(),
             value: value.ok(),
+            provider: provider.name().to_owned(),
         })
     }
 

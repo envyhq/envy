@@ -35,13 +35,11 @@ pub enum DeclarationNode {
 
 impl From<AbstractSyntaxNode> for DeclarationNode {
     fn from(declaration: AbstractSyntaxNode) -> Self {
-        match declaration {
-            AbstractSyntaxNode::Declaration(declaration) => match declaration {
-                DeclarationNode::VarDeclaration(var) => var.as_ref().clone().into(),
-                _ => panic!("Invalid conversion"),
-            },
-            _ => panic!("Invalid conversion"),
+        if let AbstractSyntaxNode::Declaration(DeclarationNode::VarDeclaration(var)) = declaration {
+            return var.as_ref().clone().into();
         }
+
+        panic!("Invalid conversion");
     }
 }
 
