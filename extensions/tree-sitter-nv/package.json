@@ -1,5 +1,5 @@
 {
-  "name": "@mdrx/tree-sitter-nv",
+  "name": "@nv/tree-sitter",
   "version": "0.0.1",
   "description": "",
   "main": "bindings/node",

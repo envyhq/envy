@@ -3,7 +3,7 @@
   "displayName": "nv",
   "description": "Language support for the nv configration language",
   "version": "0.0.1",
-  "repository": "https://github.com/mdrxtech/nv",
+  "repository": "https://github.com/lbennett-stacki/nv",
   "engines": {
     "vscode": "^1.86.0"
   },
