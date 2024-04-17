@@ -1,10 +1,10 @@
-use nv_parser::{AbstractSyntaxNode, DeclarationNode, TokenPosition};
+use nv_parser::{AbstractSyntaxNode, DeclarationNode, TokenPosition, VarDeclarationNode};
 use std::{
     collections::HashMap,
     sync::{Arc, Weak},
 };
 
-pub type PositionIndex = HashMap<TokenPosition, Weak<AbstractSyntaxNode>>;
+pub type PositionIndex = HashMap<TokenPosition, Weak<VarDeclarationNode>>;
 
 // This is an experimental token position indexer.
 // It creates a hash map of all possible cursor positions to the AST node that exists there.
@@ -17,7 +17,7 @@ pub struct Indexer {
 }
 
 impl Indexer {
-    pub fn node_at(&self, position: &TokenPosition) -> Option<&Weak<AbstractSyntaxNode>> {
+    pub fn node_at(&self, position: &TokenPosition) -> Option<&Weak<VarDeclarationNode>> {
         self.position_index.get(position)
     }
 
@@ -36,15 +36,19 @@ impl Indexer {
                         {
                             self.position_index.insert(
                                 TokenPosition::new(var.identifier.range.from.line, pos),
-                                Arc::downgrade(node),
+                                Arc::downgrade(var),
                             );
                         }
                     }
                 }),
             AbstractSyntaxNode::Declaration(declaration) => {
                 if let DeclarationNode::VarDeclaration(var) = declaration {
-                    self.position_index
-                        .insert(var.identifier.range.from.clone(), Arc::downgrade(node));
+                    for pos in var.identifier.range.from.column..var.identifier.range.to.column {
+                        self.position_index.insert(
+                            TokenPosition::new(var.identifier.range.from.line, pos),
+                            Arc::downgrade(var),
+                        );
+                    }
                 }
             }
         };

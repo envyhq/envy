@@ -27,7 +27,7 @@ pub type Modifier = Leaf<LexerVarModifierKeyword>;
 
 #[derive(Debug, Clone)]
 pub enum DeclarationNode {
-    VarDeclaration(VarDeclarationNode),
+    VarDeclaration(Arc<VarDeclarationNode>),
     ModuleDeclaration(ModuleDeclarationNode),
     ProviderDeclaration(ProviderDeclarationNode),
     AttributeDeclaration(AttributeDeclarationNode),
@@ -37,7 +37,7 @@ impl From<AbstractSyntaxNode> for DeclarationNode {
     fn from(declaration: AbstractSyntaxNode) -> Self {
         match declaration {
             AbstractSyntaxNode::Declaration(declaration) => match declaration {
-                DeclarationNode::VarDeclaration(var) => var.clone().into(),
+                DeclarationNode::VarDeclaration(var) => var.as_ref().clone().into(),
                 _ => panic!("Invalid conversion"),
             },
             _ => panic!("Invalid conversion"),
@@ -47,7 +47,7 @@ impl From<AbstractSyntaxNode> for DeclarationNode {
 
 impl From<VarDeclarationNode> for DeclarationNode {
     fn from(declaration: VarDeclarationNode) -> Self {
-        DeclarationNode::VarDeclaration(declaration)
+        DeclarationNode::VarDeclaration(Arc::new(declaration))
     }
 }
 

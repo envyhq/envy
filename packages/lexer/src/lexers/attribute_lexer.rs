@@ -33,24 +33,24 @@ impl AttributeBlockLexer {
         let builtin =
             LexerLiteralBuiltin::iter().find(|type_value| type_value.to_string() == buffered);
 
-        if builtin.is_some() {
-            return Some(LexerLiteral::Builtin(builtin.unwrap()));
+        if let Some(builtin) = builtin {
+            return Some(LexerLiteral::Builtin(builtin));
         }
 
-        if buffered.starts_with("\"") && buffered.ends_with("\"") {
+        if buffered.starts_with('"') && buffered.ends_with('"') {
             return Some(LexerLiteral::String(
                 buffered[1..buffered.len() - 1].to_string(),
             ));
         }
 
         let parsed_number = buffered.parse::<u64>();
-        if parsed_number.is_ok() {
-            return Some(LexerLiteral::Integer(parsed_number.unwrap()));
+        if let Ok(parsed_number) = parsed_number {
+            return Some(LexerLiteral::Integer(parsed_number));
         }
 
         let parsed_number = buffered.parse::<f64>();
-        if parsed_number.is_ok() {
-            return Some(LexerLiteral::Float(parsed_number.unwrap()));
+        if let Ok(parsed_number) = parsed_number {
+            return Some(LexerLiteral::Float(parsed_number));
         }
 
         None
@@ -59,7 +59,7 @@ impl AttributeBlockLexer {
 
 pub fn lookbehind_raw_token(
     current_position: &TokenPosition,
-    buffer: &Vec<String>,
+    buffer: &[String],
     stop_char: Option<LexerChar>,
 ) -> (Vec<String>, TokenPosition, TokenPosition) {
     let last_identifier_char_index = buffer
@@ -84,7 +84,7 @@ pub fn lookbehind_raw_token(
     let from = TokenPosition::new(current_position.line, to_col - (trimmed_buffer.len() - 1));
     let to = TokenPosition::new(current_position.line, to_col);
 
-    return (trimmed_buffer, from, to);
+    (trimmed_buffer, from, to)
 }
 
 impl Lexer for AttributeBlockLexer {

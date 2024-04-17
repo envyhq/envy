@@ -4,12 +4,12 @@ use crate::{
 };
 use strum::IntoEnumIterator;
 
-pub fn buffer_to_keyword(buffer: &Vec<String>) -> Option<LexerKeyword> {
+pub fn buffer_to_keyword(buffer: &[String]) -> Option<LexerKeyword> {
     let buffered = buffer.join("");
 
     let modifier = LexerVarModifierKeyword::iter()
         .find(|m| m.to_string() == buffered)
-        .map(|m| LexerKeyword::VarModifierKeyword(m));
+        .map(LexerKeyword::VarModifierKeyword);
 
     if modifier.is_some() {
         return modifier;
@@ -17,5 +17,5 @@ pub fn buffer_to_keyword(buffer: &Vec<String>) -> Option<LexerKeyword> {
 
     LexerDeclarationKeyword::iter()
         .find(|m| m.to_string() == buffered)
-        .map(|m| LexerKeyword::DeclarationKeyword(m))
+        .map(LexerKeyword::DeclarationKeyword)
 }

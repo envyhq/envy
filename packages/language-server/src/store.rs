@@ -1,6 +1,8 @@
 use nv_lexer::{Lexer, SourceFileLexer};
 use nv_parser::{AbstractSyntaxNode, SourceFileParser};
 use nv_position_indexer::Indexer;
+use nv_provider_env::EnvProvider;
+use nv_resolver::{Resolver, ResolverProvider};
 use std::{collections::HashMap, sync::Arc};
 
 #[derive(Debug, Clone)]
@@ -16,6 +18,7 @@ pub struct StoredFile {
     pub content: String,
     pub position_indexer: Indexer,
     pub root: Arc<AbstractSyntaxNode>,
+    pub resolver: Resolver,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -40,10 +43,17 @@ impl FileStore {
     fn init_position_indexer(node: &Arc<AbstractSyntaxNode>) -> Indexer {
         let mut indexer = Indexer::default();
 
-        // TODO: Make lazy
         indexer.index(node);
 
         indexer
+    }
+
+    fn init_resolver() -> Resolver {
+        let env: ResolverProvider = Arc::new(EnvProvider {});
+
+        Resolver {
+            providers: vec![env],
+        }
     }
 
     fn store(&mut self, file_path: &str) -> Result<(), FileStoreError> {
@@ -62,6 +72,7 @@ impl FileStore {
                 content,
                 path: file_path.to_owned(),
                 position_indexer: Self::init_position_indexer(&node),
+                resolver: Self::init_resolver(),
             },
         );
 

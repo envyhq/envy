@@ -1033,6 +1033,8 @@ dependencies = [
  "nv-lexer",
  "nv-parser",
  "nv-position-indexer",
+ "nv-provider-env",
+ "nv-resolver",
  "serde",
  "serde_json",
  "tokio",

@@ -60,7 +60,7 @@ async fn async_main() -> Result<(), ()> {
 
     let resolver = Resolver { providers };
 
-    let resolved = resolver.resolve(ast.as_ref().clone()).await;
+    let resolved = resolver.resolve(ast.as_ref()).await;
 
     log::info!("{:#?}", resolved);
 

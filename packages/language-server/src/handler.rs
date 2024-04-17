@@ -6,6 +6,8 @@ use crate::{
     visitor::LspMessage,
 };
 use nv_lexer::TokenPosition;
+use nv_parser::{AbstractSyntaxNode, DeclarationNode};
+use nv_resolver::TreeResolver;
 use serde_json::{json, Value};
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;
@@ -15,13 +17,13 @@ pub enum TextDocumentSyncKind {
 }
 
 pub trait Handler<T> {
-    fn handle(&mut self, request: T) -> Option<Value>;
+    async fn handle(&mut self, request: T) -> Result<Value, anyhow::Error>;
 }
 
 pub struct InitializeHandler;
 impl Handler<Initialize> for InitializeHandler {
-    fn handle(&mut self, req: Initialize) -> Option<Value> {
-        Some(json!({
+    async fn handle(&mut self, req: Initialize) -> Result<Value, anyhow::Error> {
+        Ok(json!({
             "jsonrpc": "2.0",
             "id": req.base.id,
             "result": {
@@ -40,7 +42,7 @@ pub struct TextDocumentHoverHandler {
 }
 
 impl Handler<TextDocumentHover> for TextDocumentHoverHandler {
-    fn handle(&mut self, req: TextDocumentHover) -> Option<Value> {
+    async fn handle(&mut self, req: TextDocumentHover) -> Result<Value, anyhow::Error> {
         let file = self.file_store.get(&self.file_path).unwrap();
 
         let cursor_position = TokenPosition {
@@ -50,25 +52,26 @@ impl Handler<TextDocumentHover> for TextDocumentHoverHandler {
 
         let node = file.position_indexer.node_at(&cursor_position);
 
-        if node.is_none() {
-            return None;
-        }
+        if let Some(node) = node {
+            if let Some(node) = node.upgrade() {
+                println!("THE NODE IS:     {:?}", node);
+                let resolve_node =
+                    AbstractSyntaxNode::Declaration(DeclarationNode::VarDeclaration(node));
+                let resolved = file.resolver.resolve(&resolve_node).await?;
 
-        let node = node.unwrap().upgrade();
-
-        if node.is_none() {
-            return None;
-        }
-
-        Some(json!({
-            "jsonrpc": "2.0",
-            "id": req.base.id,
-            "result": {
-                "contents": "|Provider|Key|Value|
+                return Ok(json!({
+                    "jsonrpc": "2.0",
+                    "id": req.base.id,
+                    "result": {
+                        "contents": format!("|Provider|Key|Value|
 |---|---|---|
-|[some_provider]|[some_key]|[some_value]|"
+|[some_provider]|[some_key]|{}|", resolved.first().unwrap().value.clone().unwrap())
+                }
+                }));
             }
-        }))
+        }
+
+        Err(anyhow::Error::msg("unable to resolve node"))
     }
 }
 
@@ -87,20 +90,23 @@ pub struct LspRequestHandler {
     pub file_store: FileStore,
 }
 impl LspRequestHandler {
-    async fn handle(&self, req: LspRequest) -> Result<Value, LspRequestError> {
+    async fn handle(&self, req: LspRequest) -> Result<Value, anyhow::Error> {
         let result = match req {
-            LspRequest::Initialize(req) => InitializeHandler.handle(req),
-            LspRequest::TextDocumentHover(req) => TextDocumentHoverHandler {
-                file_path: req.clone().params.text_document.uri.replace("file://", ""),
-                file_store: self.file_store.clone(),
+            LspRequest::Initialize(req) => InitializeHandler.handle(req).await?,
+            LspRequest::TextDocumentHover(req) => {
+                TextDocumentHoverHandler {
+                    file_path: req.clone().params.text_document.uri.replace("file://", ""),
+                    file_store: self.file_store.clone(),
+                }
+                .handle(req)
+                .await?
             }
-            .handle(req),
             LspRequest::Shutdown(_req) => {
                 std::process::exit(0);
             }
         };
 
-        result.ok_or(LspRequestError)
+        Ok(result)
     }
 }
 

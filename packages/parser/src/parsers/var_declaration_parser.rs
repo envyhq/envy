@@ -8,7 +8,7 @@ use nv_lexer::{
     tokens::{LexerSymbol, LexerToken},
     LexerKeyword, LexerTokenKind,
 };
-use std::sync::Weak;
+use std::sync::{Arc, Weak};
 
 pub struct VarDeclarationParser;
 
@@ -78,7 +78,7 @@ impl Parser<Option<AbstractSyntaxNode>> for VarDeclarationParser {
 
                     if declaration.is_ok() {
                         ast_fragment = Some(AbstractSyntaxNode::Declaration(
-                            DeclarationNode::VarDeclaration(declaration.unwrap()),
+                            DeclarationNode::VarDeclaration(Arc::new(declaration.unwrap())),
                         ));
                     }
                 }
@@ -88,7 +88,7 @@ impl Parser<Option<AbstractSyntaxNode>> for VarDeclarationParser {
 
                     if declaration.is_ok() {
                         ast_fragment = Some(AbstractSyntaxNode::Declaration(
-                            DeclarationNode::VarDeclaration(declaration.unwrap()),
+                            DeclarationNode::VarDeclaration(Arc::new(declaration.unwrap())),
                         ));
                     }
                 }
@@ -107,7 +107,7 @@ impl Parser<Option<AbstractSyntaxNode>> for VarDeclarationParser {
 
         if declaration.is_ok() {
             ast_fragment = Some(AbstractSyntaxNode::Declaration(
-                DeclarationNode::VarDeclaration(declaration.unwrap()),
+                DeclarationNode::VarDeclaration(Arc::new(declaration.unwrap())),
             ));
 
             return (processed_count, ast_fragment);

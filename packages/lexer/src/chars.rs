@@ -32,7 +32,7 @@ impl Display for LexerChar {
             LexerChar::Space => write!(f, " "),
             LexerChar::VarAssignmentColon => write!(f, ":"),
             LexerChar::ProviderAssignmentColon => write!(f, ":"),
-            LexerChar::NewLine => write!(f, "\n"),
+            LexerChar::NewLine => writeln!(f),
             LexerChar::AttributeAssignmentEquals => write!(f, "="),
             LexerChar::BlockOpenCurly => write!(f, "{{"),
             LexerChar::BlockCloseCurly => write!(f, "}}"),

@@ -1,4 +1,4 @@
-var my_cool_var: str {
+var HOME: str {
     default = "hello"
 
     not_default = "not_hello"
