@@ -1,127 +1,118 @@
 use crate::{
-    abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode},
+    abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode, Leaf},
     parsers::attribute_block_parser::AttributeBlockParser,
     vars::{PartialVarDeclarationNode, VarDeclarationNode},
     Parser,
 };
-use nv_lexer::{tokens::LexerSymbol, LexerKeyword, LexerTokenKind};
+use nv_lexer::{
+    tokens::{LexerSymbol, LexerToken},
+    LexerKeyword, LexerTokenKind,
+};
+use std::sync::Weak;
 
-pub struct VarDeclarationParser {
-    pub ast_fragment: Option<AbstractSyntaxNode>,
-    pub tokens: Vec<LexerTokenKind>,
+pub struct VarDeclarationParser;
 
-    buffer: Vec<LexerTokenKind>,
-}
+impl Parser<Option<AbstractSyntaxNode>> for VarDeclarationParser {
+    fn parse(
+        tokens: &Vec<LexerToken>,
+        parent: Weak<AbstractSyntaxNode>,
+    ) -> (usize, Option<AbstractSyntaxNode>) {
+        let mut buffer = vec![];
+        let mut tokens_iter = tokens.iter().enumerate();
 
-impl Parser for VarDeclarationParser {
-    fn parse(&mut self) -> usize {
-        let bound_tokens = self.tokens.clone();
-        let mut tokens = bound_tokens.iter().enumerate();
-
-        self.buffer.clear();
+        let mut ast_fragment = None;
 
         let mut processed_count = 0;
 
         let mut partial_declaration = PartialVarDeclarationNode {
+            parent: parent.clone(),
             identifier: None,
             type_value: None,
             modifier: None,
             attributes: vec![],
         };
 
-        while let Some((index, token)) = tokens.next() {
+        while let Some((index, token)) = tokens_iter.next() {
             let token = token.to_owned();
 
             processed_count += 1;
 
-            let sub_tokens = &bound_tokens[index..].to_vec();
+            let sub_tokens = &tokens[index..].to_vec();
             let sub_tokens = sub_tokens.to_vec();
 
-            match token {
+            match token.kind {
                 LexerTokenKind::Identifier(identifier) => {
-                    partial_declaration.identifier = Some(identifier);
+                    partial_declaration.identifier = Some(Leaf::new(identifier, token.range));
 
                     continue;
                 }
                 LexerTokenKind::Type(type_value) => {
-                    partial_declaration.type_value = Some(type_value);
+                    partial_declaration.type_value = Some(Leaf::new(type_value, token.range));
 
                     continue;
                 }
                 LexerTokenKind::Keyword(LexerKeyword::VarModifierKeyword(modifier)) => {
-                    partial_declaration.modifier = Some(modifier);
+                    partial_declaration.modifier = Some(Leaf::new(modifier, token.range));
 
                     continue;
                 }
                 LexerTokenKind::Symbol(LexerSymbol::BlockOpenCurly) => {
-                    let mut parser = AttributeBlockParser::new(sub_tokens.clone());
-                    // -1 because we dont want to double count the block open curly
-                    let count = parser.parse() - 1;
+                    let (count, parsed_block) =
+                        AttributeBlockParser::parse(&sub_tokens, parent.clone());
 
-                    partial_declaration.attributes = parser
-                        .ast_block
+                    // -1 because we dont want to double count the block open curly
+                    let count = count - 1;
+
+                    partial_declaration.attributes = parsed_block
                         .iter()
                         .map(|attribute| attribute.clone().into())
                         .collect();
 
                     processed_count += count;
                     if count > 0 {
-                        tokens.nth(count - 1);
+                        tokens_iter.nth(count - 1);
                     }
 
                     let declaration: Result<VarDeclarationNode, _> =
                         partial_declaration.clone().try_into();
 
                     if declaration.is_ok() {
-                        self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
-                            DeclarationNode::VarDeclaration(declaration.unwrap().clone()),
+                        ast_fragment = Some(AbstractSyntaxNode::Declaration(
+                            DeclarationNode::VarDeclaration(declaration.unwrap()),
                         ));
-                        return processed_count;
                     }
-
-                    continue;
                 }
                 LexerTokenKind::Symbol(LexerSymbol::Newline) => {
                     let declaration: Result<VarDeclarationNode, _> =
                         partial_declaration.clone().try_into();
 
                     if declaration.is_ok() {
-                        self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
-                            DeclarationNode::VarDeclaration(declaration.unwrap().clone()),
+                        ast_fragment = Some(AbstractSyntaxNode::Declaration(
+                            DeclarationNode::VarDeclaration(declaration.unwrap()),
                         ));
-
-                        return processed_count;
                     }
-
-                    continue;
                 }
                 _ => {
-                    self.buffer.push(token);
+                    buffer.push(token);
                     continue;
                 }
             };
+
+            if ast_fragment.is_some() {
+                return (processed_count, ast_fragment);
+            }
         }
 
         let declaration: Result<VarDeclarationNode, _> = partial_declaration.clone().try_into();
 
         if declaration.is_ok() {
-            self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
-                DeclarationNode::VarDeclaration(declaration.unwrap().clone()),
+            ast_fragment = Some(AbstractSyntaxNode::Declaration(
+                DeclarationNode::VarDeclaration(declaration.unwrap()),
             ));
 
-            return processed_count;
+            return (processed_count, ast_fragment);
         }
 
-        processed_count
-    }
-}
-
-impl VarDeclarationParser {
-    pub fn new(tokens: Vec<LexerTokenKind>) -> Self {
-        Self {
-            ast_fragment: None,
-            tokens,
-            buffer: vec![],
-        }
+        (processed_count, ast_fragment)
     }
 }

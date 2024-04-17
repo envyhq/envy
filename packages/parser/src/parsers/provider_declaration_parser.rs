@@ -1,24 +1,25 @@
 use crate::{
-    abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode},
+    abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode, Leaf},
     parsers::attribute_block_parser::AttributeBlockParser,
     providers::{PartialProviderDeclarationNode, ProviderDeclarationNode},
     Parser,
 };
-use nv_lexer::{tokens::LexerSymbol, LexerTokenKind};
+use nv_lexer::{
+    tokens::{LexerSymbol, LexerToken},
+    LexerTokenKind,
+};
+use std::sync::Weak;
 
-pub struct ProviderDeclarationParser {
-    pub ast_fragment: Option<AbstractSyntaxNode>,
-    pub tokens: Vec<LexerTokenKind>,
+pub struct ProviderDeclarationParser;
 
-    buffer: Vec<LexerTokenKind>,
-}
-
-impl Parser for ProviderDeclarationParser {
-    fn parse(&mut self) -> usize {
-        let bound_tokens = self.tokens.clone();
-        let mut tokens = bound_tokens.iter().enumerate();
-
-        self.buffer.clear();
+impl Parser<Option<AbstractSyntaxNode>> for ProviderDeclarationParser {
+    fn parse(
+        tokens: &Vec<LexerToken>,
+        parent: Weak<AbstractSyntaxNode>,
+    ) -> (usize, Option<AbstractSyntaxNode>) {
+        let mut tokens_iter = tokens.iter().enumerate();
+        let mut buffer = vec![];
+        let mut ast_fragment = None;
 
         let mut processed_count = 0;
 
@@ -28,49 +29,50 @@ impl Parser for ProviderDeclarationParser {
             attributes: vec![],
         };
 
-        while let Some((index, token)) = tokens.next() {
+        while let Some((index, token)) = tokens_iter.next() {
             let token = token.to_owned();
 
             processed_count += 1;
 
-            let sub_tokens = &bound_tokens[index..].to_vec();
+            let sub_tokens = &tokens[index..].to_vec();
             let sub_tokens = sub_tokens.to_vec();
 
-            match token {
+            match token.kind {
                 LexerTokenKind::Identifier(identifier) => {
-                    partial_declaration.identifier = Some(identifier);
+                    partial_declaration.identifier = Some(Leaf::new(identifier, token.range));
 
                     continue;
                 }
                 LexerTokenKind::ProviderType(type_value) => {
-                    partial_declaration.type_value = Some(type_value);
+                    partial_declaration.type_value = Some(Leaf::new(type_value, token.range));
 
                     continue;
                 }
                 LexerTokenKind::Symbol(LexerSymbol::BlockOpenCurly) => {
-                    let mut parser = AttributeBlockParser::new(sub_tokens.clone());
-                    // -1 because we dont want to double count the block open curly
-                    let count = parser.parse() - 1;
+                    let (count, parsed_block) =
+                        AttributeBlockParser::parse(&sub_tokens, parent.clone());
 
-                    partial_declaration.attributes = parser
-                        .ast_block
+                    // -1 because we dont want to double count the block open curly
+                    let count = count - 1;
+
+                    partial_declaration.attributes = parsed_block
                         .iter()
                         .map(|declaration| declaration.clone().into())
                         .collect();
 
                     processed_count += count;
                     if count > 0 {
-                        tokens.nth(count - 1);
+                        tokens_iter.nth(count - 1);
                     }
 
                     let declaration: Result<ProviderDeclarationNode, _> =
                         partial_declaration.clone().try_into();
 
                     if declaration.is_ok() {
-                        self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
-                            DeclarationNode::ProviderDeclaration(declaration.unwrap().clone()),
+                        ast_fragment = Some(AbstractSyntaxNode::Declaration(
+                            DeclarationNode::ProviderDeclaration(declaration.unwrap()),
                         ));
-                        return processed_count;
+                        return (processed_count, ast_fragment);
                     }
 
                     continue;
@@ -80,17 +82,17 @@ impl Parser for ProviderDeclarationParser {
                         partial_declaration.clone().try_into();
 
                     if declaration.is_ok() {
-                        self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
-                            DeclarationNode::ProviderDeclaration(declaration.unwrap().clone()),
+                        ast_fragment = Some(AbstractSyntaxNode::Declaration(
+                            DeclarationNode::ProviderDeclaration(declaration.unwrap()),
                         ));
 
-                        return processed_count;
+                        return (processed_count, ast_fragment);
                     }
 
                     continue;
                 }
                 _ => {
-                    self.buffer.push(token);
+                    buffer.push(token);
                     continue;
                 }
             };
@@ -100,23 +102,13 @@ impl Parser for ProviderDeclarationParser {
             partial_declaration.clone().try_into();
 
         if declaration.is_ok() {
-            self.ast_fragment = Some(AbstractSyntaxNode::Declaration(
-                DeclarationNode::ProviderDeclaration(declaration.unwrap().clone()),
+            ast_fragment = Some(AbstractSyntaxNode::Declaration(
+                DeclarationNode::ProviderDeclaration(declaration.unwrap()),
             ));
 
-            return processed_count;
+            return (processed_count, ast_fragment);
         }
 
-        processed_count
-    }
-}
-
-impl ProviderDeclarationParser {
-    pub fn new(tokens: Vec<LexerTokenKind>) -> Self {
-        Self {
-            ast_fragment: None,
-            tokens,
-            buffer: vec![],
-        }
+        (processed_count, ast_fragment)
     }
 }

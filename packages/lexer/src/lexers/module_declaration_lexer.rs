@@ -147,8 +147,6 @@ impl Lexer for ModuleDeclarationLexer {
                     current_position.clone(),
                 ));
 
-                println!("EARLY EXIT MOD DEC");
-
                 return (processed_count, current_position);
             }
         }

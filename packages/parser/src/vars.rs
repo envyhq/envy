@@ -1,21 +1,26 @@
-use nv_lexer::{LexerType, LexerVarModifierKeyword};
-
-use crate::attributes::{AttributeDeclarationNode, PartialAttributeDeclarationNode};
+use crate::{
+    abstract_syntax_tree::{Identifier, Modifier, Type},
+    attributes::{AttributeDeclarationNode, PartialAttributeDeclarationNode},
+    AbstractSyntaxNode,
+};
+use std::{sync::Arc, sync::Weak};
 
 #[derive(Debug, Clone)]
 pub struct VarDeclarationNode {
-    pub identifier: String,
-    pub type_value: LexerType,
-    pub modifier: Option<LexerVarModifierKeyword>,
-    pub attributes: Vec<AttributeDeclarationNode>,
+    pub identifier: Identifier,
+    pub type_value: Type,
+    pub modifier: Option<Modifier>,
+    pub attributes: Vec<Arc<AttributeDeclarationNode>>,
+    pub parent: Weak<AbstractSyntaxNode>,
 }
 
 #[derive(Debug, Clone)]
 pub struct PartialVarDeclarationNode {
-    pub identifier: Option<String>,
-    pub type_value: Option<LexerType>,
-    pub modifier: Option<LexerVarModifierKeyword>,
+    pub identifier: Option<Identifier>,
+    pub type_value: Option<Type>,
+    pub modifier: Option<Modifier>,
     pub attributes: Vec<PartialAttributeDeclarationNode>,
+    pub parent: Weak<AbstractSyntaxNode>,
 }
 
 impl TryFrom<PartialVarDeclarationNode> for VarDeclarationNode {
@@ -27,6 +32,7 @@ impl TryFrom<PartialVarDeclarationNode> for VarDeclarationNode {
         }
 
         Ok(VarDeclarationNode {
+            parent: partial.parent,
             identifier: partial.identifier.unwrap(),
             type_value: partial.type_value.unwrap(),
             modifier: partial.modifier,

@@ -1,5 +1,10 @@
-use nv_parser::{AbstractSyntaxTree, Parser, SourceFileParser};
-use std::collections::HashMap;
+use nv_lexer::{Lexer, SourceFileLexer};
+use nv_parser::{AbstractSyntaxNode, SourceFileParser};
+use nv_position_indexer::{Indexer, PositionIndex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Weak},
+};
 
 #[derive(Debug, Clone)]
 pub struct IoError;
@@ -12,7 +17,8 @@ pub enum FileStoreError {
 pub struct StoredFile {
     pub path: String,
     pub content: String,
-    pub tree: AbstractSyntaxTree,
+    pub position_index: PositionIndex,
+    pub root: Weak<AbstractSyntaxNode>,
 }
 
 #[derive(Debug, Clone)]
@@ -27,16 +33,23 @@ impl FileStore {
         }
     }
 
-    fn parse(input: &str) -> AbstractSyntaxTree {
-        let mut parser = SourceFileParser::new(input);
+    fn parse(content: &str) -> Arc<AbstractSyntaxNode> {
+        let mut lexer = SourceFileLexer::new(content);
+        lexer.lex();
 
-        parser.parse();
+        let (_, ast) = SourceFileParser::parse(&lexer.tokens);
 
-        parser.ast
+        ast
     }
 
     fn read_file(file_path: &str) -> Result<String, FileStoreError> {
         std::fs::read_to_string(file_path).map_err(|_| FileStoreError::IoError(IoError))
+    }
+
+    fn build_position_index(tree: Weak<AbstractSyntaxNode>) -> PositionIndex {
+        let index = Indexer::index_node(tree);
+
+        index
     }
 
     fn store(&mut self, file_path: &str) -> Result<(), FileStoreError> {
@@ -44,12 +57,17 @@ impl FileStore {
             return Ok(());
         }
 
+        let content = Self::read_file(file_path)?;
+
+        let tree = Self::parse(&content);
+
         self.files.insert(
             file_path.to_owned(),
             StoredFile {
-                tree: Self::parse(file_path),
-                content: Self::read_file(file_path)?,
+                root: Arc::downgrade(&tree),
+                content: content,
                 path: file_path.to_owned(),
+                position_index: Self::build_position_index(Arc::downgrade(&tree)),
             },
         );
 

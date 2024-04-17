@@ -1,4 +1,5 @@
-use nv_parser::{Parser, SourceFileParser};
+use nv_lexer::{Lexer, SourceFileLexer};
+use nv_parser::SourceFileParser;
 use std::{env, fs};
 
 fn main() {
@@ -13,13 +14,10 @@ fn main() {
         input = fs::read_to_string(file).unwrap();
     }
 
-    let mut parser = SourceFileParser::new(input);
+    let mut lexer = SourceFileLexer::new(&input);
+    lexer.lex();
 
-    let processed_count = parser.parse();
+    let (processed_count, ast) = SourceFileParser::parse(&lexer.tokens);
 
-    log::info!(
-        "ast: {:#?} - processed_count: {}",
-        parser.ast,
-        processed_count
-    );
+    log::info!("ast: {:#?} - processed_count: {}", ast, processed_count);
 }

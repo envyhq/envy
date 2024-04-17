@@ -109,7 +109,7 @@ pub enum LexerSymbol {
     Newline,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone)]
 pub struct TokenPosition {
     pub line: usize,
     pub column: usize,
@@ -121,7 +121,7 @@ impl TokenPosition {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct TokenRange {
     pub from: TokenPosition,
     pub to: TokenPosition,
@@ -133,7 +133,7 @@ impl TokenRange {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct LexerToken {
     pub kind: LexerTokenKind,
     pub range: TokenRange,

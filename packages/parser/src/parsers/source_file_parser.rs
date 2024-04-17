@@ -1,117 +1,98 @@
+use super::{
+    module_declaration_parser::ModuleDeclarationParser,
+    provider_declaration_parser::ProviderDeclarationParser,
+};
 use crate::{
-    abstract_syntax_tree::{AbstractSyntaxNode, AbstractSyntaxTree, SourceFileNode},
+    abstract_syntax_tree::{AbstractSyntaxNode, SourceFileNode},
     parser::ParserResult,
     parsers::var_declaration_parser::VarDeclarationParser,
     Parser,
 };
 use nv_lexer::{
-    tokens::LexerDeclarationKeyword, Lexer, LexerKeyword, LexerTokenKind, LexerVarModifierKeyword,
-    SourceFileLexer,
+    tokens::{LexerDeclarationKeyword, LexerToken},
+    LexerKeyword, LexerTokenKind, LexerVarModifierKeyword,
 };
-
-use super::{
-    module_declaration_parser::ModuleDeclarationParser,
-    provider_declaration_parser::ProviderDeclarationParser,
-};
+use std::sync::{Arc, Mutex};
 
 #[derive(Debug)]
-pub struct SourceFileParser {
-    pub ast: AbstractSyntaxTree,
-    pub tokens: Vec<LexerTokenKind>,
-}
+pub struct SourceFileParser;
 
-impl Parser for SourceFileParser {
-    fn parse(&mut self) -> usize {
-        let bound_tokens = self.tokens.clone();
-        let mut tokens = bound_tokens.iter().enumerate();
+impl SourceFileParser {
+    pub fn parse(tokens: &Vec<LexerToken>) -> (usize, Arc<AbstractSyntaxNode>) {
+        let root = Arc::new(AbstractSyntaxNode::SourceFile(Arc::new(SourceFileNode {
+            declarations: Mutex::new(vec![]),
+        })));
+        let mut tokens_iter = tokens.iter().enumerate();
 
         let mut processed_count = 0;
 
-        self.ast.root = Some(AbstractSyntaxNode::SourceFile(SourceFileNode {
-            declarations: vec![],
-        }));
-
-        while let Some((index, token)) = tokens.next() {
+        while let Some((index, token)) = tokens_iter.next() {
             processed_count += 1;
-            let sub_tokens = &bound_tokens[index..].to_vec();
+            let sub_tokens = &tokens[index..].to_vec();
             let sub_tokens = sub_tokens.to_vec();
 
-            let result = match token {
+            let result = match token.kind.clone() {
                 LexerTokenKind::Keyword(LexerKeyword::VarModifierKeyword(
                     LexerVarModifierKeyword::Pub,
                 ))
                 | LexerTokenKind::Keyword(LexerKeyword::DeclarationKeyword(
                     LexerDeclarationKeyword::Var,
                 )) => {
-                    let mut parser = VarDeclarationParser::new(sub_tokens.clone());
-                    // -1 to avoid double counting the leading token (var or pub)
-                    let count = parser.parse();
+                    let (count, parsed_fragment) =
+                        VarDeclarationParser::parse(&sub_tokens, Arc::downgrade(&root));
 
                     ParserResult {
                         processed_count: count - 1,
-                        ast_fragment: parser.ast_fragment,
+                        ast_fragment: parsed_fragment,
                     }
                 }
-                LexerTokenKind::Keyword(LexerKeyword::DeclarationKeyword(keyword)) => {
-                    match keyword {
-                        LexerDeclarationKeyword::Provider => {
-                            let mut parser = ProviderDeclarationParser::new(sub_tokens.clone());
-                            // -1 to avoid double counting the leading token (var or pub)
-                            let count = parser.parse();
+                LexerTokenKind::Keyword(LexerKeyword::DeclarationKeyword(keyword)) => match keyword
+                {
+                    LexerDeclarationKeyword::Provider => {
+                        let (count, parsed_fragment) =
+                            ProviderDeclarationParser::parse(&sub_tokens, Arc::downgrade(&root));
 
-                            ParserResult {
-                                processed_count: count - 1,
-                                ast_fragment: parser.ast_fragment,
-                            }
-                        }
-                        LexerDeclarationKeyword::Module => {
-                            let mut parser = ModuleDeclarationParser::new(sub_tokens.clone());
-                            // -1 to avoid double counting the leading token (var or pub)
-                            let count = parser.parse();
-
-                            ParserResult {
-                                processed_count: count - 1,
-                                ast_fragment: parser.ast_fragment,
-                            }
-                        }
-                        _ => {
-                            continue;
+                        ParserResult {
+                            processed_count: count - 1,
+                            ast_fragment: parsed_fragment,
                         }
                     }
-                }
+                    LexerDeclarationKeyword::Module => {
+                        let (count, parsed_fragment) =
+                            ModuleDeclarationParser::parse(&sub_tokens, Arc::downgrade(&root));
+
+                        ParserResult {
+                            processed_count: count - 1,
+                            ast_fragment: parsed_fragment,
+                        }
+                    }
+                    _ => {
+                        continue;
+                    }
+                },
                 _ => {
                     continue;
                 }
             };
 
-            if let Some(ast_fragment) = result.clone().ast_fragment {
+            if let Some(ast_fragment) = result.ast_fragment {
                 if let AbstractSyntaxNode::Declaration(declaration) = ast_fragment {
-                    if let AbstractSyntaxNode::SourceFile(source_file) =
-                        self.ast.root.as_mut().unwrap()
-                    {
-                        source_file.declarations.push(declaration);
+                    if let AbstractSyntaxNode::SourceFile(source_node) = root.as_ref() {
+                        source_node
+                            .declarations
+                            .lock()
+                            .unwrap()
+                            .push(Arc::new(declaration));
                     }
                 }
             }
 
             processed_count += result.processed_count;
             if result.processed_count > 0 {
-                tokens.nth(result.processed_count - 1);
+                tokens_iter.nth(result.processed_count - 1);
             }
         }
 
-        processed_count
-    }
-}
-
-impl SourceFileParser {
-    pub fn new(input: &str) -> Self {
-        let mut lexer = SourceFileLexer::new(input);
-        lexer.lex();
-
-        Self {
-            ast: AbstractSyntaxTree { root: None },
-            tokens: lexer.tokens,
-        }
+        (processed_count, root)
     }
 }

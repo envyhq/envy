@@ -1,16 +1,33 @@
-use crate::abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode};
-use nv_lexer::tokens::LexerLiteral;
+use crate::abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode, Identifier, Literal};
+use std::{sync::Arc, sync::Weak};
 
 #[derive(Debug, Clone)]
 pub struct AttributeDeclarationNode {
-    pub identifier: String,
-    pub value: LexerLiteral,
+    pub identifier: Identifier,
+    pub value: Literal,
+    pub parent: Weak<AbstractSyntaxNode>,
 }
 
 #[derive(Debug, Clone)]
 pub struct PartialAttributeDeclarationNode {
-    pub identifier: Option<String>,
-    pub value: Option<LexerLiteral>,
+    pub identifier: Option<Identifier>,
+    pub value: Option<Literal>,
+}
+
+impl TryFrom<PartialAttributeDeclarationNode> for Arc<AttributeDeclarationNode> {
+    type Error = ();
+
+    fn try_from(partial: PartialAttributeDeclarationNode) -> Result<Self, Self::Error> {
+        if partial.identifier.is_none() || partial.value.is_none() {
+            return Err(());
+        }
+
+        Ok(Arc::new(AttributeDeclarationNode {
+            parent: Weak::new(),
+            identifier: partial.identifier.unwrap(),
+            value: partial.value.unwrap(),
+        }))
+    }
 }
 
 impl TryFrom<PartialAttributeDeclarationNode> for AttributeDeclarationNode {
@@ -22,6 +39,7 @@ impl TryFrom<PartialAttributeDeclarationNode> for AttributeDeclarationNode {
         }
 
         Ok(AttributeDeclarationNode {
+            parent: Weak::new(),
             identifier: partial.identifier.unwrap(),
             value: partial.value.unwrap(),
         })
@@ -31,8 +49,8 @@ impl TryFrom<PartialAttributeDeclarationNode> for AttributeDeclarationNode {
 impl From<AttributeDeclarationNode> for PartialAttributeDeclarationNode {
     fn from(partial: AttributeDeclarationNode) -> Self {
         PartialAttributeDeclarationNode {
-            identifier: Some(partial.identifier),
-            value: Some(partial.value),
+            identifier: Some(partial.identifier.clone()),
+            value: Some(partial.value.clone()),
         }
     }
 }

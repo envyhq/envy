@@ -76,8 +76,6 @@ impl Lexer for SourceFileLexer {
 
             self.buffer.push(char.clone());
 
-            println!("{:?}", self.buffer);
-
             if let Some(token) = self.buffer_to_keyword() {
                 self.tokens.push(LexerToken::new(
                     LexerTokenKind::Keyword(token.clone()),

@@ -11,6 +11,8 @@ members = [
     "packages/resolver",
     "packages/resolver/examples",
 
+    "packages/position_indexer",
+
     "packages/language-server",
 
     "packages/code-generation/javascript",

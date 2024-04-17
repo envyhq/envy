@@ -1,49 +1,46 @@
 use crate::{abstract_syntax_tree::AbstractSyntaxNode, parser::ParserResult, Parser};
 use nv_lexer::{
-    tokens::LexerDeclarationKeyword, LexerKeyword, LexerTokenKind, LexerVarModifierKeyword,
+    tokens::{LexerDeclarationKeyword, LexerToken},
+    LexerKeyword, LexerTokenKind, LexerVarModifierKeyword,
 };
+use std::sync::Weak;
 
 use super::var_declaration_parser::VarDeclarationParser;
 
-pub struct VarBlockParser {
-    pub ast_block: Vec<AbstractSyntaxNode>,
-    pub tokens: Vec<LexerTokenKind>,
+#[derive(Debug, Clone)]
+pub struct VarBlockParser;
 
-    buffer: Vec<LexerTokenKind>,
-}
-
-impl Parser for VarBlockParser {
-    fn parse(&mut self) -> usize {
-        let bound_tokens = self.tokens.clone();
-        let mut tokens = bound_tokens.iter().enumerate();
-
-        self.buffer.clear();
+impl Parser<Vec<AbstractSyntaxNode>> for VarBlockParser {
+    fn parse(
+        tokens: &Vec<LexerToken>,
+        parent: Weak<AbstractSyntaxNode>,
+    ) -> (usize, Vec<AbstractSyntaxNode>) {
+        let mut tokens_iter = tokens.iter().enumerate();
+        let mut ast_block = vec![];
 
         let mut processed_count = 0;
 
-        while let Some((index, token)) = tokens.next() {
+        while let Some((index, token)) = tokens_iter.next() {
             processed_count += 1;
-            let sub_tokens = &bound_tokens[index..].to_vec();
+            let sub_tokens = &tokens[index..].to_vec();
             let sub_tokens = sub_tokens.to_vec();
 
-            let result = match token {
+            let result = match token.kind {
                 LexerTokenKind::Keyword(LexerKeyword::VarModifierKeyword(
                     LexerVarModifierKeyword::Pub,
                 ))
                 | LexerTokenKind::Keyword(LexerKeyword::DeclarationKeyword(
                     LexerDeclarationKeyword::Var,
                 )) => {
-                    let mut parser = VarDeclarationParser::new(sub_tokens.clone());
-                    // -1 to avoid double counting the leading token (var or pub)
-                    let count = parser.parse() - 1;
+                    let (count, parsed_fragment) =
+                        VarDeclarationParser::parse(&sub_tokens, parent.clone());
 
-                    if let Some(ast_fragment) = parser.ast_fragment.clone() {
-                        self.ast_block.push(ast_fragment);
-                    }
+                    // -1 to avoid double counting the leading token (var or pub)
+                    let count = count - 1;
 
                     ParserResult {
                         processed_count: count,
-                        ast_fragment: parser.ast_fragment,
+                        ast_fragment: parsed_fragment,
                     }
                 }
                 _ => {
@@ -53,20 +50,14 @@ impl Parser for VarBlockParser {
 
             processed_count += result.processed_count;
             if result.processed_count > 0 {
-                tokens.nth(result.processed_count - 1);
+                tokens_iter.nth(result.processed_count - 1);
+            }
+
+            if result.ast_fragment.is_some() {
+                ast_block.push(result.ast_fragment.unwrap());
             }
         }
 
-        processed_count
-    }
-}
-
-impl VarBlockParser {
-    pub fn new(tokens: Vec<LexerTokenKind>) -> Self {
-        Self {
-            ast_block: vec![],
-            tokens,
-            buffer: vec![],
-        }
+        (processed_count, ast_block)
     }
 }

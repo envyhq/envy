@@ -966,6 +966,7 @@ dependencies = [
  "env_logger",
  "log",
  "nv-codegen-javascript",
+ "nv-lexer",
  "nv-parser",
 ]
 
@@ -984,6 +985,7 @@ version = "0.1.0"
 dependencies = [
  "env_logger",
  "log",
+ "nv-lexer",
  "nv-parser",
 ]
 
@@ -1014,6 +1016,7 @@ dependencies = [
  "env_logger",
  "futures",
  "log",
+ "nv-lexer",
  "nv-parser",
  "nv-provider-aws-secrets-manager",
  "nv-provider-env",
@@ -1027,7 +1030,9 @@ dependencies = [
  "anyhow",
  "env_logger",
  "log",
+ "nv-lexer",
  "nv-parser",
+ "nv-position-indexer",
  "serde",
  "serde_json",
  "tokio",
@@ -1050,6 +1055,14 @@ dependencies = [
  "env_logger",
  "log",
  "nv-lexer",
+]
+
+[[package]]
+name = "nv-position-indexer"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "nv-parser",
 ]
 
 [[package]]

@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use futures::{stream, StreamExt};
-use nv_parser::{AbstractSyntaxNode, AbstractSyntaxTree, DeclarationNode, VarDeclarationNode};
+use nv_parser::{AbstractSyntaxNode, DeclarationNode, VarDeclarationNode};
 pub use nv_provider_core::Provider;
 
 #[derive(Debug)]
@@ -27,7 +27,7 @@ pub trait TreeResolver {
         &self,
         ast: AbstractSyntaxNode,
     ) -> Result<Vec<ResolvedValue>, ResolutionError>;
-    async fn resolve(&self, ast: AbstractSyntaxTree)
+    async fn resolve(&self, ast: AbstractSyntaxNode)
         -> Result<Vec<ResolvedValue>, ResolutionError>;
 }
 
@@ -45,10 +45,10 @@ impl TreeResolver for Resolver {
     ) -> Result<ResolvedValue, ResolutionError> {
         let provider = self.providers.first().unwrap();
 
-        let value = provider.get_value(&node.identifier.clone()).await;
+        let value = provider.get_value(&node.identifier.value.clone()).await;
 
         Ok(ResolvedValue {
-            key: node.identifier,
+            key: node.identifier.value,
             value: value.ok(),
         })
     }
@@ -60,7 +60,7 @@ impl TreeResolver for Resolver {
         match node {
             DeclarationNode::VarDeclaration(var) => Ok(vec![self.resolve_var(var).await?]),
             DeclarationNode::ModuleDeclaration(module) => Ok(stream::iter(module.declarations)
-                .map(|d| async move { self.resolve_declaration(d.clone()).await })
+                .map(|d| async move { self.resolve_declaration(d.as_ref().clone()).await })
                 .buffer_unordered(5)
                 .collect::<Vec<_>>()
                 .await
@@ -83,23 +83,24 @@ impl TreeResolver for Resolver {
         node: AbstractSyntaxNode,
     ) -> Result<Vec<ResolvedValue>, ResolutionError> {
         match node {
-            AbstractSyntaxNode::SourceFile(source_file) => {
-                Ok(stream::iter(source_file.declarations)
-                    .map(|d| async move { self.resolve_declaration(d.clone()).await })
-                    .buffer_unordered(5)
-                    .collect::<Vec<_>>()
-                    .await
-                    .iter()
-                    .filter_map(|d| {
-                        if d.is_ok() {
-                            Some(d.as_ref().unwrap().clone())
-                        } else {
-                            None
-                        }
-                    })
-                    .flatten()
-                    .collect::<Vec<_>>())
-            }
+            AbstractSyntaxNode::SourceFile(source_file) => Ok(stream::iter({
+                let lock = source_file.declarations.lock().unwrap();
+                lock.clone().into_iter()
+            })
+            .map(|d| async move { self.resolve_declaration(d.as_ref().clone()).await })
+            .buffer_unordered(5)
+            .collect::<Vec<_>>()
+            .await
+            .iter()
+            .filter_map(|d| {
+                if d.is_ok() {
+                    Some(d.as_ref().unwrap().clone())
+                } else {
+                    None
+                }
+            })
+            .flatten()
+            .collect::<Vec<_>>()),
             AbstractSyntaxNode::Declaration(declaration) => {
                 self.resolve_declaration(declaration).await
             }
@@ -108,13 +109,9 @@ impl TreeResolver for Resolver {
 
     async fn resolve(
         &self,
-        ast: AbstractSyntaxTree,
+        ast: AbstractSyntaxNode,
     ) -> Result<Vec<ResolvedValue>, ResolutionError> {
-        let mut resolved_values = vec![];
-
-        if let Some(root) = ast.root {
-            resolved_values = self.resolve_node(root).await?;
-        }
+        let resolved_values = self.resolve_node(ast).await?;
 
         Ok(resolved_values)
     }

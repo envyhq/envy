@@ -115,8 +115,6 @@ impl Lexer for VarDeclarationLexer {
                         current_position.clone(),
                     ));
 
-                    println!("EARLY EXIT VAR DEC");
-
                     return (processed_count, current_position);
                 }
                 Ok(LexerChar::VarAssignmentColon) => {

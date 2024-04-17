@@ -1,23 +1,25 @@
 use crate::{
-    abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode},
+    abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode, Leaf},
     attributes::{AttributeDeclarationNode, PartialAttributeDeclarationNode},
     Parser,
 };
-use nv_lexer::{tokens::LexerSymbol, LexerTokenKind};
+use nv_lexer::{
+    tokens::{LexerSymbol, LexerToken},
+    LexerTokenKind,
+};
+use std::sync::Weak;
 
-pub struct AttributeBlockParser {
-    pub ast_block: Vec<AbstractSyntaxNode>,
-    pub tokens: Vec<LexerTokenKind>,
+pub struct AttributeBlockParser;
 
-    buffer: Vec<LexerTokenKind>,
-}
-
-impl Parser for AttributeBlockParser {
-    fn parse(&mut self) -> usize {
-        let bound_tokens = self.tokens.clone();
+impl Parser<Vec<AbstractSyntaxNode>> for AttributeBlockParser {
+    fn parse(
+        tokens: &Vec<LexerToken>,
+        parent: Weak<AbstractSyntaxNode>,
+    ) -> (usize, Vec<AbstractSyntaxNode>) {
+        let mut buffer = vec![];
+        let mut ast_block: Vec<AbstractSyntaxNode> = vec![];
+        let bound_tokens = tokens.clone();
         let mut tokens = bound_tokens.iter().enumerate();
-
-        self.buffer.clear();
 
         let mut processed_count = 0;
 
@@ -31,47 +33,34 @@ impl Parser for AttributeBlockParser {
 
             processed_count += 1;
 
-            match token {
+            match token.kind {
                 LexerTokenKind::Identifier(identifier) => {
-                    partial_declaration.identifier = Some(identifier);
+                    partial_declaration.identifier = Some(Leaf::new(identifier, token.range));
                 }
                 LexerTokenKind::Literal(value) => {
-                    partial_declaration.value = Some(value);
+                    partial_declaration.value = Some(Leaf::new(value, token.range));
                 }
                 LexerTokenKind::Symbol(LexerSymbol::BlockCloseCurly) => {
                     break;
                 }
                 _ => {
-                    self.buffer.push(token);
+                    buffer.push(token);
                 }
             };
 
             let declaration: Result<AttributeDeclarationNode, _> =
                 partial_declaration.clone().try_into();
 
-            if declaration.is_ok() {
-                self.ast_block.push(AbstractSyntaxNode::Declaration(
-                    DeclarationNode::AttributeDeclaration(declaration.unwrap().clone()),
+            if let Ok(mut declaration) = declaration {
+                declaration.parent = parent.clone();
+                ast_block.push(AbstractSyntaxNode::Declaration(
+                    DeclarationNode::AttributeDeclaration(declaration),
                 ));
-                partial_declaration = PartialAttributeDeclarationNode {
-                    identifier: None,
-                    value: None,
-                };
 
                 continue;
             }
         }
 
-        processed_count
-    }
-}
-
-impl AttributeBlockParser {
-    pub fn new(tokens: Vec<LexerTokenKind>) -> Self {
-        Self {
-            ast_block: vec![],
-            tokens,
-            buffer: vec![],
-        }
+        (processed_count, ast_block)
     }
 }

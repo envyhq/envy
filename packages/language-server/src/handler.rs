@@ -38,9 +38,16 @@ pub struct TextDocumentHoverHandler {
 
 impl Handler<TextDocumentHover> for TextDocumentHoverHandler {
     fn handle(&mut self, req: TextDocumentHover) -> Value {
-        let _ = self.file_store.get(&self.file_path);
+        let file = self.file_store.get(&self.file_path).unwrap();
+        let root = file.root.clone();
 
-        // put file.unwrap().tree into some NodeFinder to get the node in the tree based on the col and row of cursor from the incoming request
+        println!(
+            "stored file: {:?} ---- root ast: {:?} ------------------- pos index: {:?} . len: {}",
+            file,
+            root,
+            file.position_index,
+            file.position_index.len()
+        );
 
         json!({
             "jsonrpc": "2.0",
@@ -62,7 +69,7 @@ impl LspRequestHandler {
         let result = match req {
             LspRequest::Initialize(req) => InitializeHandler.handle(req),
             LspRequest::TextDocumentHover(req) => TextDocumentHoverHandler {
-                file_path: req.clone().params.text_document.uri,
+                file_path: req.clone().params.text_document.uri.replace("file://", ""),
                 file_store: self.file_store.clone(),
             }
             .handle(req),
@@ -108,11 +115,7 @@ impl LspMessageHandler {
     ) -> Result<(), anyhow::Error> {
         match message {
             LspMessage::Request(req) => {
-                let result = LspRequestHandler {
-                    file_store: file_store,
-                }
-                .handle(req)
-                .await?;
+                let result = LspRequestHandler { file_store }.handle(req).await?;
                 let result = serde_json::to_string(&result)?;
                 let len = result.as_bytes().len();
 

@@ -14,14 +14,12 @@ fn main() {
         input = fs::read_to_string(file).unwrap();
     }
 
-    let mut parser = SourceFileParser::new(input);
-    let processed_count = parser.parse();
+    let mut lexer = SourceFileLexer::new(&input);
+    lexer.lex();
 
-    log::debug!(
-        "ast: {:#?} - processed_count: {}",
-        parser.ast,
-        processed_count
-    );
+    let (processed_count, ast) = SourceFileParser::parse(&lexer.tokens);
+
+    log::debug!("ast: {:#?} - processed_count: {}", ast, processed_count);
 
     let generated_source = generate_javascript_source(parser.ast);
 
