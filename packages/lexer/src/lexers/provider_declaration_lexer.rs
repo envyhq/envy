@@ -28,23 +28,20 @@ impl ProviderDeclarationLexer {
     }
 
     fn buffer_to_type(&self, buffer: Option<Vec<String>>) -> String {
-        let buffered = buffer.unwrap_or(self.buffer.clone()).join("");
-
-        buffered
+        buffer.unwrap_or(self.buffer.clone()).join("")
     }
 }
 
 impl Lexer for ProviderDeclarationLexer {
     fn lex(&mut self) -> (usize, TokenPosition) {
-        let bound_chars = self.chars.clone();
-        let mut chars = bound_chars.iter().enumerate();
+        let chars_iter = self.chars.iter().enumerate();
 
         self.buffer.clear();
 
         let mut processed_count = 0;
         let mut current_position = self.start_position.clone();
 
-        while let Some((index, char)) = chars.next() {
+        for (index, char) in chars_iter {
             let char = char.to_owned();
 
             processed_count += 1;
@@ -52,16 +49,31 @@ impl Lexer for ProviderDeclarationLexer {
 
             self.buffer.push(char.clone());
 
+            // Terminate lexing of provider declaration if we encounter a newline
             if is_newline(&char) {
+                let (buffer, from, to) = lookbehind_raw_token(
+                    &current_position,
+                    &self.buffer,
+                    Some(LexerChar::BlockOpenCurly),
+                );
+                let type_value = self.buffer_to_type(Some(buffer));
+
+                if !type_value.is_empty() {
+                    self.tokens.push(LexerToken::new(
+                        LexerTokenKind::ProviderType(type_value),
+                        from,
+                        to,
+                    ));
+                }
+
                 self.tokens.push(LexerToken::new(
                     LexerTokenKind::Symbol(LexerSymbol::Newline),
                     current_position.clone(),
                     current_position.clone(),
                 ));
-
                 current_position.line += 1;
-                current_position.column = 0;
-                continue;
+
+                return (processed_count, current_position);
             }
 
             if is_whitespace(&char) {
@@ -76,7 +88,7 @@ impl Lexer for ProviderDeclarationLexer {
                     Some(LexerChar::ProviderAssignmentColon),
                 );
                 let buffered = buffer.join("");
-                if buffered.len() > 0 {
+                if !buffered.is_empty() {
                     self.tokens.push(LexerToken::new(
                         LexerTokenKind::Identifier(buffered),
                         from,
@@ -102,7 +114,7 @@ impl Lexer for ProviderDeclarationLexer {
                     Some(LexerChar::BlockOpenCurly),
                 );
                 let type_value = self.buffer_to_type(Some(buffer));
-                if type_value.len() > 0 {
+                if !type_value.is_empty() {
                     self.tokens.push(LexerToken::new(
                         LexerTokenKind::ProviderType(type_value),
                         from,
@@ -116,7 +128,7 @@ impl Lexer for ProviderDeclarationLexer {
                     current_position.clone(),
                 ));
 
-                let sub_chars = &bound_chars[(index + 1)..].to_vec();
+                let sub_chars = &self.chars[(index + 1)..].to_vec();
                 let sub_chars = sub_chars.to_vec();
 
                 let mut block_lexer = AttributeBlockLexer::new(sub_chars, current_position.clone());
@@ -128,38 +140,14 @@ impl Lexer for ProviderDeclarationLexer {
 
                 return (processed_count, current_position);
             }
-
-            // Terminate lexing of provider declaration if we encounter a newline
-            if char == LexerChar::NewLine.to_string() {
-                let (buffer, from, to) = lookbehind_raw_token(
-                    &current_position,
-                    &self.buffer,
-                    Some(LexerChar::BlockOpenCurly),
-                );
-                let type_value = self.buffer_to_type(Some(buffer));
-                if type_value.len() > 0 {
-                    self.tokens.push(LexerToken::new(
-                        LexerTokenKind::ProviderType(type_value),
-                        from,
-                        to,
-                    ));
-                }
-
-                self.tokens.push(LexerToken::new(
-                    LexerTokenKind::Symbol(LexerSymbol::Newline),
-                    current_position.clone(),
-                    current_position.clone(),
-                ));
-
-                return (processed_count, current_position);
-            }
         }
 
         // If we haven't returned already, we reached the end of the input. Check the buffer for any remaining token.
         let (buffer, start_position, _) =
             lookbehind_raw_token(&current_position, &self.buffer, None);
         let type_value = self.buffer_to_type(Some(buffer));
-        if type_value.len() > 0 {
+
+        if !type_value.is_empty() {
             self.tokens.push(LexerToken::new(
                 LexerTokenKind::ProviderType(type_value),
                 start_position.clone(),

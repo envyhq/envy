@@ -81,7 +81,10 @@ pub fn lookbehind_raw_token(
 
     let to_col = current_position.column - (buffer.len() - (last_identifier_char_index + 1));
 
-    let from = TokenPosition::new(current_position.line, to_col - (trimmed_buffer.len() - 1));
+    let from = TokenPosition::new(
+        current_position.line,
+        to_col.saturating_sub(trimmed_buffer.len().saturating_sub(1)),
+    );
     let to = TokenPosition::new(current_position.line, to_col);
 
     (trimmed_buffer, from, to)
