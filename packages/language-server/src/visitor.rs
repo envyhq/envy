@@ -122,4 +122,4 @@ impl<'de> serde::de::Visitor<'de> for LspMessageVisitor {
     }
 }
 
-static FIELDS: &'static [&'static str] = &["jsonrpc", "id", "method", "params"];
+static FIELDS: &[&str] = &["jsonrpc", "id", "method", "params"];

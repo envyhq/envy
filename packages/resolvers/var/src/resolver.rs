@@ -1,9 +1,10 @@
-use std::{error::Error, fmt, sync::Arc};
-
 use async_trait::async_trait;
 use futures::{stream, StreamExt};
 use nv_parser::{AbstractSyntaxNode, DeclarationNode, VarDeclarationNode};
 pub use nv_provider_core::Provider;
+use nv_provider_resolver::ProviderResolver;
+pub use nv_provider_resolver::ResolverProvider;
+use std::{error::Error, fmt};
 
 #[derive(Debug)]
 pub enum ResolutionError {
@@ -21,7 +22,7 @@ impl Error for ResolutionError {}
 
 impl fmt::Display for ResolutionError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invalid first item to double")
+        write!(f, "error resolving value")
     }
 }
 
@@ -43,20 +44,33 @@ pub trait TreeResolver {
     ) -> Result<Vec<ResolvedValue>, ResolutionError>;
 }
 
-pub type ResolverProvider = Arc<dyn Provider + Sync + Send>;
-
 #[derive(Debug, Default, Clone)]
-pub struct Resolver {
+pub struct VarResolver {
     pub providers: Vec<ResolverProvider>,
+    pub provider_resolver: ProviderResolver,
+}
+
+impl VarResolver {
+    pub fn init(&mut self, node: &AbstractSyntaxNode) {
+        let providers = self.provider_resolver.resolve(node);
+
+        for provider in providers {
+            self.add_provider(provider);
+        }
+    }
+
+    fn add_provider(&mut self, provider: ResolverProvider) {
+        self.providers.push(provider);
+    }
 }
 
 #[async_trait]
-impl TreeResolver for Resolver {
+impl TreeResolver for VarResolver {
     async fn resolve_var(
         &self,
         node: &VarDeclarationNode,
     ) -> Result<ResolvedValue, ResolutionError> {
-        let provider = self.providers.first().unwrap();
+        let provider = self.providers.first().unwrap(); // TODO: Should use something like self.providers.find(|p| p.identifier.value == node.provider).unwrap();... need to link var nodes to their provider
 
         let value = provider.get_value(&node.identifier.value).await;
 

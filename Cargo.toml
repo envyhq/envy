@@ -2,27 +2,28 @@
 resolver = "2"
 
 members = [
-    "packages/parser",
-    "packages/parser/examples",
+  "packages/parser",
+  "packages/parser/examples",
 
-    "packages/lexer",
-    "packages/lexer/examples",
+  "packages/lexer",
+  "packages/lexer/examples",
 
-    "packages/resolver",
-    "packages/resolver/examples",
+  "packages/resolvers/var",
+  "packages/resolvers/var/examples",
+  "packages/resolvers/provider",
 
-    "packages/position_indexer",
+  "packages/position_indexer",
 
-    "packages/language-server",
+  "packages/language-server",
 
-    "packages/code-generation/javascript",
-    "packages/code-generation/javascript/examples",
+  "packages/code-generation/javascript",
+  "packages/code-generation/javascript/examples",
 
-    "packages/provider/core",
+  "packages/provider/core",
 
-    "packages/provider/providers/env",
-    "packages/provider/providers/env/examples",
+  "packages/provider/providers/env",
+  "packages/provider/providers/env/examples",
 
-    "packages/provider/providers/aws-secrets-manager",
-    "packages/provider/providers/aws-secrets-manager/examples",
+  "packages/provider/providers/aws-secrets-manager",
+  "packages/provider/providers/aws-secrets-manager/examples",
 ]

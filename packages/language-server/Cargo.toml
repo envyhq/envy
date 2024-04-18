@@ -18,6 +18,5 @@ tokio = { version = "1.37.0", features = [
 nv-parser = { path = "../parser" }
 nv-lexer = { path = "../lexer" }
 nv-position-indexer = { path = "../position_indexer" }
-nv-resolver = { path = "../resolver" }
+nv-var-resolver = { path = "../resolvers/var" }
 nv-provider-env = { path = "../provider/providers/env" }
-

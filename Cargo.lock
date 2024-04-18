@@ -1010,7 +1010,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "nv-examples-resolver-api"
+name = "nv-examples-var-resolver-api"
 version = "0.1.0"
 dependencies = [
  "env_logger",
@@ -1020,7 +1020,7 @@ dependencies = [
  "nv-parser",
  "nv-provider-aws-secrets-manager",
  "nv-provider-env",
- "nv-resolver",
+ "nv-var-resolver",
 ]
 
 [[package]]
@@ -1034,7 +1034,7 @@ dependencies = [
  "nv-parser",
  "nv-position-indexer",
  "nv-provider-env",
- "nv-resolver",
+ "nv-var-resolver",
  "serde",
  "serde_json",
  "tokio",
@@ -1094,7 +1094,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "nv-resolver"
+name = "nv-provider-resolver"
 version = "0.1.0"
 dependencies = [
  "async-trait",
@@ -1102,6 +1102,18 @@ dependencies = [
  "log",
  "nv-parser",
  "nv-provider-core",
+]
+
+[[package]]
+name = "nv-var-resolver"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "futures",
+ "log",
+ "nv-parser",
+ "nv-provider-core",
+ "nv-provider-resolver",
 ]
 
 [[package]]

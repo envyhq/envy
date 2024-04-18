@@ -12,7 +12,9 @@ A language for configuration.
 
 - Lexer - [Source](./packages/lexer/src/lib.rs)
 - Parser - [README](./packages/parser/README.md) [Source](./packages/parser/src/lib.rs)
-- Resolver - [Source](./packages/resolver/src/lib.rs)
+- Resolvers
+  - Variable Resolver - [Source](./packages/resolvers/var/src/lib.rs)
+  - Provider Resolver - [Source](./packages/resolvers/provider/lib.rs)
 - Language Server - [Source](./packages/language-server/src/main.rs)
   - Position Indexer - [Source](./packages/position_indexer/src/lib.rs)
 - Code Generation

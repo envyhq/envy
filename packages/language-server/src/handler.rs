@@ -7,7 +7,7 @@ use crate::{
 };
 use nv_lexer::TokenPosition;
 use nv_parser::{AbstractSyntaxNode, DeclarationNode};
-use nv_resolver::TreeResolver;
+use nv_var_resolver::TreeResolver;
 use serde_json::{json, Value};
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;

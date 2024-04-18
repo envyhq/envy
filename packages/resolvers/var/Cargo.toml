@@ -1,0 +1,12 @@
+[package]
+name = "nv-var-resolver"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+log = "0.4.21"
+nv-provider-core = { path = "../../provider/core" }
+nv-parser = { path = "../../parser" }
+nv-provider-resolver = { path = "../provider" }
+futures = "0.3.30"
+async-trait = "0.1.79"

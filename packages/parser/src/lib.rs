@@ -12,4 +12,5 @@ pub use modules::ModuleDeclarationNode;
 pub use nv_lexer::TokenPosition;
 pub use parser::Parser;
 pub use parsers::source_file_parser::SourceFileParser;
+pub use providers::ProviderDeclarationNode;
 pub use vars::VarDeclarationNode;

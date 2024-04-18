@@ -3,7 +3,7 @@ use nv_lexer::{Lexer, SourceFileLexer};
 use nv_parser::{AbstractSyntaxNode, SourceFileParser};
 use nv_provider_aws_secrets_manager::AwsSecretsManagerProvider;
 use nv_provider_env::EnvProvider;
-use nv_resolver::{Resolver, ResolverProvider, TreeResolver};
+use nv_var_resolver::{VarResolver, ResolverProvider, TreeResolver};
 use std::{collections::HashMap, env, fs, sync::Arc};
 
 async fn async_main() -> Result<(), ()> {
@@ -58,7 +58,7 @@ async fn async_main() -> Result<(), ()> {
         vec![]
     };
 
-    let resolver = Resolver { providers };
+    let resolver = VarResolver { providers };
 
     let resolved = resolver.resolve(ast.as_ref()).await;
 
