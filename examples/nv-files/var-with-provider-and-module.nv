@@ -3,12 +3,12 @@ provider OurEnv: env {
 }
 
 var my_other_var: str {
-    default = "wowowowow"
+    default = "a_default"
 }
 
 module MyOtherCoolModule {
     var some_module_var: str {
-        default = "cocococo"
+        default = "another_default"
     }
 
     pub var my_other_cool_var: int {
