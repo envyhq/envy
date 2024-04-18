@@ -40,15 +40,14 @@ impl Lexer for VarDeclarationLexer {
     // We are given the whole source file from the var keyword onwards, so we lex until we reach a valid output.
     // The source file lexer must continue where we left of, so we return the number of characters we have processed.
     fn lex(&mut self) -> (usize, TokenPosition) {
-        let bound_chars = self.chars.clone();
-        let mut chars = bound_chars.iter().enumerate();
+        let chars_iter = self.chars.iter().enumerate();
 
         self.buffer.clear();
 
         let mut processed_count = 0;
         let mut current_position = self.start_position.clone();
 
-        while let Some((index, char)) = chars.next() {
+        for (index, char) in chars_iter {
             let char = char.to_owned();
 
             processed_count += 1;
@@ -126,7 +125,7 @@ impl Lexer for VarDeclarationLexer {
                     );
 
                     let buffered = buffer.join("");
-                    if buffered.len() > 0 {
+                    if !buffered.is_empty() {
                         self.tokens.push(LexerToken::new(
                             LexerTokenKind::Identifier(buffered.clone()),
                             from,
@@ -163,13 +162,15 @@ impl Lexer for VarDeclarationLexer {
                         current_position.clone(),
                     ));
 
-                    let sub_chars = &bound_chars[(index + 1)..].to_vec();
+                    let sub_chars = &self.chars[(index + 1)..].to_vec();
                     let sub_chars = sub_chars.to_vec();
 
                     let mut block_lexer =
                         AttributeBlockLexer::new(sub_chars, current_position.clone());
 
-                    let (block_count, _) = block_lexer.lex();
+                    let (block_count, block_position) = block_lexer.lex();
+
+                    current_position = block_position;
 
                     processed_count += block_count;
 

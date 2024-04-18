@@ -72,7 +72,11 @@ impl Handler<TextDocumentHover> for TextDocumentHoverHandler {
             }
         }
 
-        Err(anyhow::Error::msg("unable to resolve node"))
+        Ok(json!({
+            "jsonrpc": "2.0",
+            "id": req.base.id,
+            "result": null
+        }))
     }
 }
 

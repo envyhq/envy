@@ -42,10 +42,9 @@ impl SourceFileLexer {
 
 impl Lexer for SourceFileLexer {
     fn lex(&mut self) -> (usize, TokenPosition) {
-        let bound_chars = self.chars.clone();
-        let mut chars = bound_chars.iter().enumerate();
+        let mut chars_iter = self.chars.iter().enumerate();
 
-        if self.tokens.len() > 0 || self.buffer.len() > 0 {
+        if !self.tokens.is_empty() || !self.buffer.is_empty() {
             self.tokens = vec![];
             self.buffer = vec![];
         }
@@ -53,7 +52,7 @@ impl Lexer for SourceFileLexer {
         let mut processed_count = 0;
         let mut current_position = TokenPosition::new(1, 0);
 
-        while let Some((index, char)) = chars.next() {
+        while let Some((index, char)) = chars_iter.next() {
             let char = char.to_owned();
 
             processed_count += 1;
@@ -67,6 +66,7 @@ impl Lexer for SourceFileLexer {
                 ));
                 current_position.line += 1;
                 current_position.column = 0;
+
                 continue;
             }
 
@@ -88,7 +88,7 @@ impl Lexer for SourceFileLexer {
                     current_position.clone(),
                 ));
                 self.buffer.clear();
-                let sub_chars = &bound_chars[(index + 1)..].to_vec();
+                let sub_chars = &self.chars[(index + 1)..].to_vec();
                 let sub_chars = sub_chars.to_vec();
 
                 let result: LexerResult = match token {
@@ -134,7 +134,7 @@ impl Lexer for SourceFileLexer {
 
                 processed_count += result.processed_count;
                 if result.processed_count > 0 {
-                    chars.nth(result.processed_count - 1);
+                    chars_iter.nth(result.processed_count - 1);
                 }
                 current_position = result.final_position;
                 self.buffer.clear();

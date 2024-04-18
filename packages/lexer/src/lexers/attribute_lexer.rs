@@ -89,13 +89,13 @@ pub fn lookbehind_raw_token(
 
 impl Lexer for AttributeBlockLexer {
     fn lex(&mut self) -> (usize, TokenPosition) {
-        let mut chars = self.chars.iter();
+        let chars_iter = self.chars.iter();
         self.buffer.clear();
 
         let mut processed_count = 0;
         let mut current_position = self.start_position.clone();
 
-        while let Some(char) = chars.next() {
+        for char in chars_iter {
             let char = char.to_owned();
 
             processed_count += 1;
@@ -147,7 +147,7 @@ impl Lexer for AttributeBlockLexer {
                 );
 
                 let buffered = buffer.join("");
-                if buffered.len() > 0 {
+                if !buffered.is_empty() {
                     self.tokens.push(LexerToken::new(
                         LexerTokenKind::Identifier(buffered.clone()),
                         from,
