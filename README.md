@@ -2,9 +2,9 @@
 
 A language for configuration.
 
-![nv syntax highlighting](./extensions/vscode-nv/docs/assets/images/vscode-nv-syntax-highlighting.png)
-
-https://github.com/lbennett-stacki/nv/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8
+| | |
+|-|-|
+| ![nv logo](./docs/assets/images/discord-server-logo.png) | ![nv syntax highlighting](./extensions/vscode-nv/docs/assets/images/vscode-nv-syntax-highlighting.png) |
 
 [nv FigJam discovery board](https://www.figma.com/file/YLWiYaLvchfUlrbmr4P0M2/NV-Discovery?type=whiteboard&node-id=0%3A1&t=7aag2YKaHTLDS4lW-1)
 
@@ -51,3 +51,8 @@ https://github.com/lbennett-stacki/nv/assets/5678671/e2fd9685-4905-41f7-8cf5-e94
 ## Examples
 
 A lot of packages have an examples/ directory to show simple usage of the packages API.
+
+
+## LSP
+
+https://github.com/lbennett-stacki/nv/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8](https://github.com/lbennett-stacki/nv/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8
