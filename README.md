@@ -4,7 +4,7 @@ A language for configuration.
 
 ![nv syntax highlighting](./extensions/vscode-nv/docs/assets/images/vscode-nv-syntax-highlighting.png)
 
-https://github.com/lbennett-stacki/nv/raw/main/packages/language-server/docs/assets/videos/lsp.mov
+https://github.com/lbennett-stacki/nv/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8
 
 [nv FigJam discovery board](https://www.figma.com/file/YLWiYaLvchfUlrbmr4P0M2/NV-Discovery?type=whiteboard&node-id=0%3A1&t=7aag2YKaHTLDS4lW-1)
 
