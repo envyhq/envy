@@ -52,15 +52,8 @@ pub struct VarResolver {
 
 impl VarResolver {
     pub fn init(&mut self, node: &AbstractSyntaxNode) {
-        let providers = self.provider_resolver.resolve(node);
-
-        for provider in providers {
-            self.add_provider(provider);
-        }
-    }
-
-    fn add_provider(&mut self, provider: ResolverProvider) {
-        self.providers.push(provider);
+        let mut providers = self.provider_resolver.resolve(node);
+        self.providers.append(&mut providers);
     }
 }
 
@@ -70,7 +63,10 @@ impl TreeResolver for VarResolver {
         &self,
         node: &VarDeclarationNode,
     ) -> Result<ResolvedValue, ResolutionError> {
-        let provider = self.providers.first().unwrap(); // TODO: Should use something like self.providers.find(|p| p.identifier.value == node.provider).unwrap();... need to link var nodes to their provider
+        // TODO: Should use something like self.providers.find(|p| p.identifier.value == node.provider).unwrap();...
+        // Need to link var nodes to their provider nodes, then resolve the provider, then resolve the var
+        // And then should rly make self.providers a hashmap across all resolver types
+        let provider = self.providers.first().unwrap();
 
         let value = provider.get_value(&node.identifier.value).await;
 

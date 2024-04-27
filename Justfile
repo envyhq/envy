@@ -44,3 +44,7 @@ build:
     just pueue-result
 build-release:
     cargo build --release
+
+lsp:
+  cd packages/language-server
+  cargo watch -x "run --bin nv-language-server"

@@ -6,6 +6,7 @@ pub type ResolverProvider = Arc<dyn Provider + Sync + Send>;
 
 #[derive(Debug, Default, Clone)]
 pub struct ProviderResolver {
+    // TODO: We dont need this really, just get rid
     pub providers: Vec<ResolverProvider>,
 }
 
@@ -15,6 +16,9 @@ impl ProviderResolver {
 
         for node in nodes {
             println!("Adding provider: {:?}", node);
+            // TODO: node is a provider declaration node, we need to create a real provider from
+            // it like Arc::new(EnvProvider {}) for example..
+            // then we add that provider to self.providers and return it
         }
 
         vec![]
