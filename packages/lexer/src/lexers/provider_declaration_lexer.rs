@@ -129,7 +129,6 @@ impl Lexer for ProviderDeclarationLexer {
                 ));
 
                 let sub_chars = &self.chars[(index + 1)..].to_vec();
-                let sub_chars = sub_chars.to_vec();
 
                 let mut block_lexer = AttributeBlockLexer::new(sub_chars, current_position.clone());
                 let (block_count, _) = block_lexer.lex();

@@ -9,21 +9,22 @@ members = [
   "packages/lexer/examples",
 
   "packages/resolvers/var",
-  "packages/resolvers/var/examples",
   "packages/resolvers/provider",
+  "packages/resolvers/__examples/var",
 
   "packages/position_indexer",
 
   "packages/language-server",
 
   "packages/code-generation/javascript",
-  "packages/code-generation/javascript/examples",
+  "packages/code-generation/__examples/javascript",
 
   "packages/provider/core",
 
   "packages/provider/providers/env",
-  "packages/provider/providers/env/examples",
+  "packages/provider/providers/__examples/env",
 
   "packages/provider/providers/aws-secrets-manager",
-  "packages/provider/providers/aws-secrets-manager/examples", "testing/nvx-parsing",
+  "packages/provider/providers/__examples/aws-secrets-manager",
+  "testing/nvx-parsing",
 ]

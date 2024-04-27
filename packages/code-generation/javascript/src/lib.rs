@@ -37,6 +37,8 @@ fn traverse_nodes(node: &AbstractSyntaxNode) -> String {
         AbstractSyntaxNode::Declaration(declaration) => traverse_declaration(declaration, false),
         AbstractSyntaxNode::SourceFile(source_file) => source_file
             .declarations
+            .lock()
+            .unwrap()
             .iter()
             .map(|declaration| traverse_declaration(declaration, false))
             .collect(),

@@ -1,8 +1,10 @@
-use nv_codegen_javascript::generate_javascript_source;
-use nv_parser::{Parser, SourceFileParser};
+use futures::executor;
+use nv_lexer::{Lexer, SourceFileLexer};
+use nv_parser::SourceFileParser;
+use nv_var_resolver::{TreeResolver, VarResolver};
 use std::{env, fs};
 
-fn main() {
+async fn async_main() -> Result<(), ()> {
     env_logger::init();
 
     let args: Vec<String> = env::args().collect();
@@ -19,9 +21,17 @@ fn main() {
 
     let (processed_count, ast) = SourceFileParser::parse(&lexer.tokens);
 
-    log::debug!("ast: {:#?} - processed_count: {}", ast, processed_count);
+    log::info!("ast processed_count: {}", processed_count);
 
-    let generated_source = generate_javascript_source(parser.ast);
+    let resolver = VarResolver::default();
 
-    log::info!("generated source: {:#?}", generated_source);
+    let resolved = resolver.resolve(ast.as_ref()).await;
+
+    log::info!("{:#?}", resolved);
+
+    Ok(())
+}
+
+fn main() {
+    let _ = executor::block_on(async_main());
 }

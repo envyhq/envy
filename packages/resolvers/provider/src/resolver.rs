@@ -6,12 +6,11 @@ pub type ResolverProvider = Arc<dyn Provider + Sync + Send>;
 
 #[derive(Debug, Default, Clone)]
 pub struct ProviderResolver {
-    // TODO: We dont need this really, just get rid
     pub providers: Vec<ResolverProvider>,
 }
 
 impl ProviderResolver {
-    pub fn resolve(&self, node: &AbstractSyntaxNode) -> Vec<ResolverProvider> {
+    pub fn resolve(&self, node: &AbstractSyntaxNode) {
         let nodes = self.find_provider_nodes(node);
 
         for node in nodes {
@@ -19,9 +18,8 @@ impl ProviderResolver {
             // TODO: node is a provider declaration node, we need to create a real provider from
             // it like Arc::new(EnvProvider {}) for example..
             // then we add that provider to self.providers and return it
+            // this actually involves potentially downloading provider from net
         }
-
-        vec![]
     }
 
     fn find_provider_nodes(&self, node: &AbstractSyntaxNode) -> Vec<ProviderDeclarationNode> {

@@ -109,7 +109,7 @@ pub enum LexerSymbol {
     Newline,
 }
 
-#[derive(Debug, Eq, Hash, PartialEq, Clone)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone, Default)]
 pub struct TokenPosition {
     pub line: usize,
     pub column: usize,

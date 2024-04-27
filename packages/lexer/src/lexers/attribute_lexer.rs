@@ -8,17 +8,17 @@ use crate::{
 };
 use strum::IntoEnumIterator;
 
-pub struct AttributeBlockLexer {
+pub struct AttributeBlockLexer<'a> {
     pub tokens: Vec<LexerToken>,
 
-    chars: Vec<String>,
+    chars: &'a [String],
     buffer: Vec<String>,
 
     start_position: TokenPosition,
 }
 
-impl AttributeBlockLexer {
-    pub fn new(chars: Vec<String>, start_position: TokenPosition) -> Self {
+impl<'a> AttributeBlockLexer<'a> {
+    pub fn new(chars: &'a [String], start_position: TokenPosition) -> Self {
         Self {
             chars,
             tokens: vec![],
@@ -90,7 +90,7 @@ pub fn lookbehind_raw_token(
     (trimmed_buffer, from, to)
 }
 
-impl Lexer for AttributeBlockLexer {
+impl<'a> Lexer for AttributeBlockLexer<'a> {
     fn lex(&mut self) -> (usize, TokenPosition) {
         let chars_iter = self.chars.iter();
         self.buffer.clear();
@@ -206,5 +206,44 @@ impl Lexer for AttributeBlockLexer {
         }
 
         (processed_count, current_position)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{lexers::attribute_lexer::AttributeBlockLexer, Lexer, TokenPosition};
+
+    #[test]
+    fn it_lexes_attribte_tokens() {
+        let graphemes = vec![
+            "attribute".to_string(),
+            "=".to_string(),
+            "1".to_string(),
+            "\n".to_string(),
+            "attribute".to_string(),
+            "=".to_string(),
+            "2".to_string(),
+            "\n".to_string(),
+            "attribute".to_string(),
+            "=".to_string(),
+            "3".to_string(),
+            "\n".to_string(),
+            "}".to_string(),
+        ];
+        let newline_count = graphemes.iter().filter(|s| s.as_str() == "\n").count();
+        let index_last_newline = graphemes.iter().rposition(|s| s.as_str() == "\n").unwrap();
+        let graphemes_after_last_newline = graphemes.len() - 1 - index_last_newline;
+
+        let mut lexer = AttributeBlockLexer::new(&graphemes, TokenPosition::default());
+
+        let (count, position) = lexer.lex();
+
+        assert_eq!(count, graphemes.len());
+        assert_eq!(
+            position,
+            TokenPosition::new(newline_count, graphemes_after_last_newline)
+        );
+        assert_eq!(lexer.tokens.len(), graphemes.len());
+        insta::assert_debug_snapshot!(lexer.tokens);
     }
 }

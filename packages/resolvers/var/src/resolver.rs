@@ -3,7 +3,6 @@ use futures::{stream, StreamExt};
 use nv_parser::{AbstractSyntaxNode, DeclarationNode, VarDeclarationNode};
 pub use nv_provider_core::Provider;
 use nv_provider_resolver::ProviderResolver;
-pub use nv_provider_resolver::ResolverProvider;
 use std::{error::Error, fmt};
 
 #[derive(Debug)]
@@ -46,14 +45,12 @@ pub trait TreeResolver {
 
 #[derive(Debug, Default, Clone)]
 pub struct VarResolver {
-    pub providers: Vec<ResolverProvider>,
     pub provider_resolver: ProviderResolver,
 }
 
 impl VarResolver {
     pub fn init(&mut self, node: &AbstractSyntaxNode) {
-        let mut providers = self.provider_resolver.resolve(node);
-        self.providers.append(&mut providers);
+        self.provider_resolver.resolve(node);
     }
 }
 
@@ -63,10 +60,10 @@ impl TreeResolver for VarResolver {
         &self,
         node: &VarDeclarationNode,
     ) -> Result<ResolvedValue, ResolutionError> {
-        // TODO: Should use something like self.providers.find(|p| p.identifier.value == node.provider).unwrap();...
+        // TODO: Should use something like self.provider_resolver.providers.find(|p| p.identifier.value == node.provider).unwrap();...
         // Need to link var nodes to their provider nodes, then resolve the provider, then resolve the var
         // And then should rly make self.providers a hashmap across all resolver types
-        let provider = self.providers.first().unwrap();
+        let provider = self.provider_resolver.providers.first().unwrap();
 
         let value = provider.get_value(&node.identifier.value).await;
 

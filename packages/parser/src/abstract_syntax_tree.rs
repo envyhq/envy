@@ -2,6 +2,7 @@ use crate::{
     attributes::AttributeDeclarationNode, modules::ModuleDeclarationNode,
     providers::ProviderDeclarationNode, vars::VarDeclarationNode,
 };
+use core::fmt;
 use nv_lexer::{
     tokens::{LexerLiteral, TokenRange},
     LexerType, LexerVarModifierKeyword,
@@ -16,6 +17,11 @@ pub struct Leaf<V> {
 impl<V> Leaf<V> {
     pub fn new(value: V, range: TokenRange) -> Self {
         Self { value, range }
+    }
+}
+impl<V: fmt::Display> fmt::Display for Leaf<V> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.value)
     }
 }
 

@@ -163,7 +163,6 @@ impl Lexer for VarDeclarationLexer {
                     ));
 
                     let sub_chars = &self.chars[(index + 1)..].to_vec();
-                    let sub_chars = sub_chars.to_vec();
 
                     let mut block_lexer =
                         AttributeBlockLexer::new(sub_chars, current_position.clone());

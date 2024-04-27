@@ -1,0 +1,207 @@
+---
+source: packages/lexer/src/lexers/attribute_lexer.rs
+expression: lexer.tokens
+---
+[
+    LexerToken {
+        kind: Identifier(
+            "attribute",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 0,
+                column: 1,
+            },
+            to: TokenPosition {
+                line: 0,
+                column: 1,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            AttributeAssignmentEquals,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 0,
+                column: 2,
+            },
+            to: TokenPosition {
+                line: 0,
+                column: 2,
+            },
+        },
+    },
+    LexerToken {
+        kind: Literal(
+            Integer(
+                1,
+            ),
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 0,
+                column: 3,
+            },
+            to: TokenPosition {
+                line: 0,
+                column: 3,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            Newline,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 0,
+                column: 4,
+            },
+            to: TokenPosition {
+                line: 0,
+                column: 4,
+            },
+        },
+    },
+    LexerToken {
+        kind: Identifier(
+            "attribute",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 1,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 1,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            AttributeAssignmentEquals,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 2,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 2,
+            },
+        },
+    },
+    LexerToken {
+        kind: Literal(
+            Integer(
+                2,
+            ),
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 3,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 3,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            Newline,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 4,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 4,
+            },
+        },
+    },
+    LexerToken {
+        kind: Identifier(
+            "attribute",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 2,
+                column: 1,
+            },
+            to: TokenPosition {
+                line: 2,
+                column: 1,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            AttributeAssignmentEquals,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 2,
+                column: 2,
+            },
+            to: TokenPosition {
+                line: 2,
+                column: 2,
+            },
+        },
+    },
+    LexerToken {
+        kind: Literal(
+            Integer(
+                3,
+            ),
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 2,
+                column: 3,
+            },
+            to: TokenPosition {
+                line: 2,
+                column: 3,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            Newline,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 2,
+                column: 4,
+            },
+            to: TokenPosition {
+                line: 2,
+                column: 4,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            BlockCloseCurly,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 3,
+                column: 1,
+            },
+            to: TokenPosition {
+                line: 3,
+                column: 1,
+            },
+        },
+    },
+]

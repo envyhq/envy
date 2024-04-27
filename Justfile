@@ -47,4 +47,4 @@ build-release:
 
 lsp:
   cd packages/language-server
-  cargo watch -x "run --bin nv-language-server"
+  cargo watch -x test -x "run --bin nv-language-server"
