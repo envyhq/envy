@@ -1,5 +1,5 @@
 use super::{
-    attribute_lexer::lookbehind_raw_token,
+    attribute_block_lexer::lookbehind_raw_token,
     utils::{is_newline, is_whitespace},
 };
 use crate::{
@@ -14,17 +14,17 @@ use crate::{
     Lexer,
 };
 
-pub struct ModuleDeclarationLexer {
+pub struct ModuleDeclarationLexer<'a> {
     pub tokens: Vec<LexerToken>,
 
-    chars: Vec<String>,
+    chars: &'a [String],
     buffer: Vec<String>,
 
     start_position: TokenPosition,
 }
 
-impl ModuleDeclarationLexer {
-    pub fn new(chars: Vec<String>, start_position: TokenPosition) -> Self {
+impl<'a> ModuleDeclarationLexer<'a> {
+    pub fn new(chars: &'a [String], start_position: TokenPosition) -> Self {
         Self {
             chars,
             tokens: vec![],
@@ -38,10 +38,9 @@ impl ModuleDeclarationLexer {
     }
 }
 
-impl Lexer for ModuleDeclarationLexer {
+impl<'a> Lexer for ModuleDeclarationLexer<'a> {
     fn lex(&mut self) -> (usize, TokenPosition) {
-        let bound_chars = self.chars.clone();
-        let mut chars = bound_chars.iter().enumerate();
+        let mut chars = self.chars.iter().enumerate();
 
         self.buffer.clear();
 
@@ -105,8 +104,7 @@ impl Lexer for ModuleDeclarationLexer {
                     from,
                     to,
                 ));
-                let sub_chars = &bound_chars[(index + 1)..].to_vec();
-                let sub_chars = sub_chars.to_vec();
+                let sub_chars = &self.chars[(index + 1)..];
 
                 let mut result: LexerResult = match token {
                     LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Var) => {
@@ -152,7 +150,7 @@ impl Lexer for ModuleDeclarationLexer {
         }
 
         // If we haven't returned already, we reached the end of the input. Check the buffer for any remaining token, which can only be an identifier.
-        if self.buffer.len() > 0 {
+        if !self.buffer.is_empty() {
             self.tokens.push(LexerToken::new(
                 LexerTokenKind::Identifier(self.buffer.join("")),
                 current_position.clone(),
@@ -161,5 +159,30 @@ impl Lexer for ModuleDeclarationLexer {
         }
 
         (processed_count, current_position)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{lexers::module_declaration_lexer::ModuleDeclarationLexer, Lexer, TokenPosition};
+    use nv_unit_testing::str_to_graphemes;
+
+    #[test]
+    fn lexes_module_tokens() {
+        let input = str_to_graphemes(
+            "
+module Cakes {}
+",
+        );
+
+        let mut lexer = ModuleDeclarationLexer::new(&input, TokenPosition::default());
+
+        let (count, position) = lexer.lex();
+
+        assert_eq!(count, input.len());
+        // WARN: explore why 0 line instead of 1? attr block lexer would treat this as line 1?
+        assert_eq!(position, TokenPosition::new(0, 15));
+        assert_eq!(lexer.tokens.len(), 4);
+        insta::assert_debug_snapshot!(lexer.tokens);
     }
 }

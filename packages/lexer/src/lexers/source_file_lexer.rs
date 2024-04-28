@@ -88,8 +88,7 @@ impl Lexer for SourceFileLexer {
                     current_position.clone(),
                 ));
                 self.buffer.clear();
-                let sub_chars = &self.chars[(index + 1)..].to_vec();
-                let sub_chars = sub_chars.to_vec();
+                let sub_chars = &self.chars[(index + 1)..];
 
                 let result: LexerResult = match token {
                     LexerKeyword::DeclarationKeyword(LexerDeclarationKeyword::Var) => {
@@ -144,5 +143,25 @@ impl Lexer for SourceFileLexer {
         }
 
         (processed_count, current_position)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{lexers::source_file_lexer::SourceFileLexer, Lexer, TokenPosition};
+
+    #[test]
+    fn lexes_source_file_tokens() {
+        let input = "var my_test_var: int";
+
+        let mut lexer = SourceFileLexer::new(input);
+
+        let (count, position) = lexer.lex();
+
+        assert_eq!(count, input.len());
+        assert_eq!(position, TokenPosition::new(1, 20));
+        assert_eq!(lexer.tokens.len(), 4);
+
+        insta::assert_debug_snapshot!(lexer.tokens);
     }
 }

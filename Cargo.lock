@@ -1115,6 +1115,7 @@ dependencies = [
  "env_logger",
  "insta",
  "log",
+ "nv-unit-testing",
  "strum",
  "unicode-segmentation",
 ]
@@ -1171,6 +1172,14 @@ dependencies = [
  "log",
  "nv-parser",
  "nv-provider-core",
+]
+
+[[package]]
+name = "nv-unit-testing"
+version = "0.1.0"
+dependencies = [
+ "insta",
+ "unicode-segmentation",
 ]
 
 [[package]]

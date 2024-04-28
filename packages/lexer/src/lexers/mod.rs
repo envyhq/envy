@@ -1,4 +1,4 @@
-mod attribute_lexer;
+mod attribute_block_lexer;
 mod module_declaration_lexer;
 mod provider_declaration_lexer;
 pub mod source_file_lexer;

@@ -211,39 +211,28 @@ impl<'a> Lexer for AttributeBlockLexer<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{lexers::attribute_lexer::AttributeBlockLexer, Lexer, TokenPosition};
+    use crate::{lexers::attribute_block_lexer::AttributeBlockLexer, Lexer, TokenPosition};
+    use nv_unit_testing::str_to_graphemes;
 
     #[test]
-    fn it_lexes_attribte_tokens() {
-        let graphemes = vec![
-            "attribute".to_string(),
-            "=".to_string(),
-            "1".to_string(),
-            "\n".to_string(),
-            "attribute".to_string(),
-            "=".to_string(),
-            "2".to_string(),
-            "\n".to_string(),
-            "attribute".to_string(),
-            "=".to_string(),
-            "3".to_string(),
-            "\n".to_string(),
-            "}".to_string(),
-        ];
-        let newline_count = graphemes.iter().filter(|s| s.as_str() == "\n").count();
-        let index_last_newline = graphemes.iter().rposition(|s| s.as_str() == "\n").unwrap();
-        let graphemes_after_last_newline = graphemes.len() - 1 - index_last_newline;
+    fn lexes_attribute_tokens() {
+        let input = str_to_graphemes(
+            "
+attribute = 1
+attribute = 2
+attribute = 3
+}
+",
+        );
 
-        let mut lexer = AttributeBlockLexer::new(&graphemes, TokenPosition::default());
+        let mut lexer = AttributeBlockLexer::new(&input, TokenPosition::default());
 
         let (count, position) = lexer.lex();
 
-        assert_eq!(count, graphemes.len());
-        assert_eq!(
-            position,
-            TokenPosition::new(newline_count, graphemes_after_last_newline)
-        );
-        assert_eq!(lexer.tokens.len(), graphemes.len());
+        assert_eq!(count, input.len());
+        assert_eq!(position, TokenPosition::new(3, 1));
+        assert_eq!(lexer.tokens.len(), 13);
+
         insta::assert_debug_snapshot!(lexer.tokens);
     }
 }

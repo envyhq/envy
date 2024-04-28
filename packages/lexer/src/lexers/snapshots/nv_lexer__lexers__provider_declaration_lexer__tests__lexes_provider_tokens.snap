@@ -1,0 +1,51 @@
+---
+source: packages/lexer/src/lexers/provider_declaration_lexer.rs
+expression: lexer.tokens
+---
+[
+    LexerToken {
+        kind: Identifier(
+            "providerEnv",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 0,
+                column: 2,
+            },
+            to: TokenPosition {
+                line: 0,
+                column: 12,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            ProviderAssignmentColon,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 0,
+                column: 13,
+            },
+            to: TokenPosition {
+                line: 0,
+                column: 13,
+            },
+        },
+    },
+    LexerToken {
+        kind: ProviderType(
+            "env",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 0,
+                column: 15,
+            },
+            to: TokenPosition {
+                line: 0,
+                column: 17,
+            },
+        },
+    },
+]

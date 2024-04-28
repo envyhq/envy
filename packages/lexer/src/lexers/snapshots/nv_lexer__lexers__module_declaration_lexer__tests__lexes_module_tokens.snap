@@ -1,0 +1,68 @@
+---
+source: packages/lexer/src/lexers/module_declaration_lexer.rs
+expression: lexer.tokens
+---
+[
+    LexerToken {
+        kind: Keyword(
+            DeclarationKeyword(
+                Module,
+            ),
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 0,
+                column: 1,
+            },
+            to: TokenPosition {
+                line: 0,
+                column: 6,
+            },
+        },
+    },
+    LexerToken {
+        kind: Identifier(
+            "Cakes",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 0,
+                column: 8,
+            },
+            to: TokenPosition {
+                line: 0,
+                column: 12,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            BlockOpenCurly,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 0,
+                column: 14,
+            },
+            to: TokenPosition {
+                line: 0,
+                column: 14,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            BlockCloseCurly,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 0,
+                column: 15,
+            },
+            to: TokenPosition {
+                line: 0,
+                column: 15,
+            },
+        },
+    },
+]

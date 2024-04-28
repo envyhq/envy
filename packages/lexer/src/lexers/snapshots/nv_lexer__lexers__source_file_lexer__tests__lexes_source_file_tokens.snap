@@ -1,0 +1,68 @@
+---
+source: packages/lexer/src/lexers/source_file_lexer.rs
+expression: lexer.tokens
+---
+[
+    LexerToken {
+        kind: Keyword(
+            DeclarationKeyword(
+                Var,
+            ),
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 1,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 3,
+            },
+        },
+    },
+    LexerToken {
+        kind: Identifier(
+            "my_test_var",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 5,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 15,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            VarAssignmentColon,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 16,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 16,
+            },
+        },
+    },
+    LexerToken {
+        kind: Type(
+            Int,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 18,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 20,
+            },
+        },
+    },
+]

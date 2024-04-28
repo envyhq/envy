@@ -9,3 +9,4 @@ insta = "1.38.0"
 log = "0.4.20"
 strum = { version = "0.26.1", features = ["derive"] }
 unicode-segmentation = "1.11.0"
+nv-unit-testing = { path = "../../testing/unit" }

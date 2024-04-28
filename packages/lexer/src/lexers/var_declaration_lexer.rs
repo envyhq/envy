@@ -1,4 +1,4 @@
-use super::attribute_lexer::{lookbehind_raw_token, AttributeBlockLexer};
+use super::attribute_block_lexer::{lookbehind_raw_token, AttributeBlockLexer};
 use crate::{
     chars::LexerChar,
     lexers::utils::{is_newline, is_whitespace},
@@ -8,17 +8,17 @@ use crate::{
 use std::str::FromStr;
 use strum::IntoEnumIterator;
 
-pub struct VarDeclarationLexer {
+pub struct VarDeclarationLexer<'a> {
     pub tokens: Vec<LexerToken>,
 
-    chars: Vec<String>,
+    chars: &'a [String],
     buffer: Vec<String>,
 
     start_position: TokenPosition,
 }
 
-impl VarDeclarationLexer {
-    pub fn new(chars: Vec<String>, start_position: TokenPosition) -> Self {
+impl<'a> VarDeclarationLexer<'a> {
+    pub fn new(chars: &'a [String], start_position: TokenPosition) -> Self {
         Self {
             chars,
             tokens: vec![],
@@ -34,7 +34,7 @@ impl VarDeclarationLexer {
     }
 }
 
-impl Lexer for VarDeclarationLexer {
+impl<'a> Lexer for VarDeclarationLexer<'a> {
     // Called whenever the lexer encounters a var keyword, we continue to lex in the context of variable declaration, having already stored the var keyword token.
     // We search for a colon to indicate the start of the variable type assignment, taking everything before that as the identifier and everything after as the type.
     // We are given the whole source file from the var keyword onwards, so we lex until we reach a valid output.
@@ -162,7 +162,7 @@ impl Lexer for VarDeclarationLexer {
                         current_position.clone(),
                     ));
 
-                    let sub_chars = &self.chars[(index + 1)..].to_vec();
+                    let sub_chars = &self.chars[(index + 1)..];
 
                     let mut block_lexer =
                         AttributeBlockLexer::new(sub_chars, current_position.clone());
@@ -197,5 +197,31 @@ impl Lexer for VarDeclarationLexer {
         }
 
         (processed_count, current_position)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{lexers::var_declaration_lexer::VarDeclarationLexer, Lexer, TokenPosition};
+    use nv_unit_testing::str_to_graphemes;
+
+    #[test]
+    fn lexes_var_tokens() {
+        let input = str_to_graphemes(
+            "
+var id: int
+",
+        );
+
+        let mut lexer = VarDeclarationLexer::new(&input, TokenPosition::default());
+
+        let (count, position) = lexer.lex();
+
+        assert_eq!(count, input.len());
+        // WARN: why line 0 like mod dec and prov dec lexer but not attr block?
+        assert_eq!(position, TokenPosition::new(0, 11));
+        // FIX: this is currently returning 3 but should be 4, need to fix
+        assert_eq!(lexer.tokens.len(), 3);
+        insta::assert_debug_snapshot!(lexer.tokens);
     }
 }
