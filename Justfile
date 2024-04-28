@@ -54,5 +54,5 @@ test:
 test-dev:
   cargo watch -x test
 test-coverage:
-  cargo tarpaulin
+  cargo tarpaulin --out html
 
