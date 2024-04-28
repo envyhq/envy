@@ -136,8 +136,6 @@ mod tests {
 
         assert_eq!(count, 3);
 
-        // TODO: assert line and col
-
         insta::assert_yaml_snapshot!(ast);
     }
 }

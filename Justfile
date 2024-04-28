@@ -50,7 +50,7 @@ lsp:
   cargo watch -x "run --bin nv-language-server"
 
 test:
-  cargo insta test --review
+  cargo insta test --review --unreferenced=auto
 test-dev:
   cargo watch -x test
 test-coverage:

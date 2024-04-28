@@ -11,15 +11,19 @@ async fn async_main() -> Result<(), ()> {
 
     let mut input = "var my_cool_var: string\nvar my_other_var: int".to_string();
 
-    if args.len() > 1 && args[1] == "--file" && !args[2].is_empty() {
-        let file = args[2].to_string();
-        input = fs::read_to_string(file).unwrap();
-    }
+    let path = if args.len() > 1 && args[1] == "--file" && !args[2].is_empty() {
+        let file = args[2].clone();
+        input = fs::read_to_string(file.clone()).unwrap();
+
+        file
+    } else {
+        "test.nv".to_string()
+    };
 
     let mut lexer = SourceFileLexer::new(&input);
     lexer.lex();
 
-    let (processed_count, ast) = SourceFileParser::parse(&lexer.tokens);
+    let (processed_count, ast) = SourceFileParser::parse(&path, &lexer.tokens);
 
     log::info!("ast processed_count: {}", processed_count);
 

@@ -32,7 +32,7 @@ pub type Type = Leaf<LexerType>;
 pub type ProviderType = Leaf<String>;
 pub type Modifier = Leaf<LexerVarModifierKeyword>;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub enum DeclarationNode {
     VarDeclaration(Arc<VarDeclarationNode>),
     ModuleDeclaration(ModuleDeclarationNode),
@@ -58,10 +58,17 @@ impl From<VarDeclarationNode> for DeclarationNode {
 
 #[derive(Debug, Serialize)]
 pub struct SourceFileNode {
+    pub path: String,
     pub declarations: Mutex<Vec<Arc<DeclarationNode>>>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+impl PartialEq for SourceFileNode {
+    fn eq(&self, other: &Self) -> bool {
+        self.path == other.path
+    }
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub enum AbstractSyntaxNode {
     SourceFile(Arc<SourceFileNode>),
     Declaration(DeclarationNode),

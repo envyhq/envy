@@ -11,6 +11,12 @@ pub struct AttributeDeclarationNode {
     pub parent: Weak<AbstractSyntaxNode>,
 }
 
+impl PartialEq for AttributeDeclarationNode {
+    fn eq(&self, other: &Self) -> bool {
+        self.identifier == other.identifier && self.value == other.value
+    }
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct PartialAttributeDeclarationNode {
     pub identifier: Option<Identifier>,

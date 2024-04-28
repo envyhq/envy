@@ -17,6 +17,15 @@ pub struct VarDeclarationNode {
     pub parent: Weak<AbstractSyntaxNode>,
 }
 
+impl PartialEq for VarDeclarationNode {
+    fn eq(&self, other: &Self) -> bool {
+        self.identifier == other.identifier
+            && self.type_value == other.type_value
+            && self.modifier == other.modifier
+            && self.attributes == other.attributes
+    }
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct PartialVarDeclarationNode {
     pub identifier: Option<Identifier>,

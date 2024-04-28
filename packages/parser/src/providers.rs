@@ -5,7 +5,7 @@ use crate::{
     attributes::{AttributeDeclarationNode, PartialAttributeDeclarationNode},
 };
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct ProviderDeclarationNode {
     pub identifier: Identifier,
     pub type_value: ProviderType,

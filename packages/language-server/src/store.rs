@@ -26,11 +26,11 @@ pub struct FileStore {
 }
 
 impl FileStore {
-    fn parse(content: &str) -> Arc<AbstractSyntaxNode> {
+    fn parse(path: &str, content: &str) -> Arc<AbstractSyntaxNode> {
         let mut lexer = SourceFileLexer::new(content);
         lexer.lex();
 
-        let (_, ast) = SourceFileParser::parse(&lexer.tokens);
+        let (_, ast) = SourceFileParser::parse(path, &lexer.tokens);
 
         ast
     }
@@ -62,7 +62,7 @@ impl FileStore {
 
         let content = Self::read_file(file_path)?;
 
-        let node = Self::parse(&content);
+        let node = Self::parse(file_path, &content);
 
         self.files.insert(
             file_path.to_owned(),

@@ -3,25 +3,99 @@ source: packages/parser/src/parsers/source_file_parser.rs
 expression: ast
 ---
 SourceFile:
+  path: test.nv
   declarations:
     - VarDeclaration:
         identifier:
           value: my_var
           range:
             from:
-              line: 18
-              column: 11
+              line: 1
+              column: 5
             to:
-              line: 18
-              column: 16
+              line: 1
+              column: 10
         type_value:
           value: Int
           range:
             from:
-              line: 18
-              column: 19
+              line: 1
+              column: 13
             to:
-              line: 18
-              column: 21
+              line: 1
+              column: 15
         modifier: ~
         attributes: []
+    - ProviderDeclaration:
+        identifier:
+          value: Env
+          range:
+            from:
+              line: 3
+              column: 10
+            to:
+              line: 3
+              column: 12
+        type_value:
+          value: env
+          range:
+            from:
+              line: 3
+              column: 15
+            to:
+              line: 3
+              column: 17
+        attributes: []
+    - ModuleDeclaration:
+        identifier: MyCoolModule
+        declarations:
+          - VarDeclaration:
+              identifier:
+                value: my_cool_var
+                range:
+                  from:
+                    line: 6
+                    column: 9
+                  to:
+                    line: 6
+                    column: 19
+              type_value:
+                value: String
+                range:
+                  from:
+                    line: 6
+                    column: 22
+                  to:
+                    line: 6
+                    column: 24
+              modifier: ~
+              attributes: []
+          - VarDeclaration:
+              identifier:
+                value: my_other_var
+                range:
+                  from:
+                    line: 7
+                    column: 13
+                  to:
+                    line: 7
+                    column: 24
+              type_value:
+                value: Url
+                range:
+                  from:
+                    line: 7
+                    column: 27
+                  to:
+                    line: 7
+                    column: 29
+              modifier:
+                value: Pub
+                range:
+                  from:
+                    line: 7
+                    column: 5
+                  to:
+                    line: 7
+                    column: 7
+              attributes: []

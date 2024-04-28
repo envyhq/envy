@@ -104,8 +104,6 @@ mod tests {
 
         assert_eq!(count, 9);
 
-        // TODO: assert line and column
-
         insta::assert_yaml_snapshot!(ast);
     }
 }
