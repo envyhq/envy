@@ -51,5 +51,8 @@ lsp:
 
 test:
   cargo test
-dev-test:
+test-dev:
   cargo watch -x test
+test-coverage:
+  cargo tarpaulin
+

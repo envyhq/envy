@@ -10,11 +10,11 @@ expression: lexer.tokens
         range: TokenRange {
             from: TokenPosition {
                 line: 0,
-                column: 5,
+                column: 1,
             },
             to: TokenPosition {
                 line: 0,
-                column: 6,
+                column: 2,
             },
         },
     },
@@ -25,11 +25,11 @@ expression: lexer.tokens
         range: TokenRange {
             from: TokenPosition {
                 line: 0,
-                column: 7,
+                column: 3,
             },
             to: TokenPosition {
                 line: 0,
-                column: 7,
+                column: 3,
             },
         },
     },
@@ -40,11 +40,11 @@ expression: lexer.tokens
         range: TokenRange {
             from: TokenPosition {
                 line: 0,
-                column: 9,
+                column: 5,
             },
             to: TokenPosition {
                 line: 0,
-                column: 11,
+                column: 7,
             },
         },
     },

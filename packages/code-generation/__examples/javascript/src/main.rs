@@ -1,6 +1,6 @@
 use nv_codegen_javascript::generate_javascript_source;
 use nv_lexer::{Lexer, SourceFileLexer};
-use nv_parser::{Parser, SourceFileParser};
+use nv_parser::SourceFileParser;
 use std::{env, fs};
 
 fn main() {
