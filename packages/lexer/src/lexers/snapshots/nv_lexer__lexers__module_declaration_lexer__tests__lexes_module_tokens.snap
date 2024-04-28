@@ -2,67 +2,40 @@
 source: packages/lexer/src/lexers/module_declaration_lexer.rs
 expression: lexer.tokens
 ---
-[
-    LexerToken {
-        kind: Keyword(
-            DeclarationKeyword(
-                Module,
-            ),
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 32,
-                column: 26,
-            },
-            to: TokenPosition {
-                line: 32,
-                column: 31,
-            },
-        },
-    },
-    LexerToken {
-        kind: Identifier(
-            "Cakes",
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 32,
-                column: 33,
-            },
-            to: TokenPosition {
-                line: 32,
-                column: 37,
-            },
-        },
-    },
-    LexerToken {
-        kind: Symbol(
-            BlockOpenCurly,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 32,
-                column: 39,
-            },
-            to: TokenPosition {
-                line: 32,
-                column: 39,
-            },
-        },
-    },
-    LexerToken {
-        kind: Symbol(
-            BlockCloseCurly,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 32,
-                column: 40,
-            },
-            to: TokenPosition {
-                line: 32,
-                column: 40,
-            },
-        },
-    },
-]
+- kind:
+    Keyword:
+      DeclarationKeyword: Module
+  range:
+    from:
+      line: 32
+      column: 26
+    to:
+      line: 32
+      column: 31
+- kind:
+    Identifier: Cakes
+  range:
+    from:
+      line: 32
+      column: 33
+    to:
+      line: 32
+      column: 37
+- kind:
+    Symbol: BlockOpenCurly
+  range:
+    from:
+      line: 32
+      column: 39
+    to:
+      line: 32
+      column: 39
+- kind:
+    Symbol: BlockCloseCurly
+  range:
+    from:
+      line: 32
+      column: 40
+    to:
+      line: 32
+      column: 40

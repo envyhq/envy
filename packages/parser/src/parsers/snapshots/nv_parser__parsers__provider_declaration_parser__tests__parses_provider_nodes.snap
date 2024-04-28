@@ -1,0 +1,25 @@
+---
+source: packages/parser/src/parsers/provider_declaration_parser.rs
+expression: ast
+---
+Declaration:
+  ProviderDeclaration:
+    identifier:
+      value: Env
+      range:
+        from:
+          line: 13
+          column: 3
+        to:
+          line: 13
+          column: 5
+    type_value:
+      value: env
+      range:
+        from:
+          line: 13
+          column: 8
+        to:
+          line: 13
+          column: 10
+    attributes: []

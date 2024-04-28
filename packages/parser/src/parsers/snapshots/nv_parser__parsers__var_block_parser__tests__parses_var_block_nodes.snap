@@ -1,0 +1,56 @@
+---
+source: packages/parser/src/parsers/var_block_parser.rs
+expression: ast
+---
+- Declaration:
+    VarDeclaration:
+      identifier:
+        value: my_cool_var
+        range:
+          from:
+            line: 14
+            column: 9
+          to:
+            line: 14
+            column: 19
+      type_value:
+        value: String
+        range:
+          from:
+            line: 14
+            column: 22
+          to:
+            line: 14
+            column: 24
+      modifier: ~
+      attributes: []
+- Declaration:
+    VarDeclaration:
+      identifier:
+        value: my_other_var
+        range:
+          from:
+            line: 15
+            column: 13
+          to:
+            line: 15
+            column: 24
+      type_value:
+        value: String
+        range:
+          from:
+            line: 15
+            column: 27
+          to:
+            line: 15
+            column: 29
+      modifier:
+        value: Pub
+        range:
+          from:
+            line: 15
+            column: 5
+          to:
+            line: 15
+            column: 7
+      attributes: []

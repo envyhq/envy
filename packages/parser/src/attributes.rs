@@ -1,14 +1,17 @@
+use serde::Serialize;
+
 use crate::abstract_syntax_tree::{AbstractSyntaxNode, DeclarationNode, Identifier, Literal};
 use std::{sync::Arc, sync::Weak};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct AttributeDeclarationNode {
     pub identifier: Identifier,
     pub value: Literal,
+    #[serde(skip_serializing)]
     pub parent: Weak<AbstractSyntaxNode>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct PartialAttributeDeclarationNode {
     pub identifier: Option<Identifier>,
     pub value: Option<Literal>,

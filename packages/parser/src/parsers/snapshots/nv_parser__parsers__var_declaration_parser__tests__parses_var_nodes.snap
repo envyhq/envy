@@ -1,0 +1,26 @@
+---
+source: packages/parser/src/parsers/var_declaration_parser.rs
+expression: ast
+---
+Declaration:
+  VarDeclaration:
+    identifier:
+      value: my_cool_var
+      range:
+        from:
+          line: 10
+          column: 6
+        to:
+          line: 10
+          column: 16
+    type_value:
+      value: String
+      range:
+        from:
+          line: 10
+          column: 19
+        to:
+          line: 10
+          column: 21
+    modifier: ~
+    attributes: []

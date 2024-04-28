@@ -1,5 +1,6 @@
 use unicode_segmentation::UnicodeSegmentation;
 
+// TODO: we dont really need this package, just move this to lexer package's tests mod
 pub fn str_to_graphemes(input: &str) -> Vec<String> {
     input
         .trim()

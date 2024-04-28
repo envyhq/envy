@@ -124,18 +124,13 @@ impl LspNotificationHandler {
             LspNotification::Initialized(_params) => {
                 log::info!("nv language server client connection initialized");
             }
-            LspNotification::TextDocumentDidOpen(_params) => {
-                println!("text doc did open notification");
-            }
-            LspNotification::TextDocumentDidClose(_params) => {
-                println!("text doc did close notification");
-            }
-            LspNotification::TextDocumentDidSave(_params) => {
-                println!("text doc did save notification");
-            }
-            LspNotification::TextDocumentDidChange(_params) => {
-                println!("text doc did change notification");
-            }
+            _ => {
+                log::warn!("unhandled notification");
+            } //
+              // LspNotification::TextDocumentDidOpen(_params) => {}
+              // LspNotification::TextDocumentDidClose(_params) => {}
+              // LspNotification::TextDocumentDidSave(_params) => {}
+              // LspNotification::TextDocumentDidChange(_params) => {}
         }
     }
 }

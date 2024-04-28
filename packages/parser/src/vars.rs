@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::{
     abstract_syntax_tree::{Identifier, Modifier, Type},
     attributes::{AttributeDeclarationNode, PartialAttributeDeclarationNode},
@@ -5,21 +7,23 @@ use crate::{
 };
 use std::{sync::Arc, sync::Weak};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct VarDeclarationNode {
     pub identifier: Identifier,
     pub type_value: Type,
     pub modifier: Option<Modifier>,
     pub attributes: Vec<Arc<AttributeDeclarationNode>>,
+    #[serde(skip_serializing)]
     pub parent: Weak<AbstractSyntaxNode>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct PartialVarDeclarationNode {
     pub identifier: Option<Identifier>,
     pub type_value: Option<Type>,
     pub modifier: Option<Modifier>,
     pub attributes: Vec<PartialAttributeDeclarationNode>,
+    #[serde(skip_serializing)]
     pub parent: Weak<AbstractSyntaxNode>,
 }
 
@@ -39,7 +43,7 @@ impl TryFrom<PartialVarDeclarationNode> for VarDeclarationNode {
             attributes: partial
                 .attributes
                 .into_iter()
-                .filter_map(|attribute| attribute.try_into().map_or(None, |a| Some(a)))
+                .filter_map(|attribute| attribute.try_into().ok())
                 .collect(),
         })
     }

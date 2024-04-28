@@ -220,6 +220,6 @@ mod tests {
         assert_eq!(count, input.len());
         assert_eq!(position, TokenPosition::new(start_line, start_column + 7));
         assert_eq!(lexer.tokens.len(), 3);
-        insta::assert_debug_snapshot!(lexer.tokens);
+        insta::assert_yaml_snapshot!(lexer.tokens);
     }
 }

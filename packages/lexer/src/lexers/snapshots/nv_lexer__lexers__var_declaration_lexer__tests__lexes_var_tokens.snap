@@ -2,50 +2,30 @@
 source: packages/lexer/src/lexers/var_declaration_lexer.rs
 expression: lexer.tokens
 ---
-[
-    LexerToken {
-        kind: Identifier(
-            "id",
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 11,
-                column: 41,
-            },
-            to: TokenPosition {
-                line: 11,
-                column: 42,
-            },
-        },
-    },
-    LexerToken {
-        kind: Symbol(
-            VarAssignmentColon,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 11,
-                column: 43,
-            },
-            to: TokenPosition {
-                line: 11,
-                column: 43,
-            },
-        },
-    },
-    LexerToken {
-        kind: Type(
-            Int,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 11,
-                column: 45,
-            },
-            to: TokenPosition {
-                line: 11,
-                column: 47,
-            },
-        },
-    },
-]
+- kind:
+    Identifier: id
+  range:
+    from:
+      line: 11
+      column: 41
+    to:
+      line: 11
+      column: 42
+- kind:
+    Symbol: VarAssignmentColon
+  range:
+    from:
+      line: 11
+      column: 43
+    to:
+      line: 11
+      column: 43
+- kind:
+    Type: Int
+  range:
+    from:
+      line: 11
+      column: 45
+    to:
+      line: 11
+      column: 47

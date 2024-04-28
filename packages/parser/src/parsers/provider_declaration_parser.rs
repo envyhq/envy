@@ -112,3 +112,32 @@ impl Parser<Option<AbstractSyntaxNode>> for ProviderDeclarationParser {
         (processed_count, ast_fragment)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::parsers::provider_declaration_parser::{Parser, ProviderDeclarationParser};
+    use nv_lexer::{Lexer, ProviderDeclarationLexer, TokenPosition};
+    use nv_unit_testing::str_to_graphemes;
+    use std::sync::Weak;
+
+    #[test]
+    fn parses_provider_nodes() {
+        // We dont have "provider" keyword here, its handled by the source file parser
+        let input = str_to_graphemes("Env: env");
+
+        let start_line = 13;
+        let start_column = 2;
+        let mut lexer =
+            ProviderDeclarationLexer::new(&input, TokenPosition::new(start_line, start_column));
+        lexer.lex();
+
+        let parent = Weak::new();
+        let (count, ast) = ProviderDeclarationParser::parse(&lexer.tokens, parent);
+
+        assert_eq!(count, 3);
+
+        // TODO: assert line and col
+
+        insta::assert_yaml_snapshot!(ast);
+    }
+}

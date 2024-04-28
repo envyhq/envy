@@ -1,7 +1,8 @@
+use serde::Serialize;
 use std::fmt::Display;
 use strum::{Display, EnumIter};
 
-#[derive(Debug, PartialEq, Clone, EnumIter)]
+#[derive(Debug, PartialEq, Clone, EnumIter, Serialize)]
 pub enum LexerLiteralBuiltin {
     True,
     False,
@@ -18,7 +19,7 @@ impl Display for LexerLiteralBuiltin {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum LexerLiteral {
     Builtin(LexerLiteralBuiltin),
     String(String),
@@ -37,11 +38,12 @@ impl Display for LexerLiteral {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, EnumIter)]
+#[derive(Debug, PartialEq, Clone, EnumIter, Serialize)]
 pub enum LexerType {
     String,
     Int,
     Float,
+    Url,
 }
 
 impl Display for LexerType {
@@ -50,11 +52,12 @@ impl Display for LexerType {
             LexerType::String => write!(f, "str"),
             LexerType::Int => write!(f, "int"),
             LexerType::Float => write!(f, "float"),
+            LexerType::Url => write!(f, "url"),
         }
     }
 }
 
-#[derive(Debug, PartialEq, Clone, EnumIter)]
+#[derive(Debug, PartialEq, Clone, EnumIter, Serialize)]
 pub enum LexerVarModifierKeyword {
     Pub,
 }
@@ -67,7 +70,7 @@ impl Display for LexerVarModifierKeyword {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, EnumIter)]
+#[derive(Debug, PartialEq, Clone, EnumIter, Serialize)]
 pub enum LexerDeclarationKeyword {
     Var,
     Module,
@@ -84,7 +87,7 @@ impl Display for LexerDeclarationKeyword {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum LexerKeyword {
     VarModifierKeyword(LexerVarModifierKeyword),
     DeclarationKeyword(LexerDeclarationKeyword),
@@ -99,7 +102,7 @@ impl Display for LexerKeyword {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum LexerSymbol {
     VarAssignmentColon,
     ProviderAssignmentColon,
@@ -109,7 +112,7 @@ pub enum LexerSymbol {
     Newline,
 }
 
-#[derive(Debug, Eq, Hash, PartialEq, Clone, Default)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone, Default, Serialize)]
 pub struct TokenPosition {
     pub line: usize,
     pub column: usize,
@@ -121,7 +124,7 @@ impl TokenPosition {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct TokenRange {
     pub from: TokenPosition,
     pub to: TokenPosition,
@@ -133,7 +136,7 @@ impl TokenRange {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct LexerToken {
     pub kind: LexerTokenKind,
     pub range: TokenRange,
@@ -148,7 +151,7 @@ impl LexerToken {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Display)]
+#[derive(Debug, PartialEq, Clone, Display, Serialize)]
 pub enum LexerTokenKind {
     Identifier(String),
     Keyword(LexerKeyword),

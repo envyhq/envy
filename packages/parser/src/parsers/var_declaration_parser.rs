@@ -33,32 +33,38 @@ impl Parser<Option<AbstractSyntaxNode>> for VarDeclarationParser {
         };
 
         while let Some((index, token)) = tokens_iter.next() {
-            let token = token.to_owned();
-
             processed_count += 1;
 
-            let sub_tokens = &tokens[index..].to_vec();
-            let sub_tokens = sub_tokens.to_vec();
-
-            match token.kind {
+            match &token.kind {
                 LexerTokenKind::Identifier(identifier) => {
-                    partial_declaration.identifier = Some(Leaf::new(identifier, token.range));
+                    partial_declaration.identifier =
+                        Some(Leaf::new(identifier.clone(), token.range.clone()));
+
+                    println!("set identifier {:?}", identifier);
 
                     continue;
                 }
                 LexerTokenKind::Type(type_value) => {
-                    partial_declaration.type_value = Some(Leaf::new(type_value, token.range));
+                    partial_declaration.type_value =
+                        Some(Leaf::new(type_value.clone(), token.range.clone()));
+
+                    println!("set type_value {:?}", type_value);
 
                     continue;
                 }
                 LexerTokenKind::Keyword(LexerKeyword::VarModifierKeyword(modifier)) => {
-                    partial_declaration.modifier = Some(Leaf::new(modifier, token.range));
+                    partial_declaration.modifier =
+                        Some(Leaf::new(modifier.clone(), token.range.clone()));
+
+                    println!("set modifier {:?}", modifier);
 
                     continue;
                 }
                 LexerTokenKind::Symbol(LexerSymbol::BlockOpenCurly) => {
                     let (count, parsed_block) =
-                        AttributeBlockParser::parse(&sub_tokens, parent.clone());
+                        AttributeBlockParser::parse(&tokens[index..], parent.clone());
+
+                    println!("set parsed_block {:?}", parsed_block);
 
                     // -1 because we dont want to double count the block open curly
                     let count = count - 1;
@@ -114,5 +120,34 @@ impl Parser<Option<AbstractSyntaxNode>> for VarDeclarationParser {
         }
 
         (processed_count, ast_fragment)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::parsers::var_declaration_parser::{Parser, VarDeclarationParser};
+    use nv_lexer::{Lexer, TokenPosition, VarDeclarationLexer};
+    use nv_unit_testing::str_to_graphemes;
+    use std::sync::Weak;
+
+    #[test]
+    fn parses_var_nodes() {
+        // We dont have "var" keyword here, its handled by the source file parser
+        let input = str_to_graphemes("my_cool_var: str");
+
+        let start_line = 10;
+        let start_column = 5;
+        let mut lexer =
+            VarDeclarationLexer::new(&input, TokenPosition::new(start_line, start_column));
+        lexer.lex();
+
+        let parent = Weak::new();
+        let (count, ast) = VarDeclarationParser::parse(&lexer.tokens, parent);
+
+        assert_eq!(count, 3);
+
+        // TODO: assert line and col
+
+        insta::assert_yaml_snapshot!(ast);
     }
 }

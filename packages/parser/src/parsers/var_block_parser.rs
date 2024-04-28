@@ -22,7 +22,6 @@ impl Parser<Vec<AbstractSyntaxNode>> for VarBlockParser {
 
         while let Some((index, token)) = tokens_iter.next() {
             processed_count += 1;
-            let sub_tokens = &tokens[index..];
 
             let result = match token.kind {
                 LexerTokenKind::Keyword(LexerKeyword::VarModifierKeyword(
@@ -32,7 +31,7 @@ impl Parser<Vec<AbstractSyntaxNode>> for VarBlockParser {
                     LexerDeclarationKeyword::Var,
                 )) => {
                     let (count, parsed_fragment) =
-                        VarDeclarationParser::parse(sub_tokens, parent.clone());
+                        VarDeclarationParser::parse(&tokens[index..], parent.clone());
 
                     // -1 to avoid double counting the leading token (var or pub)
                     let count = count - 1;
@@ -58,5 +57,38 @@ impl Parser<Vec<AbstractSyntaxNode>> for VarBlockParser {
         }
 
         (processed_count, ast_block)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::parsers::var_block_parser::{Parser, VarBlockParser};
+    use nv_lexer::{Lexer, ModuleDeclarationLexer, TokenPosition};
+    use nv_unit_testing::str_to_graphemes;
+    use std::sync::Weak;
+
+    #[test]
+    fn parses_var_block_nodes() {
+        let input = str_to_graphemes(
+            "module MyCoolModule {
+    var my_cool_var: str
+    pub var my_other_var: str
+}",
+        );
+
+        let start_line = 13;
+        let start_column = 2;
+        let mut lexer =
+            ModuleDeclarationLexer::new(&input, TokenPosition::new(start_line, start_column));
+        lexer.lex();
+
+        let parent = Weak::new();
+        let (count, ast) = VarBlockParser::parse(&lexer.tokens, parent);
+
+        assert_eq!(count, 16);
+
+        // TODO: assert line and col
+
+        insta::assert_yaml_snapshot!(ast);
     }
 }

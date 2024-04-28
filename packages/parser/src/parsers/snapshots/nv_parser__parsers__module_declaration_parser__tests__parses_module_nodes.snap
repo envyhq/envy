@@ -2,13 +2,28 @@
 source: packages/parser/src/parsers/module_declaration_parser.rs
 expression: ast
 ---
-Some(
-    Declaration(
-        ModuleDeclaration(
-            ModuleDeclarationNode {
-                identifier: "Env",
-                declarations: [],
-            },
-        ),
-    ),
-)
+Declaration:
+  ModuleDeclaration:
+    identifier: MyCoolModule
+    declarations:
+      - VarDeclaration:
+          identifier:
+            value: my_var
+            range:
+              from:
+                line: 21
+                column: 9
+              to:
+                line: 21
+                column: 14
+          type_value:
+            value: Url
+            range:
+              from:
+                line: 21
+                column: 17
+              to:
+                line: 21
+                column: 19
+          modifier: ~
+          attributes: []

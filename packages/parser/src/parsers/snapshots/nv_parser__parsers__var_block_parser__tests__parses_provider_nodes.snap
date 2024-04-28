@@ -1,0 +1,90 @@
+---
+source: packages/parser/src/parsers/var_block_parser.rs
+expression: ast
+---
+[
+    Declaration(
+        VarDeclaration(
+            VarDeclarationNode {
+                identifier: Leaf {
+                    value: "my_cool_var",
+                    range: TokenRange {
+                        from: TokenPosition {
+                            line: 14,
+                            column: 9,
+                        },
+                        to: TokenPosition {
+                            line: 14,
+                            column: 19,
+                        },
+                    },
+                },
+                type_value: Leaf {
+                    value: String,
+                    range: TokenRange {
+                        from: TokenPosition {
+                            line: 14,
+                            column: 22,
+                        },
+                        to: TokenPosition {
+                            line: 14,
+                            column: 24,
+                        },
+                    },
+                },
+                modifier: None,
+                attributes: [],
+                parent: (Weak),
+            },
+        ),
+    ),
+    Declaration(
+        VarDeclaration(
+            VarDeclarationNode {
+                identifier: Leaf {
+                    value: "my_other_var",
+                    range: TokenRange {
+                        from: TokenPosition {
+                            line: 15,
+                            column: 13,
+                        },
+                        to: TokenPosition {
+                            line: 15,
+                            column: 24,
+                        },
+                    },
+                },
+                type_value: Leaf {
+                    value: String,
+                    range: TokenRange {
+                        from: TokenPosition {
+                            line: 15,
+                            column: 27,
+                        },
+                        to: TokenPosition {
+                            line: 15,
+                            column: 29,
+                        },
+                    },
+                },
+                modifier: Some(
+                    Leaf {
+                        value: Pub,
+                        range: TokenRange {
+                            from: TokenPosition {
+                                line: 15,
+                                column: 5,
+                            },
+                            to: TokenPosition {
+                                line: 15,
+                                column: 7,
+                            },
+                        },
+                    },
+                ),
+                attributes: [],
+                parent: (Weak),
+            },
+        ),
+    ),
+]

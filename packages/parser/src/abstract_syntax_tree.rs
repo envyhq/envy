@@ -7,9 +7,10 @@ use nv_lexer::{
     tokens::{LexerLiteral, TokenRange},
     LexerType, LexerVarModifierKeyword,
 };
+use serde::Serialize;
 use std::sync::{Arc, Mutex};
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Leaf<V> {
     pub value: V,
     pub range: TokenRange,
@@ -31,7 +32,7 @@ pub type Type = Leaf<LexerType>;
 pub type ProviderType = Leaf<String>;
 pub type Modifier = Leaf<LexerVarModifierKeyword>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub enum DeclarationNode {
     VarDeclaration(Arc<VarDeclarationNode>),
     ModuleDeclaration(ModuleDeclarationNode),
@@ -55,12 +56,12 @@ impl From<VarDeclarationNode> for DeclarationNode {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct SourceFileNode {
     pub declarations: Mutex<Vec<Arc<DeclarationNode>>>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub enum AbstractSyntaxNode {
     SourceFile(Arc<SourceFileNode>),
     Declaration(DeclarationNode),

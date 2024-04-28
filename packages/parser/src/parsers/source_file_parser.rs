@@ -94,3 +94,38 @@ impl SourceFileParser {
         (processed_count, root)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::parsers::source_file_parser::SourceFileParser;
+    use nv_lexer::{Lexer, ModuleDeclarationLexer, TokenPosition};
+    use nv_unit_testing::str_to_graphemes;
+
+    #[test]
+    fn parses_source_file_nodes() {
+        let input = str_to_graphemes(
+            "var my_var: int
+
+provider Env: env
+
+module MyCoolModule {
+    var my_cool_var: str
+    pub var my_other_var: url
+}",
+        );
+
+        let start_line = 18;
+        let start_column = 6;
+        let mut lexer =
+            ModuleDeclarationLexer::new(&input, TokenPosition::new(start_line, start_column));
+        lexer.lex();
+
+        let (count, ast) = SourceFileParser::parse(&lexer.tokens);
+
+        assert_eq!(count, 24);
+
+        // TODO: assert line and col
+
+        insta::assert_yaml_snapshot!(ast);
+    }
+}

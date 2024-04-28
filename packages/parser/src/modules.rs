@@ -1,7 +1,9 @@
+use serde::Serialize;
+
 use crate::abstract_syntax_tree::DeclarationNode;
 use std::sync::Arc;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ModuleDeclarationNode {
     pub identifier: String,
     pub declarations: Vec<Arc<DeclarationNode>>,

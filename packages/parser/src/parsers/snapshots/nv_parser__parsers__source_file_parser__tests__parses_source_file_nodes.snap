@@ -1,0 +1,27 @@
+---
+source: packages/parser/src/parsers/source_file_parser.rs
+expression: ast
+---
+SourceFile:
+  declarations:
+    - VarDeclaration:
+        identifier:
+          value: my_var
+          range:
+            from:
+              line: 18
+              column: 11
+            to:
+              line: 18
+              column: 16
+        type_value:
+          value: Int
+          range:
+            from:
+              line: 18
+              column: 19
+            to:
+              line: 18
+              column: 21
+        modifier: ~
+        attributes: []

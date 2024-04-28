@@ -233,6 +233,6 @@ attribute = 3
         assert_eq!(position, TokenPosition::new(3, 1));
         assert_eq!(lexer.tokens.len(), 13);
 
-        insta::assert_debug_snapshot!(lexer.tokens);
+        insta::assert_yaml_snapshot!(lexer.tokens);
     }
 }

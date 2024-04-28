@@ -162,7 +162,7 @@ mod tests {
         assert_eq!(position, TokenPosition::new(1, 20));
         assert_eq!(lexer.tokens.len(), 4);
 
-        insta::assert_debug_snapshot!(lexer.tokens);
+        insta::assert_yaml_snapshot!(lexer.tokens);
     }
 
     #[test]
@@ -179,7 +179,7 @@ pub var my_pub_test_var: str";
         assert_eq!(position, TokenPosition::new(3, 28));
         assert_eq!(lexer.tokens.len(), 11);
 
-        insta::assert_debug_snapshot!(lexer.tokens);
+        insta::assert_yaml_snapshot!(lexer.tokens);
     }
 
     #[test]
@@ -198,9 +198,9 @@ var my_attr_test_var: url {
 
         assert_eq!(count, input.len());
         assert_eq!(position, TokenPosition::new(7, 1));
-        assert_eq!(lexer.tokens.len(), 26);
+        assert_eq!(lexer.tokens.len(), 27);
 
-        insta::assert_debug_snapshot!(lexer.tokens);
+        insta::assert_yaml_snapshot!(lexer.tokens);
     }
 
     #[test]
@@ -219,7 +219,7 @@ module TestModule {
         assert_eq!(position, TokenPosition::new(5, 1));
         assert_eq!(lexer.tokens.len(), 16);
 
-        insta::assert_debug_snapshot!(lexer.tokens);
+        insta::assert_yaml_snapshot!(lexer.tokens);
     }
 
     #[test]
@@ -240,6 +240,6 @@ module TestModule {
         assert_eq!(position, TokenPosition::new(7, 1));
         assert_eq!(lexer.tokens.len(), 22);
 
-        insta::assert_debug_snapshot!(lexer.tokens);
+        insta::assert_yaml_snapshot!(lexer.tokens);
     }
 }

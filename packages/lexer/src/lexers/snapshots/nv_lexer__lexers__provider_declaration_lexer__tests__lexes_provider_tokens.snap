@@ -2,50 +2,30 @@
 source: packages/lexer/src/lexers/provider_declaration_lexer.rs
 expression: lexer.tokens
 ---
-[
-    LexerToken {
-        kind: Identifier(
-            "Env",
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 20,
-                column: 6,
-            },
-            to: TokenPosition {
-                line: 20,
-                column: 8,
-            },
-        },
-    },
-    LexerToken {
-        kind: Symbol(
-            ProviderAssignmentColon,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 20,
-                column: 9,
-            },
-            to: TokenPosition {
-                line: 20,
-                column: 9,
-            },
-        },
-    },
-    LexerToken {
-        kind: ProviderType(
-            "env",
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 20,
-                column: 11,
-            },
-            to: TokenPosition {
-                line: 20,
-                column: 13,
-            },
-        },
-    },
-]
+- kind:
+    Identifier: Env
+  range:
+    from:
+      line: 20
+      column: 6
+    to:
+      line: 20
+      column: 8
+- kind:
+    Symbol: ProviderAssignmentColon
+  range:
+    from:
+      line: 20
+      column: 9
+    to:
+      line: 20
+      column: 9
+- kind:
+    ProviderType: env
+  range:
+    from:
+      line: 20
+      column: 11
+    to:
+      line: 20
+      column: 13

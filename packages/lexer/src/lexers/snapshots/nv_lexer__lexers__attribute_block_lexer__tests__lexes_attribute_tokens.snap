@@ -2,206 +2,123 @@
 source: packages/lexer/src/lexers/attribute_block_lexer.rs
 expression: lexer.tokens
 ---
-[
-    LexerToken {
-        kind: Identifier(
-            "attribute",
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 0,
-                column: 1,
-            },
-            to: TokenPosition {
-                line: 0,
-                column: 9,
-            },
-        },
-    },
-    LexerToken {
-        kind: Symbol(
-            AttributeAssignmentEquals,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 0,
-                column: 11,
-            },
-            to: TokenPosition {
-                line: 0,
-                column: 11,
-            },
-        },
-    },
-    LexerToken {
-        kind: Literal(
-            Integer(
-                1,
-            ),
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 0,
-                column: 13,
-            },
-            to: TokenPosition {
-                line: 0,
-                column: 13,
-            },
-        },
-    },
-    LexerToken {
-        kind: Symbol(
-            Newline,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 0,
-                column: 14,
-            },
-            to: TokenPosition {
-                line: 0,
-                column: 14,
-            },
-        },
-    },
-    LexerToken {
-        kind: Identifier(
-            "attribute",
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 1,
-                column: 1,
-            },
-            to: TokenPosition {
-                line: 1,
-                column: 9,
-            },
-        },
-    },
-    LexerToken {
-        kind: Symbol(
-            AttributeAssignmentEquals,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 1,
-                column: 11,
-            },
-            to: TokenPosition {
-                line: 1,
-                column: 11,
-            },
-        },
-    },
-    LexerToken {
-        kind: Literal(
-            Integer(
-                2,
-            ),
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 1,
-                column: 13,
-            },
-            to: TokenPosition {
-                line: 1,
-                column: 13,
-            },
-        },
-    },
-    LexerToken {
-        kind: Symbol(
-            Newline,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 1,
-                column: 14,
-            },
-            to: TokenPosition {
-                line: 1,
-                column: 14,
-            },
-        },
-    },
-    LexerToken {
-        kind: Identifier(
-            "attribute",
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 2,
-                column: 1,
-            },
-            to: TokenPosition {
-                line: 2,
-                column: 9,
-            },
-        },
-    },
-    LexerToken {
-        kind: Symbol(
-            AttributeAssignmentEquals,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 2,
-                column: 11,
-            },
-            to: TokenPosition {
-                line: 2,
-                column: 11,
-            },
-        },
-    },
-    LexerToken {
-        kind: Literal(
-            Integer(
-                3,
-            ),
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 2,
-                column: 13,
-            },
-            to: TokenPosition {
-                line: 2,
-                column: 13,
-            },
-        },
-    },
-    LexerToken {
-        kind: Symbol(
-            Newline,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 2,
-                column: 14,
-            },
-            to: TokenPosition {
-                line: 2,
-                column: 14,
-            },
-        },
-    },
-    LexerToken {
-        kind: Symbol(
-            BlockCloseCurly,
-        ),
-        range: TokenRange {
-            from: TokenPosition {
-                line: 3,
-                column: 1,
-            },
-            to: TokenPosition {
-                line: 3,
-                column: 1,
-            },
-        },
-    },
-]
+- kind:
+    Identifier: attribute
+  range:
+    from:
+      line: 0
+      column: 1
+    to:
+      line: 0
+      column: 9
+- kind:
+    Symbol: AttributeAssignmentEquals
+  range:
+    from:
+      line: 0
+      column: 11
+    to:
+      line: 0
+      column: 11
+- kind:
+    Literal:
+      Integer: 1
+  range:
+    from:
+      line: 0
+      column: 13
+    to:
+      line: 0
+      column: 13
+- kind:
+    Symbol: Newline
+  range:
+    from:
+      line: 0
+      column: 14
+    to:
+      line: 0
+      column: 14
+- kind:
+    Identifier: attribute
+  range:
+    from:
+      line: 1
+      column: 1
+    to:
+      line: 1
+      column: 9
+- kind:
+    Symbol: AttributeAssignmentEquals
+  range:
+    from:
+      line: 1
+      column: 11
+    to:
+      line: 1
+      column: 11
+- kind:
+    Literal:
+      Integer: 2
+  range:
+    from:
+      line: 1
+      column: 13
+    to:
+      line: 1
+      column: 13
+- kind:
+    Symbol: Newline
+  range:
+    from:
+      line: 1
+      column: 14
+    to:
+      line: 1
+      column: 14
+- kind:
+    Identifier: attribute
+  range:
+    from:
+      line: 2
+      column: 1
+    to:
+      line: 2
+      column: 9
+- kind:
+    Symbol: AttributeAssignmentEquals
+  range:
+    from:
+      line: 2
+      column: 11
+    to:
+      line: 2
+      column: 11
+- kind:
+    Literal:
+      Integer: 3
+  range:
+    from:
+      line: 2
+      column: 13
+    to:
+      line: 2
+      column: 13
+- kind:
+    Symbol: Newline
+  range:
+    from:
+      line: 2
+      column: 14
+    to:
+      line: 2
+      column: 14
+- kind:
+    Symbol: BlockCloseCurly
+  range:
+    from:
+      line: 3
+      column: 1
+    to:
+      line: 3
+      column: 1
