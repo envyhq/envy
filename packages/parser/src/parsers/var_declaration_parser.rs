@@ -40,15 +40,11 @@ impl Parser<Option<AbstractSyntaxNode>> for VarDeclarationParser {
                     partial_declaration.identifier =
                         Some(Leaf::new(identifier.clone(), token.range.clone()));
 
-                    println!("set identifier {:?}", identifier);
-
                     continue;
                 }
                 LexerTokenKind::Type(type_value) => {
                     partial_declaration.type_value =
                         Some(Leaf::new(type_value.clone(), token.range.clone()));
-
-                    println!("set type_value {:?}", type_value);
 
                     continue;
                 }
@@ -56,15 +52,11 @@ impl Parser<Option<AbstractSyntaxNode>> for VarDeclarationParser {
                     partial_declaration.modifier =
                         Some(Leaf::new(modifier.clone(), token.range.clone()));
 
-                    println!("set modifier {:?}", modifier);
-
                     continue;
                 }
                 LexerTokenKind::Symbol(LexerSymbol::BlockOpenCurly) => {
                     let (count, parsed_block) =
                         AttributeBlockParser::parse(&tokens[index..], parent.clone());
-
-                    println!("set parsed_block {:?}", parsed_block);
 
                     // -1 because we dont want to double count the block open curly
                     let count = count - 1;

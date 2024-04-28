@@ -170,15 +170,17 @@ impl<'a> Lexer for AttributeBlockLexer<'a> {
 
             if char == LexerChar::BlockCloseCurly.to_string() {
                 // Terminate lexing if we reach a block close curly
-                let literal_value = self.buffer_to_literal(None);
+                let (buffer, from, to) = lookbehind_raw_token(
+                    &current_position,
+                    &self.buffer,
+                    Some(LexerChar::BlockCloseCurly),
+                );
+                let literal_value = self.buffer_to_literal(Some(buffer));
                 if let Some(literal_value) = literal_value {
                     self.tokens.push(LexerToken::new(
                         LexerTokenKind::Literal(literal_value.clone()),
-                        TokenPosition::new(
-                            current_position.line,
-                            current_position.column - literal_value.to_string().len(),
-                        ),
-                        current_position.clone(),
+                        from,
+                        to,
                     ));
                 }
 
@@ -193,15 +195,14 @@ impl<'a> Lexer for AttributeBlockLexer<'a> {
         }
 
         // If we haven't returned already, we reached the end of the input. Check the buffer for any remaining token.
-        let literal_value = self.buffer_to_literal(None);
+        let (buffer, from, to) = lookbehind_raw_token(&current_position, &self.buffer, None);
+        let literal_value = self.buffer_to_literal(Some(buffer));
+        println!("Literal value: {:?} - {:?}", literal_value, self.buffer);
         if let Some(literal_value) = literal_value {
             self.tokens.push(LexerToken::new(
                 LexerTokenKind::Literal(literal_value.clone()),
-                TokenPosition::new(
-                    current_position.line,
-                    current_position.column - literal_value.to_string().len(),
-                ),
-                current_position.clone(),
+                from,
+                to,
             ));
         }
 
@@ -217,12 +218,11 @@ mod tests {
     #[test]
     fn lexes_attribute_tokens() {
         let input = str_to_graphemes(
-            "
-attribute = 1
-attribute = 2
+            "unique = true
+default = 2
 attribute = 3
-}
-",
+something = 4
+}",
         );
 
         let mut lexer = AttributeBlockLexer::new(&input, TokenPosition::default());
@@ -230,8 +230,48 @@ attribute = 3
         let (count, position) = lexer.lex();
 
         assert_eq!(count, input.len());
-        assert_eq!(position, TokenPosition::new(3, 1));
-        assert_eq!(lexer.tokens.len(), 13);
+        assert_eq!(position, TokenPosition::new(4, 1));
+        assert_eq!(lexer.tokens.len(), 17);
+
+        insta::assert_yaml_snapshot!(lexer.tokens);
+    }
+
+    #[test]
+    fn lexes_inline_attribute_tokens() {
+        let input = str_to_graphemes(
+            "unique = true
+default = 2
+attribute = 3
+something = 4 }",
+        );
+
+        let mut lexer = AttributeBlockLexer::new(&input, TokenPosition::default());
+
+        let (count, position) = lexer.lex();
+
+        assert_eq!(count, input.len());
+        assert_eq!(position, TokenPosition::new(3, 15));
+        assert_eq!(lexer.tokens.len(), 16);
+
+        insta::assert_yaml_snapshot!(lexer.tokens);
+    }
+
+    #[test]
+    fn lexes_incomplete_attribute_tokens() {
+        let input = str_to_graphemes(
+            "unique = true
+default = 2
+attribute = 3
+something = 4",
+        );
+
+        let mut lexer = AttributeBlockLexer::new(&input, TokenPosition::default());
+
+        let (count, position) = lexer.lex();
+
+        assert_eq!(count, input.len());
+        assert_eq!(position, TokenPosition::new(3, 13));
+        assert_eq!(lexer.tokens.len(), 15);
 
         insta::assert_yaml_snapshot!(lexer.tokens);
     }

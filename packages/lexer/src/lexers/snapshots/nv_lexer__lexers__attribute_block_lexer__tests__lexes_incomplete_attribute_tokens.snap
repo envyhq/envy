@@ -141,21 +141,3 @@ expression: lexer.tokens
     to:
       line: 3
       column: 13
-- kind:
-    Symbol: Newline
-  range:
-    from:
-      line: 3
-      column: 14
-    to:
-      line: 3
-      column: 14
-- kind:
-    Symbol: BlockCloseCurly
-  range:
-    from:
-      line: 4
-      column: 1
-    to:
-      line: 4
-      column: 1
