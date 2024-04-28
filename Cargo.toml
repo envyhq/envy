@@ -26,5 +26,7 @@ members = [
 
   "packages/provider/providers/aws-secrets-manager",
   "packages/provider/providers/__examples/aws-secrets-manager",
-  "testing/nvx-parsing", "testing/unit",
+
+  "testing/nvx-parsing",
+  "testing/unit",
 ]
