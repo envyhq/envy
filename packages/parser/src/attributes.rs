@@ -58,10 +58,9 @@ impl From<AttributeDeclarationNode> for PartialAttributeDeclarationNode {
 impl From<AbstractSyntaxNode> for PartialAttributeDeclarationNode {
     fn from(partial: AbstractSyntaxNode) -> Self {
         match partial {
-            AbstractSyntaxNode::Declaration(declaration) => match declaration {
-                DeclarationNode::AttributeDeclaration(attribute) => attribute.into(),
-                _ => panic!("Invalid conversion"),
-            },
+            AbstractSyntaxNode::Declaration(DeclarationNode::AttributeDeclaration(declaration)) => {
+                declaration.into()
+            }
             _ => panic!("Invalid conversion"),
         }
     }

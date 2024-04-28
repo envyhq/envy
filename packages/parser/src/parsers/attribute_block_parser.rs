@@ -13,13 +13,12 @@ pub struct AttributeBlockParser;
 
 impl Parser<Vec<AbstractSyntaxNode>> for AttributeBlockParser {
     fn parse(
-        tokens: &Vec<LexerToken>,
+        tokens: &[LexerToken],
         parent: Weak<AbstractSyntaxNode>,
     ) -> (usize, Vec<AbstractSyntaxNode>) {
         let mut buffer = vec![];
         let mut ast_block: Vec<AbstractSyntaxNode> = vec![];
-        let bound_tokens = tokens.clone();
-        let tokens = bound_tokens.iter().enumerate();
+        let tokens = tokens.iter().enumerate();
 
         let mut processed_count = 0;
 

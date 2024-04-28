@@ -139,7 +139,7 @@ fn main() {
         {
             thread::sleep(Duration::from_millis(100));
             print!("\x1B[2J\x1B[1;1H");
-            println!("Elapsed: {:?}", start.elapsed());
+            log::info!("Elapsed: {:?}", start.elapsed());
         }
     });
 
@@ -147,6 +147,6 @@ fn main() {
     b.join().unwrap();
     c.join().unwrap();
 
-    println!("nvx avg: {:?}", a_avg.lock().unwrap().unwrap().unwrap());
-    println!("json avg: {:?}", b_avg.lock().unwrap().unwrap().unwrap());
+    log::info!("nvx avg: {:?}", a_avg.lock().unwrap().unwrap().unwrap());
+    log::info!("json avg: {:?}", b_avg.lock().unwrap().unwrap().unwrap());
 }

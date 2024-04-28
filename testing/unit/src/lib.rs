@@ -22,8 +22,6 @@ cool
 
         let output = str_to_graphemes(input);
 
-        println!("{:?}", output);
-
         assert_eq!(output.len(), 32);
         insta::assert_debug_snapshot!(output);
     }

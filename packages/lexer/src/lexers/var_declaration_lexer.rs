@@ -207,16 +207,18 @@ mod tests {
 
     #[test]
     fn lexes_var_tokens() {
-        // We dont have "var" keyword in the lexer, its handled by the source file lexer
+        // We dont have "var" keyword here, its handled by the source file lexer
         let input = str_to_graphemes("id: int");
 
-        let mut lexer = VarDeclarationLexer::new(&input, TokenPosition::default());
+        let start_line = 11;
+        let start_column = 40;
+        let mut lexer =
+            VarDeclarationLexer::new(&input, TokenPosition::new(start_line, start_column));
 
         let (count, position) = lexer.lex();
 
         assert_eq!(count, input.len());
-        // WARN: why line 0 like mod dec and prov dec lexer but not attr block?
-        assert_eq!(position, TokenPosition::new(0, 7));
+        assert_eq!(position, TokenPosition::new(start_line, start_column + 7));
         assert_eq!(lexer.tokens.len(), 3);
         insta::assert_debug_snapshot!(lexer.tokens);
     }

@@ -9,12 +9,12 @@ expression: lexer.tokens
         ),
         range: TokenRange {
             from: TokenPosition {
-                line: 0,
-                column: 1,
+                line: 11,
+                column: 41,
             },
             to: TokenPosition {
-                line: 0,
-                column: 2,
+                line: 11,
+                column: 42,
             },
         },
     },
@@ -24,12 +24,12 @@ expression: lexer.tokens
         ),
         range: TokenRange {
             from: TokenPosition {
-                line: 0,
-                column: 3,
+                line: 11,
+                column: 43,
             },
             to: TokenPosition {
-                line: 0,
-                column: 3,
+                line: 11,
+                column: 43,
             },
         },
     },
@@ -39,12 +39,12 @@ expression: lexer.tokens
         ),
         range: TokenRange {
             from: TokenPosition {
-                line: 0,
-                column: 5,
+                line: 11,
+                column: 45,
             },
             to: TokenPosition {
-                line: 0,
-                column: 7,
+                line: 11,
+                column: 47,
             },
         },
     },

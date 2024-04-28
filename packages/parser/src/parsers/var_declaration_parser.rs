@@ -14,7 +14,7 @@ pub struct VarDeclarationParser;
 
 impl Parser<Option<AbstractSyntaxNode>> for VarDeclarationParser {
     fn parse(
-        tokens: &Vec<LexerToken>,
+        tokens: &[LexerToken],
         parent: Weak<AbstractSyntaxNode>,
     ) -> (usize, Option<AbstractSyntaxNode>) {
         let mut buffer = vec![];

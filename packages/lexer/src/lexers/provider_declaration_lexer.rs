@@ -82,7 +82,6 @@ impl<'a> Lexer for ProviderDeclarationLexer<'a> {
 
             if char == LexerChar::ProviderAssignmentColon.to_string() {
                 // When we reach the colon, lex the var idenitifier and push it to the tokens before the colon
-                println!("REACHED ASSIGNMENT {:?}", self.buffer);
                 let (buffer, from, to) = lookbehind_raw_token(
                     &current_position,
                     &self.buffer,
@@ -168,17 +167,18 @@ mod tests {
 
     #[test]
     fn lexes_provider_tokens() {
-        // We dont have "provider" keyword in the lexer, its handled by the source file lexer
+        // We dont have "provider" keyword here, its handled by the source file lexer
         let input = str_to_graphemes("Env: env");
 
-        let mut lexer = ProviderDeclarationLexer::new(&input, TokenPosition::default());
+        let start_line = 20;
+        let start_column = 5;
+        let mut lexer =
+            ProviderDeclarationLexer::new(&input, TokenPosition::new(start_line, start_column));
 
         let (count, position) = lexer.lex();
 
         assert_eq!(count, input.len());
-        // WARN: why line 0 like mod dec lexer and var dec lexer but not attr block?
-        assert_eq!(position, TokenPosition::new(0, 8));
-        println!("{:?}", lexer.tokens);
+        assert_eq!(position, TokenPosition::new(start_line, start_column + 8));
         assert_eq!(lexer.tokens.len(), 3);
         insta::assert_debug_snapshot!(lexer.tokens);
     }

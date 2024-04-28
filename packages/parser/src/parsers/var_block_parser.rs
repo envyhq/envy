@@ -12,7 +12,7 @@ pub struct VarBlockParser;
 
 impl Parser<Vec<AbstractSyntaxNode>> for VarBlockParser {
     fn parse(
-        tokens: &Vec<LexerToken>,
+        tokens: &[LexerToken],
         parent: Weak<AbstractSyntaxNode>,
     ) -> (usize, Vec<AbstractSyntaxNode>) {
         let mut tokens_iter = tokens.iter().enumerate();
@@ -22,8 +22,7 @@ impl Parser<Vec<AbstractSyntaxNode>> for VarBlockParser {
 
         while let Some((index, token)) = tokens_iter.next() {
             processed_count += 1;
-            let sub_tokens = &tokens[index..].to_vec();
-            let sub_tokens = sub_tokens.to_vec();
+            let sub_tokens = &tokens[index..];
 
             let result = match token.kind {
                 LexerTokenKind::Keyword(LexerKeyword::VarModifierKeyword(
@@ -33,7 +32,7 @@ impl Parser<Vec<AbstractSyntaxNode>> for VarBlockParser {
                     LexerDeclarationKeyword::Var,
                 )) => {
                     let (count, parsed_fragment) =
-                        VarDeclarationParser::parse(&sub_tokens, parent.clone());
+                        VarDeclarationParser::parse(sub_tokens, parent.clone());
 
                     // -1 to avoid double counting the leading token (var or pub)
                     let count = count - 1;

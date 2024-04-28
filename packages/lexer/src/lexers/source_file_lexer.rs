@@ -164,4 +164,82 @@ mod tests {
 
         insta::assert_debug_snapshot!(lexer.tokens);
     }
+
+    #[test]
+    fn lexes_source_file_tokens_with_pub_var() {
+        let input = "var my_test_var: int
+
+pub var my_pub_test_var: str";
+
+        let mut lexer = SourceFileLexer::new(input);
+
+        let (count, position) = lexer.lex();
+
+        assert_eq!(count, input.len());
+        assert_eq!(position, TokenPosition::new(3, 28));
+        assert_eq!(lexer.tokens.len(), 11);
+
+        insta::assert_debug_snapshot!(lexer.tokens);
+    }
+
+    #[test]
+    fn lexes_source_file_tokens_with_var_attributes() {
+        let input = "var my_test_var: int
+
+pub var my_pub_test_var: str
+var my_attr_test_var: url {
+    protocol = \"https\"
+    host = \"test.com\"
+}";
+
+        let mut lexer = SourceFileLexer::new(input);
+
+        let (count, position) = lexer.lex();
+
+        assert_eq!(count, input.len());
+        assert_eq!(position, TokenPosition::new(7, 1));
+        assert_eq!(lexer.tokens.len(), 26);
+
+        insta::assert_debug_snapshot!(lexer.tokens);
+    }
+
+    #[test]
+    fn lexes_source_file_tokens_with_module() {
+        let input = "var my_test_var: int
+
+module TestModule {
+    var my_test_var: int
+}";
+
+        let mut lexer = SourceFileLexer::new(input);
+
+        let (count, position) = lexer.lex();
+
+        assert_eq!(count, input.len());
+        assert_eq!(position, TokenPosition::new(5, 1));
+        assert_eq!(lexer.tokens.len(), 16);
+
+        insta::assert_debug_snapshot!(lexer.tokens);
+    }
+
+    #[test]
+    fn lexes_source_file_tokens_with_provider() {
+        let input = "var my_test_var: int
+
+provider Env: env
+
+module TestModule {
+    var my_test_var: int
+}";
+
+        let mut lexer = SourceFileLexer::new(input);
+
+        let (count, position) = lexer.lex();
+
+        assert_eq!(count, input.len());
+        assert_eq!(position, TokenPosition::new(7, 1));
+        assert_eq!(lexer.tokens.len(), 22);
+
+        insta::assert_debug_snapshot!(lexer.tokens);
+    }
 }

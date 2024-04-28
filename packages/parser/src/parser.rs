@@ -3,7 +3,7 @@ use nv_lexer::tokens::LexerToken;
 use std::sync::Weak;
 
 pub trait Parser<O> {
-    fn parse(tokens: &Vec<LexerToken>, parent: Weak<AbstractSyntaxNode>) -> (usize, O);
+    fn parse(tokens: &[LexerToken], parent: Weak<AbstractSyntaxNode>) -> (usize, O);
 }
 
 #[derive(Debug)]

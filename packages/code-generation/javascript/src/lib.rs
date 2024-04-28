@@ -1,7 +1,7 @@
 use nv_parser::{AbstractSyntaxNode, AbstractSyntaxTree, DeclarationNode};
 
 fn traverse_ast(ast: &AbstractSyntaxTree) -> String {
-    traverse_nodes(&ast.root.as_ref().unwrap())
+    traverse_nodes(ast.root.as_ref().unwrap())
 }
 
 fn traverse_declaration(node: &DeclarationNode, is_module_var: bool) -> String {

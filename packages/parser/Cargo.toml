@@ -7,3 +7,7 @@ edition = "2021"
 env_logger = "0.11.2"
 log = "0.4.20"
 nv-lexer = { path = "../lexer" }
+
+[dev-dependencies]
+insta = "1.38.0"
+nv-unit-testing = { path = "../../testing/unit" }

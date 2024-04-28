@@ -14,7 +14,7 @@ pub struct ProviderDeclarationParser;
 
 impl Parser<Option<AbstractSyntaxNode>> for ProviderDeclarationParser {
     fn parse(
-        tokens: &Vec<LexerToken>,
+        tokens: &[LexerToken],
         parent: Weak<AbstractSyntaxNode>,
     ) -> (usize, Option<AbstractSyntaxNode>) {
         let mut tokens_iter = tokens.iter().enumerate();

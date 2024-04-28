@@ -169,19 +169,17 @@ mod tests {
 
     #[test]
     fn lexes_module_tokens() {
-        let input = str_to_graphemes(
-            "
-module Cakes {}
-",
-        );
+        let input = str_to_graphemes("module Cakes {}");
 
-        let mut lexer = ModuleDeclarationLexer::new(&input, TokenPosition::default());
+        let start_line = 32;
+        let start_column = 25;
+        let mut lexer =
+            ModuleDeclarationLexer::new(&input, TokenPosition::new(start_line, start_column));
 
         let (count, position) = lexer.lex();
 
         assert_eq!(count, input.len());
-        // WARN: explore why 0 line instead of 1? attr block lexer would treat this as line 1?
-        assert_eq!(position, TokenPosition::new(0, 15));
+        assert_eq!(position, TokenPosition::new(start_line, start_column + 15));
         assert_eq!(lexer.tokens.len(), 4);
         insta::assert_debug_snapshot!(lexer.tokens);
     }

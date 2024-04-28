@@ -13,15 +13,25 @@ pub struct PartialModuleDeclarationNode {
     pub declarations: Vec<DeclarationNode>,
 }
 
-impl From<PartialModuleDeclarationNode> for ModuleDeclarationNode {
-    fn from(partial: PartialModuleDeclarationNode) -> Self {
-        ModuleDeclarationNode {
-            identifier: partial.identifier.unwrap(),
+pub enum ModuleDeclarationConvertError {
+    MissingIdentifier,
+}
+
+impl TryFrom<PartialModuleDeclarationNode> for ModuleDeclarationNode {
+    type Error = ModuleDeclarationConvertError;
+
+    fn try_from(partial: PartialModuleDeclarationNode) -> Result<Self, Self::Error> {
+        let identifier = partial
+            .identifier
+            .ok_or(ModuleDeclarationConvertError::MissingIdentifier)?;
+
+        Ok(ModuleDeclarationNode {
+            identifier,
             declarations: partial
                 .declarations
                 .iter()
                 .map(|d| Arc::new(d.clone()))
                 .collect(),
-        }
+        })
     }
 }

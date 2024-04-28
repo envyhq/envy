@@ -1,0 +1,344 @@
+---
+source: packages/lexer/src/lexers/source_file_lexer.rs
+expression: lexer.tokens
+---
+[
+    LexerToken {
+        kind: Keyword(
+            DeclarationKeyword(
+                Var,
+            ),
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 1,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 3,
+            },
+        },
+    },
+    LexerToken {
+        kind: Identifier(
+            "my_test_var",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 5,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 15,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            VarAssignmentColon,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 16,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 16,
+            },
+        },
+    },
+    LexerToken {
+        kind: Type(
+            Int,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 18,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 20,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            Newline,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 1,
+                column: 21,
+            },
+            to: TokenPosition {
+                line: 1,
+                column: 21,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            Newline,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 2,
+                column: 1,
+            },
+            to: TokenPosition {
+                line: 2,
+                column: 1,
+            },
+        },
+    },
+    LexerToken {
+        kind: Keyword(
+            DeclarationKeyword(
+                Provider,
+            ),
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 3,
+                column: 1,
+            },
+            to: TokenPosition {
+                line: 3,
+                column: 8,
+            },
+        },
+    },
+    LexerToken {
+        kind: Identifier(
+            "Env",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 3,
+                column: 10,
+            },
+            to: TokenPosition {
+                line: 3,
+                column: 12,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            ProviderAssignmentColon,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 3,
+                column: 13,
+            },
+            to: TokenPosition {
+                line: 3,
+                column: 13,
+            },
+        },
+    },
+    LexerToken {
+        kind: ProviderType(
+            "env",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 3,
+                column: 15,
+            },
+            to: TokenPosition {
+                line: 3,
+                column: 17,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            Newline,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 3,
+                column: 18,
+            },
+            to: TokenPosition {
+                line: 3,
+                column: 18,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            Newline,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 4,
+                column: 19,
+            },
+            to: TokenPosition {
+                line: 4,
+                column: 19,
+            },
+        },
+    },
+    LexerToken {
+        kind: Keyword(
+            DeclarationKeyword(
+                Module,
+            ),
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 5,
+                column: 1,
+            },
+            to: TokenPosition {
+                line: 5,
+                column: 6,
+            },
+        },
+    },
+    LexerToken {
+        kind: Identifier(
+            "TestModule",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 5,
+                column: 8,
+            },
+            to: TokenPosition {
+                line: 5,
+                column: 17,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            BlockOpenCurly,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 5,
+                column: 19,
+            },
+            to: TokenPosition {
+                line: 5,
+                column: 19,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            Newline,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 5,
+                column: 20,
+            },
+            to: TokenPosition {
+                line: 5,
+                column: 20,
+            },
+        },
+    },
+    LexerToken {
+        kind: Keyword(
+            DeclarationKeyword(
+                Var,
+            ),
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 6,
+                column: 5,
+            },
+            to: TokenPosition {
+                line: 6,
+                column: 7,
+            },
+        },
+    },
+    LexerToken {
+        kind: Identifier(
+            "my_test_var",
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 6,
+                column: 9,
+            },
+            to: TokenPosition {
+                line: 6,
+                column: 19,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            VarAssignmentColon,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 6,
+                column: 20,
+            },
+            to: TokenPosition {
+                line: 6,
+                column: 20,
+            },
+        },
+    },
+    LexerToken {
+        kind: Type(
+            Int,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 6,
+                column: 22,
+            },
+            to: TokenPosition {
+                line: 6,
+                column: 24,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            Newline,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 6,
+                column: 25,
+            },
+            to: TokenPosition {
+                line: 6,
+                column: 25,
+            },
+        },
+    },
+    LexerToken {
+        kind: Symbol(
+            BlockCloseCurly,
+        ),
+        range: TokenRange {
+            from: TokenPosition {
+                line: 7,
+                column: 1,
+            },
+            to: TokenPosition {
+                line: 7,
+                column: 1,
+            },
+        },
+    },
+]
