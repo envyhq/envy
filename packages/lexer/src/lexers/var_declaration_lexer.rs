@@ -1,4 +1,4 @@
-use super::attribute_block_lexer::{lookbehind_raw_token, AttributeBlockLexer};
+use super::{attribute_block_lexer::AttributeBlockLexer, utils::lookbehind_raw_token};
 use crate::{
     chars::LexerChar,
     lexers::utils::{is_newline, is_whitespace},
@@ -40,14 +40,14 @@ impl<'a> Lexer for VarDeclarationLexer<'a> {
     // We are given the whole source file from the var keyword onwards, so we lex until we reach a valid output.
     // The source file lexer must continue where we left of, so we return the number of characters we have processed.
     fn lex(&mut self) -> (usize, TokenPosition) {
-        let chars_iter = self.chars.iter().enumerate();
+        let chars = self.chars.iter().enumerate();
 
         self.buffer.clear();
 
         let mut processed_count = 0;
         let mut current_position = self.start_position.clone();
 
-        for (index, char) in chars_iter {
+        for (index, char) in chars {
             let char = char.to_owned();
 
             processed_count += 1;
@@ -85,7 +85,7 @@ impl<'a> Lexer for VarDeclarationLexer<'a> {
             }
 
             if is_whitespace(&char) {
-                self.buffer.pop(); //  remove the newline
+                self.buffer.pop(); //  remove the whitespace
                 let type_value = self.buffer_to_type();
                 if let Some(type_value) = type_value {
                     self.tokens.push(LexerToken::new(
@@ -107,7 +107,7 @@ impl<'a> Lexer for VarDeclarationLexer<'a> {
 
             match LexerChar::from_str(&char) {
                 Ok(LexerChar::BlockCloseCurly) => {
-                    // Terminate lexing if we reach a block close curly
+                    // Terminate lexing if we reach a block close curly, return
                     self.tokens.push(LexerToken::new(
                         LexerTokenKind::Symbol(LexerSymbol::BlockCloseCurly),
                         current_position.clone(),

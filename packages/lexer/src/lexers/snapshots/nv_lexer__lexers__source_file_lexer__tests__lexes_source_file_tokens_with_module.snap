@@ -141,11 +141,67 @@ expression: lexer.tokens
       line: 4
       column: 25
 - kind:
-    Symbol: BlockCloseCurly
+    Keyword:
+      VarModifierKeyword: Pub
   range:
     from:
       line: 5
-      column: 1
+      column: 5
     to:
       line: 5
+      column: 7
+- kind:
+    Keyword:
+      DeclarationKeyword: Var
+  range:
+    from:
+      line: 5
+      column: 9
+    to:
+      line: 5
+      column: 11
+- kind:
+    Identifier: my_pub_test_var
+  range:
+    from:
+      line: 5
+      column: 13
+    to:
+      line: 5
+      column: 27
+- kind:
+    Symbol: VarAssignmentColon
+  range:
+    from:
+      line: 5
+      column: 28
+    to:
+      line: 5
+      column: 28
+- kind:
+    Type: Int
+  range:
+    from:
+      line: 5
+      column: 30
+    to:
+      line: 5
+      column: 32
+- kind:
+    Symbol: Newline
+  range:
+    from:
+      line: 5
+      column: 33
+    to:
+      line: 5
+      column: 33
+- kind:
+    Symbol: BlockCloseCurly
+  range:
+    from:
+      line: 6
+      column: 1
+    to:
+      line: 6
       column: 1

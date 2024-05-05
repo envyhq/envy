@@ -1,6 +1,6 @@
 use super::{
-    attribute_block_lexer::{lookbehind_raw_token, AttributeBlockLexer},
-    utils::{is_newline, is_whitespace},
+    attribute_block_lexer::AttributeBlockLexer,
+    utils::{is_newline, is_whitespace, lookbehind_raw_token},
 };
 use crate::{
     chars::LexerChar,
@@ -34,14 +34,14 @@ impl<'a> ProviderDeclarationLexer<'a> {
 
 impl<'a> Lexer for ProviderDeclarationLexer<'a> {
     fn lex(&mut self) -> (usize, TokenPosition) {
-        let chars_iter = self.chars.iter().enumerate();
+        let chars = self.chars.iter().enumerate();
 
         self.buffer.clear();
 
         let mut processed_count = 0;
         let mut current_position = self.start_position.clone();
 
-        for (index, char) in chars_iter {
+        for (index, char) in chars {
             let char = char.to_owned();
 
             processed_count += 1;
@@ -80,32 +80,6 @@ impl<'a> Lexer for ProviderDeclarationLexer<'a> {
                 continue;
             }
 
-            if char == LexerChar::ProviderAssignmentColon.to_string() {
-                // When we reach the colon, lex the var idenitifier and push it to the tokens before the colon
-                let (buffer, from, to) = lookbehind_raw_token(
-                    &current_position,
-                    &self.buffer,
-                    Some(LexerChar::ProviderAssignmentColon),
-                );
-                let buffered = buffer.join("");
-                if !buffered.is_empty() {
-                    self.tokens.push(LexerToken::new(
-                        LexerTokenKind::Identifier(buffered),
-                        from,
-                        to,
-                    ));
-                } else {
-                    panic!("Expected variable declaration identifier before colon")
-                }
-                self.tokens.push(LexerToken::new(
-                    LexerTokenKind::Symbol(LexerSymbol::ProviderAssignmentColon),
-                    current_position.clone(),
-                    current_position.clone(),
-                ));
-                self.buffer.clear();
-                continue;
-            }
-
             if char == LexerChar::BlockOpenCurly.to_string() {
                 // If we reach a block open curly, store current buffer and continue to lex for attributes
                 let (buffer, from, to) = lookbehind_raw_token(
@@ -138,6 +112,32 @@ impl<'a> Lexer for ProviderDeclarationLexer<'a> {
                 self.tokens.append(&mut block_lexer.tokens);
 
                 return (processed_count, current_position);
+            }
+
+            if char == LexerChar::ProviderAssignmentColon.to_string() {
+                // When we reach the colon, lex the var idenitifier and push it to the tokens before the colon
+                let (buffer, from, to) = lookbehind_raw_token(
+                    &current_position,
+                    &self.buffer,
+                    Some(LexerChar::ProviderAssignmentColon),
+                );
+                let buffered = buffer.join("");
+                if !buffered.is_empty() {
+                    self.tokens.push(LexerToken::new(
+                        LexerTokenKind::Identifier(buffered),
+                        from,
+                        to,
+                    ));
+                } else {
+                    panic!("Expected variable declaration identifier before colon")
+                }
+                self.tokens.push(LexerToken::new(
+                    LexerTokenKind::Symbol(LexerSymbol::ProviderAssignmentColon),
+                    current_position.clone(),
+                    current_position.clone(),
+                ));
+                self.buffer.clear();
+                continue;
             }
         }
 

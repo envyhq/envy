@@ -59,6 +59,7 @@ impl Lexer for SourceFileLexer {
             current_position.column += 1;
 
             if is_newline(&char) {
+                // INFO: add newline, iterate line
                 self.tokens.push(LexerToken::new(
                     LexerTokenKind::Symbol(LexerSymbol::Newline),
                     current_position.clone(),
@@ -71,11 +72,13 @@ impl Lexer for SourceFileLexer {
             }
 
             if is_whitespace(&char) {
+                // INFO: skip
                 continue;
             }
 
             self.buffer.push(char.clone());
 
+            // INFO: check buffer until keyword
             if let Some(token) = self.buffer_to_keyword() {
                 self.tokens.push(LexerToken::new(
                     LexerTokenKind::Keyword(token.clone()),
@@ -129,6 +132,7 @@ impl Lexer for SourceFileLexer {
                     }
                 };
 
+                // INFO: add results of child lexers, keep lexing
                 self.tokens.append(&mut result.tokens.clone());
 
                 processed_count += result.processed_count;
@@ -209,6 +213,7 @@ var my_attr_test_var: url {
 
 module TestModule {
     var my_test_var: int
+    pub var my_pub_test_var: int
 }";
 
         let mut lexer = SourceFileLexer::new(input);
@@ -216,8 +221,8 @@ module TestModule {
         let (count, position) = lexer.lex();
 
         assert_eq!(count, input.len());
-        assert_eq!(position, TokenPosition::new(5, 1));
-        assert_eq!(lexer.tokens.len(), 16);
+        assert_eq!(position, TokenPosition::new(6, 1));
+        assert_eq!(lexer.tokens.len(), 22);
 
         insta::assert_yaml_snapshot!(lexer.tokens);
     }

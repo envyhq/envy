@@ -3,39 +3,29 @@ source: packages/lexer/src/lexers/module_declaration_lexer.rs
 expression: lexer.tokens
 ---
 - kind:
-    Keyword:
-      DeclarationKeyword: Module
+    Identifier: Cakes
   range:
     from:
       line: 32
       column: 26
     to:
       line: 32
-      column: 31
+      column: 30
 - kind:
-    Identifier: Cakes
+    Symbol: BlockOpenCurly
+  range:
+    from:
+      line: 32
+      column: 32
+    to:
+      line: 32
+      column: 32
+- kind:
+    Symbol: BlockCloseCurly
   range:
     from:
       line: 32
       column: 33
     to:
       line: 32
-      column: 37
-- kind:
-    Symbol: BlockOpenCurly
-  range:
-    from:
-      line: 32
-      column: 39
-    to:
-      line: 32
-      column: 39
-- kind:
-    Symbol: BlockCloseCurly
-  range:
-    from:
-      line: 32
-      column: 40
-    to:
-      line: 32
-      column: 40
+      column: 33
