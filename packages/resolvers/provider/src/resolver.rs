@@ -19,6 +19,10 @@ impl ProviderResolver {
             // it like Arc::new(EnvProvider {}) for example..
             // then we add that provider to self.providers and return it
             // this actually involves potentially downloading provider from net
+            // but... we should by default throw an error if its not already available locally?
+            // note that EnvProvider needs to be updated to be a client of the EnvProvider under process model
+            // we can probably wrap EnvProvider etc in a ProviderServer struct of some kind that
+            // that manages the IPC protocol + calling in to the underlying EnvProvider etc
         }
     }
 

@@ -5,7 +5,7 @@ use nv_provider_core::{Provider, ProviderValueError};
 #[derive(Debug)]
 pub struct EnvProvider {}
 
-#[async_trait::async_trait]
+#[esync_trait::async_trait]
 impl Provider for EnvProvider {
     fn name(&self) -> &'static str {
         "env"

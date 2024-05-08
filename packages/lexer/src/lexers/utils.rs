@@ -37,11 +37,6 @@ pub fn lookbehind_raw_token(
         })
         .collect();
 
-    println!(
-        "lookbehind_raw_token: trimmed_buffer: {:#?}",
-        trimmed_buffer,
-    );
-
     let to_col = current_position.column - (buffer.len() - (last_identifier_char_index + 1));
 
     let from = TokenPosition::new(
