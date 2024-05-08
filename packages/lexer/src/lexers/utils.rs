@@ -16,7 +16,9 @@ pub fn lookbehind_raw_token(
     buffer: &[String],
     stop_char: Option<LexerChar>,
 ) -> (Vec<String>, TokenPosition, TokenPosition) {
-    println!("lookbehind_raw_token: buffer: {:#?}", buffer,);
+    if buffer.is_empty() {
+        return (vec![], current_position.clone(), current_position.clone());
+    }
 
     let last_identifier_char_index = buffer
         .iter()

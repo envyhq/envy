@@ -18,10 +18,10 @@ expression: ast
         range:
           from:
             line: 14
-            column: 22
+            column: 23
           to:
             line: 14
-            column: 24
+            column: 25
       modifier: ~
       attributes: []
 - Declaration:
@@ -40,10 +40,10 @@ expression: ast
         range:
           from:
             line: 15
-            column: 27
+            column: 28
           to:
             line: 15
-            column: 29
+            column: 30
       modifier:
         value: Pub
         range:

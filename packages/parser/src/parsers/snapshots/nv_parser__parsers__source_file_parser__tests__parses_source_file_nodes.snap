@@ -20,10 +20,10 @@ SourceFile:
           range:
             from:
               line: 1
-              column: 13
+              column: 14
             to:
               line: 1
-              column: 15
+              column: 16
         modifier: ~
         attributes: []
     - ProviderDeclaration:
@@ -64,10 +64,10 @@ SourceFile:
                 range:
                   from:
                     line: 6
-                    column: 22
+                    column: 23
                   to:
                     line: 6
-                    column: 24
+                    column: 25
               modifier: ~
               attributes: []
           - VarDeclaration:
@@ -85,10 +85,10 @@ SourceFile:
                 range:
                   from:
                     line: 7
-                    column: 27
+                    column: 28
                   to:
                     line: 7
-                    column: 29
+                    column: 30
               modifier:
                 value: Pub
                 range:

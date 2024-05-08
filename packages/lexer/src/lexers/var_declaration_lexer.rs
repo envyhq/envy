@@ -5,7 +5,6 @@ use crate::{
     tokens::{LexerSymbol, LexerToken, LexerTokenKind, LexerType, TokenPosition},
     Lexer,
 };
-use std::str::FromStr;
 use strum::IntoEnumIterator;
 
 pub struct VarDeclarationLexer<'a> {
@@ -27,22 +26,112 @@ impl<'a> VarDeclarationLexer<'a> {
         }
     }
 
-    fn buffer_to_type(&self) -> Option<LexerType> {
-        let buffered = self.buffer.join("");
+    fn buffer_to_type(&self, buffer: Vec<String>) -> Option<LexerType> {
+        let buffered = buffer.join("");
 
         LexerType::iter().find(|type_value| type_value.to_string() == buffered)
+    }
+
+    fn lex_newline(&mut self, current_position: &mut TokenPosition) {
+        self.buffer.pop(); //  remove the newline
+        self.lex_type_value(current_position, Some(LexerChar::NewLine));
+
+        self.tokens.push(LexerToken::new(
+            LexerTokenKind::Symbol(LexerSymbol::Newline),
+            current_position.clone(),
+            current_position.clone(),
+        ));
+
+        current_position.line += 1;
+        current_position.column = 0;
+    }
+
+    fn lex_whitespace(&mut self, current_position: &mut TokenPosition) {
+        self.buffer.pop(); //  remove the whitespace
+        self.lex_type_value(current_position, None);
+        self.buffer.clear();
+    }
+
+    fn lex_block_close(&mut self, current_position: &mut TokenPosition) {
+        self.tokens.push(LexerToken::new(
+            LexerTokenKind::Symbol(LexerSymbol::BlockCloseCurly),
+            current_position.clone(),
+            current_position.clone(),
+        ));
+    }
+
+    fn lex_var_assignment(&mut self, current_position: &mut TokenPosition) {
+        let (buffer, from, to) = lookbehind_raw_token(
+            current_position,
+            &self.buffer,
+            Some(LexerChar::VarAssignmentColon),
+        );
+
+        let buffered = buffer.join("");
+        if !buffered.is_empty() {
+            self.tokens.push(LexerToken::new(
+                LexerTokenKind::Identifier(buffered.clone()),
+                from,
+                to,
+            ));
+        } else {
+            panic!("Expected variable declaration identifier before colon")
+        }
+        self.tokens.push(LexerToken::new(
+            LexerTokenKind::Symbol(LexerSymbol::VarAssignmentColon),
+            current_position.clone(),
+            current_position.clone(),
+        ));
+        self.buffer.clear();
+    }
+
+    fn lex_block_open(
+        &mut self,
+        current_position: &mut TokenPosition,
+        processed_count: &mut usize,
+        index: &usize,
+    ) {
+        self.lex_type_value(current_position, Some(LexerChar::BlockOpenCurly));
+
+        self.tokens.push(LexerToken::new(
+            LexerTokenKind::Symbol(LexerSymbol::BlockOpenCurly),
+            current_position.clone(),
+            current_position.clone(),
+        ));
+
+        let sub_chars = &self.chars[(index + 1)..];
+
+        let mut block_lexer = AttributeBlockLexer::new(sub_chars, current_position.clone());
+
+        let (block_count, block_position) = block_lexer.lex();
+
+        *current_position = block_position;
+
+        *processed_count += block_count;
+
+        self.tokens.append(&mut block_lexer.tokens);
+    }
+
+    fn lex_type_value(
+        &mut self,
+        current_position: &mut TokenPosition,
+        stop_char: Option<LexerChar>,
+    ) {
+        let (buffer, from, to) = lookbehind_raw_token(current_position, &self.buffer, stop_char);
+        let type_value = self.buffer_to_type(buffer);
+        if let Some(type_value) = type_value {
+            self.tokens.push(LexerToken::new(
+                LexerTokenKind::Type(type_value.clone()),
+                from,
+                to,
+            ));
+        }
     }
 }
 
 impl<'a> Lexer for VarDeclarationLexer<'a> {
-    // Called whenever the lexer encounters a var keyword, we continue to lex in the context of variable declaration, having already stored the var keyword token.
-    // We search for a colon to indicate the start of the variable type assignment, taking everything before that as the identifier and everything after as the type.
-    // We are given the whole source file from the var keyword onwards, so we lex until we reach a valid output.
-    // The source file lexer must continue where we left of, so we return the number of characters we have processed.
     fn lex(&mut self) -> (usize, TokenPosition) {
         let chars = self.chars.iter().enumerate();
-
-        self.buffer.clear();
 
         let mut processed_count = 0;
         let mut current_position = self.start_position.clone();
@@ -56,125 +145,26 @@ impl<'a> Lexer for VarDeclarationLexer<'a> {
             self.buffer.push(char.clone());
 
             if is_newline(&char) {
-                self.buffer.pop(); //  remove the newline
-                let type_value = self.buffer_to_type();
-                if let Some(type_value) = type_value {
-                    self.tokens.push(LexerToken::new(
-                        LexerTokenKind::Type(type_value.clone()),
-                        TokenPosition::new(
-                            current_position.line,
-                            current_position.column - type_value.to_string().len(),
-                        ),
-                        TokenPosition::new(
-                            current_position.line,
-                            current_position.column - 1, // -1 because buffer.pop() to remove newline
-                        ),
-                    ));
-                }
-
-                self.tokens.push(LexerToken::new(
-                    LexerTokenKind::Symbol(LexerSymbol::Newline),
-                    current_position.clone(),
-                    current_position.clone(),
-                ));
-
-                current_position.line += 1;
-                current_position.column = 0;
-
+                self.lex_newline(&mut current_position);
                 return (processed_count, current_position);
             }
 
             if is_whitespace(&char) {
-                self.buffer.pop(); //  remove the whitespace
-                let type_value = self.buffer_to_type();
-                if let Some(type_value) = type_value {
-                    self.tokens.push(LexerToken::new(
-                        LexerTokenKind::Type(type_value.clone()),
-                        TokenPosition::new(
-                            current_position.line,
-                            current_position.column - type_value.to_string().len(),
-                        ),
-                        TokenPosition::new(
-                            current_position.line,
-                            current_position.column - 1, // -1 because buffer.pop() to remove newline
-                        ),
-                    ));
-                }
-
-                self.buffer.clear();
+                self.lex_whitespace(&mut current_position);
                 continue;
             }
 
-            match LexerChar::from_str(&char) {
+            match char.parse() {
                 Ok(LexerChar::BlockCloseCurly) => {
-                    // Terminate lexing if we reach a block close curly, return
-                    self.tokens.push(LexerToken::new(
-                        LexerTokenKind::Symbol(LexerSymbol::BlockCloseCurly),
-                        current_position.clone(),
-                        current_position.clone(),
-                    ));
-
+                    self.lex_block_close(&mut current_position);
                     return (processed_count, current_position);
                 }
                 Ok(LexerChar::VarAssignmentColon) => {
-                    // When we reach the colon, lex the var idenitifier and push it to the tokens before the colon
-                    let (buffer, from, to) = lookbehind_raw_token(
-                        &current_position,
-                        &self.buffer,
-                        Some(LexerChar::VarAssignmentColon),
-                    );
-
-                    let buffered = buffer.join("");
-                    if !buffered.is_empty() {
-                        self.tokens.push(LexerToken::new(
-                            LexerTokenKind::Identifier(buffered.clone()),
-                            from,
-                            to,
-                        ));
-                    } else {
-                        panic!("Expected variable declaration identifier before colon")
-                    }
-                    self.tokens.push(LexerToken::new(
-                        LexerTokenKind::Symbol(LexerSymbol::VarAssignmentColon),
-                        current_position.clone(),
-                        current_position.clone(),
-                    ));
-                    self.buffer.clear();
+                    self.lex_var_assignment(&mut current_position);
                     continue;
                 }
                 Ok(LexerChar::BlockOpenCurly) => {
-                    // If we reach a block open curly, check current buffer for type and continue to lex for attributes
-                    let type_value = self.buffer_to_type();
-                    if let Some(type_value) = type_value {
-                        self.tokens.push(LexerToken::new(
-                            LexerTokenKind::Type(type_value.clone()),
-                            TokenPosition::new(
-                                current_position.line,
-                                current_position.column - type_value.to_string().len(),
-                            ),
-                            current_position.clone(),
-                        ));
-                    }
-
-                    self.tokens.push(LexerToken::new(
-                        LexerTokenKind::Symbol(LexerSymbol::BlockOpenCurly),
-                        current_position.clone(),
-                        current_position.clone(),
-                    ));
-
-                    let sub_chars = &self.chars[(index + 1)..];
-
-                    let mut block_lexer =
-                        AttributeBlockLexer::new(sub_chars, current_position.clone());
-
-                    let (block_count, block_position) = block_lexer.lex();
-
-                    current_position = block_position;
-
-                    processed_count += block_count;
-
-                    self.tokens.append(&mut block_lexer.tokens);
-
+                    self.lex_block_open(&mut current_position, &mut processed_count, &index);
                     return (processed_count, current_position);
                 }
                 _ => {
@@ -183,18 +173,7 @@ impl<'a> Lexer for VarDeclarationLexer<'a> {
             }
         }
 
-        // If we haven't returned already, we reached the end of the input. Check the buffer for any remaining token.
-        let type_value = self.buffer_to_type();
-        if let Some(type_value) = type_value {
-            self.tokens.push(LexerToken::new(
-                LexerTokenKind::Type(type_value.clone()),
-                TokenPosition::new(
-                    current_position.line,
-                    current_position.column + 1 - type_value.to_string().len(),
-                ),
-                current_position.clone(),
-            ));
-        }
+        self.lex_type_value(&mut current_position, None);
 
         (processed_count, current_position)
     }

@@ -21,9 +21,9 @@ Declaration:
             range:
               from:
                 line: 21
-                column: 17
+                column: 18
               to:
                 line: 21
-                column: 19
+                column: 20
           modifier: ~
           attributes: []

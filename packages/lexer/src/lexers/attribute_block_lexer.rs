@@ -55,116 +55,79 @@ impl<'a> AttributeBlockLexer<'a> {
 
         None
     }
-}
 
-impl<'a> Lexer for AttributeBlockLexer<'a> {
-    fn lex(&mut self) -> (usize, TokenPosition) {
-        let chars_iter = self.chars.iter();
-        self.buffer.clear();
+    fn lex_newline(&mut self, current_position: &mut TokenPosition) {
+        if self.buffer.len() > 1 {
+            let (buffer, from, to) = lookbehind_raw_token(
+                current_position,
+                &self.buffer,
+                Some(LexerChar::AttributeAssignmentEquals),
+            );
 
-        let mut processed_count = 0;
-        let mut current_position = self.start_position.clone();
+            let literal_value = self.buffer_to_literal(Some(buffer));
 
-        for char in chars_iter {
-            let char = char.to_owned();
-
-            processed_count += 1;
-            current_position.column += 1;
-
-            self.buffer.push(char.clone());
-
-            // Terminate lexing of a single attribute but look for more attributes
-            if is_newline(&char) {
-                if self.buffer.len() > 1 {
-                    let (buffer, from, to) = lookbehind_raw_token(
-                        &current_position,
-                        &self.buffer,
-                        Some(LexerChar::AttributeAssignmentEquals),
-                    );
-
-                    let literal_value = self.buffer_to_literal(Some(buffer));
-
-                    if let Some(literal_value) = literal_value {
-                        self.tokens.push(LexerToken::new(
-                            LexerTokenKind::Literal(literal_value.clone()),
-                            from,
-                            to,
-                        ));
-                    }
-                }
+            if let Some(literal_value) = literal_value {
                 self.tokens.push(LexerToken::new(
-                    LexerTokenKind::Symbol(LexerSymbol::Newline),
-                    current_position.clone(),
-                    current_position.clone(),
+                    LexerTokenKind::Literal(literal_value.clone()),
+                    from,
+                    to,
                 ));
-
-                self.buffer.clear();
-                current_position.line += 1;
-                current_position.column = 0;
-                continue;
-            }
-
-            if is_whitespace(&char) {
-                continue;
-            }
-
-            if char == LexerChar::AttributeAssignmentEquals.to_string() {
-                // When we reach the equals, lex the attribute idenitifier and push it to the tokens before the equals
-                let (buffer, from, to) = lookbehind_raw_token(
-                    &current_position,
-                    &self.buffer,
-                    Some(LexerChar::AttributeAssignmentEquals),
-                );
-
-                let buffered = buffer.join("");
-                if !buffered.is_empty() {
-                    self.tokens.push(LexerToken::new(
-                        LexerTokenKind::Identifier(buffered.clone()),
-                        from,
-                        to,
-                    ));
-                } else {
-                    panic!("Expected attribute identifier before equals")
-                }
-                self.tokens.push(LexerToken::new(
-                    LexerTokenKind::Symbol(LexerSymbol::AttributeAssignmentEquals),
-                    current_position.clone(),
-                    current_position.clone(),
-                ));
-                self.buffer.clear();
-                continue;
-            }
-
-            if char == LexerChar::BlockCloseCurly.to_string() {
-                // Terminate lexing if we reach a block close curly
-                let (buffer, from, to) = lookbehind_raw_token(
-                    &current_position,
-                    &self.buffer,
-                    Some(LexerChar::BlockCloseCurly),
-                );
-                let literal_value = self.buffer_to_literal(Some(buffer));
-                if let Some(literal_value) = literal_value {
-                    self.tokens.push(LexerToken::new(
-                        LexerTokenKind::Literal(literal_value.clone()),
-                        from,
-                        to,
-                    ));
-                }
-
-                self.tokens.push(LexerToken::new(
-                    LexerTokenKind::Symbol(LexerSymbol::BlockCloseCurly),
-                    current_position.clone(),
-                    current_position.clone(),
-                ));
-
-                return (processed_count, current_position);
             }
         }
 
-        // If we haven't returned already, we reached the end of the input. Check the buffer for any remaining token.
-        let (buffer, from, to) = lookbehind_raw_token(&current_position, &self.buffer, None);
+        self.tokens.push(LexerToken::new(
+            LexerTokenKind::Symbol(LexerSymbol::Newline),
+            current_position.clone(),
+            current_position.clone(),
+        ));
+
+        self.buffer.clear();
+        current_position.line += 1;
+        current_position.column = 0;
+    }
+
+    fn lex_attribute_assignment(&mut self, current_position: &mut TokenPosition) {
+        let (buffer, from, to) = lookbehind_raw_token(
+            current_position,
+            &self.buffer,
+            Some(LexerChar::AttributeAssignmentEquals),
+        );
+
+        let buffered = buffer.join("");
+        if !buffered.is_empty() {
+            self.tokens.push(LexerToken::new(
+                LexerTokenKind::Identifier(buffered.clone()),
+                from,
+                to,
+            ));
+        } else {
+            panic!("Expected attribute identifier before equals")
+        }
+        self.tokens.push(LexerToken::new(
+            LexerTokenKind::Symbol(LexerSymbol::AttributeAssignmentEquals),
+            current_position.clone(),
+            current_position.clone(),
+        ));
+        self.buffer.clear();
+    }
+
+    fn lex_block_close(&mut self, current_position: &mut TokenPosition) {
+        self.lex_literal_value(current_position);
+
+        self.tokens.push(LexerToken::new(
+            LexerTokenKind::Symbol(LexerSymbol::BlockCloseCurly),
+            current_position.clone(),
+            current_position.clone(),
+        ));
+    }
+
+    fn lex_literal_value(&mut self, current_position: &mut TokenPosition) {
+        let (buffer, from, to) = lookbehind_raw_token(
+            current_position,
+            &self.buffer,
+            Some(LexerChar::BlockCloseCurly),
+        );
         let literal_value = self.buffer_to_literal(Some(buffer));
-        println!("Literal value: {:?} - {:?}", literal_value, self.buffer);
         if let Some(literal_value) = literal_value {
             self.tokens.push(LexerToken::new(
                 LexerTokenKind::Literal(literal_value.clone()),
@@ -172,7 +135,45 @@ impl<'a> Lexer for AttributeBlockLexer<'a> {
                 to,
             ));
         }
+    }
+}
 
+impl<'a> Lexer for AttributeBlockLexer<'a> {
+    fn lex(&mut self) -> (usize, TokenPosition) {
+        let chars = self.chars.iter();
+
+        let mut processed_count = 0;
+        let mut current_position = self.start_position.clone();
+
+        for char in chars {
+            processed_count += 1;
+            current_position.column += 1;
+
+            self.buffer.push(char.clone());
+
+            if is_newline(char) {
+                self.lex_newline(&mut current_position);
+                continue;
+            }
+
+            if is_whitespace(char) {
+                continue;
+            }
+
+            match char.parse() {
+                Ok(LexerChar::AttributeAssignmentEquals) => {
+                    self.lex_attribute_assignment(&mut current_position);
+                    continue;
+                }
+                Ok(LexerChar::BlockCloseCurly) => {
+                    self.lex_block_close(&mut current_position);
+                    return (processed_count, current_position);
+                }
+                _ => {}
+            }
+        }
+
+        self.lex_literal_value(&mut current_position);
         (processed_count, current_position)
     }
 }
