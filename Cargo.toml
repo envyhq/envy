@@ -19,13 +19,13 @@ members = [
   "packages/code-generation/javascript",
   "packages/code-generation/__examples/javascript",
 
-  "packages/provider/core",
+  "packages/providers/core",
 
-  "packages/provider/providers/env",
-  "packages/provider/providers/__examples/env",
+  "packages/providers/providers/env",
+  "packages/providers/providers/__examples/env",
 
-  "packages/provider/providers/aws-secrets-manager",
-  "packages/provider/providers/__examples/aws-secrets-manager",
+  "packages/providers/providers/aws-secrets-manager",
+  "packages/providers/providers/__examples/aws-secrets-manager",
 
   "testing/nvx-parsing",
   "testing/unit",

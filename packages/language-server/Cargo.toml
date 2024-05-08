@@ -19,4 +19,3 @@ nv-parser = { path = "../parser" }
 nv-lexer = { path = "../lexer" }
 nv-position-indexer = { path = "../position_indexer" }
 nv-var-resolver = { path = "../resolvers/var" }
-nv-provider-env = { path = "../provider/providers/env" }

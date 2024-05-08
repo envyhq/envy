@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 log = "0.4.21"
-nv-provider-core = { path = "../../provider/core" }
+nv-provider-core = { path = "../../providers/core" }
 nv-parser = { path = "../../parser" }
 nv-provider-resolver = { path = "../provider" }
 futures = "0.3.30"

@@ -2,8 +2,8 @@
 
 A language for configuration.
 
-| | |
-|-|-|
+|                                                          |                                                                                                        |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | ![nv logo](./docs/assets/images/discord-server-logo.png) | ![nv syntax highlighting](./extensions/vscode-nv/docs/assets/images/vscode-nv-syntax-highlighting.png) |
 
 [nv FigJam discovery board](https://www.figma.com/file/YLWiYaLvchfUlrbmr4P0M2/NV-Discovery?type=whiteboard&node-id=0%3A1&t=7aag2YKaHTLDS4lW-1)
@@ -21,8 +21,8 @@ A language for configuration.
   - JavaScript - [Source](./packages/code-generation/javascript/src/lib.rs)
 - Code Formatter - **TODO**
 - Providers
-  - Env [Source](./packages/provider/providers/env/src/lib.rs)
-  - AWS Secrets Manager [Source](./packages/provider/providers/aws-secrets-manager/src/lib.rs)
+  - Env [Source](./packages/providers/providers/env/src/lib.rs)
+  - AWS Secrets Manager [Source](./packages/providers/providers/aws-secrets-manager/src/lib.rs)
   - AWS KMS - **TODO**
   - GCP Secret Manager - **TODO**
   - Azure Key Vault - **TODO**
@@ -53,7 +53,6 @@ A language for configuration.
 ## Examples
 
 A lot of packages have an examples/ directory to show simple usage of the packages API.
-
 
 ## LSP
 
