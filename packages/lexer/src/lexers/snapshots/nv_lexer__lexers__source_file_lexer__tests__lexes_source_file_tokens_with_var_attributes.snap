@@ -35,10 +35,10 @@ expression: lexer.tokens
   range:
     from:
       line: 1
-      column: 19
+      column: 18
     to:
       line: 1
-      column: 21
+      column: 20
 - kind:
     Symbol: Newline
   range:
@@ -100,10 +100,10 @@ expression: lexer.tokens
   range:
     from:
       line: 3
-      column: 27
+      column: 26
     to:
       line: 3
-      column: 29
+      column: 28
 - kind:
     Symbol: Newline
   range:
@@ -146,10 +146,10 @@ expression: lexer.tokens
   range:
     from:
       line: 4
-      column: 24
+      column: 23
     to:
       line: 4
-      column: 26
+      column: 25
 - kind:
     Symbol: BlockOpenCurly
   range:

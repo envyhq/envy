@@ -62,10 +62,10 @@ expression: lexer.tokens
   range:
     from:
       line: 33
-      column: 26
+      column: 25
     to:
       line: 33
-      column: 28
+      column: 27
 - kind:
     Symbol: Newline
   range:
@@ -127,10 +127,10 @@ expression: lexer.tokens
   range:
     from:
       line: 35
-      column: 23
+      column: 22
     to:
       line: 35
-      column: 25
+      column: 24
 - kind:
     Symbol: Newline
   range:

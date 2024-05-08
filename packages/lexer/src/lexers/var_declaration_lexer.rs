@@ -33,7 +33,6 @@ impl<'a> VarDeclarationLexer<'a> {
     }
 
     fn lex_newline(&mut self, current_position: &mut TokenPosition) {
-        self.buffer.pop(); //  remove the newline
         self.lex_type_value(current_position, Some(LexerChar::NewLine));
 
         self.tokens.push(LexerToken::new(
@@ -47,7 +46,6 @@ impl<'a> VarDeclarationLexer<'a> {
     }
 
     fn lex_whitespace(&mut self, current_position: &mut TokenPosition) {
-        self.buffer.pop(); //  remove the whitespace
         self.lex_type_value(current_position, None);
         self.buffer.clear();
     }

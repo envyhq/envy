@@ -35,10 +35,10 @@ expression: lexer.tokens
   range:
     from:
       line: 1
-      column: 19
+      column: 18
     to:
       line: 1
-      column: 21
+      column: 20
 - kind:
     Symbol: Newline
   range:
