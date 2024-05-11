@@ -10,6 +10,6 @@ nv-parser = { path = "../../../parser" }
 nv-lexer = { path = "../../../lexer" }
 nv-var-resolver = { path = "../../var/" }
 nv-provider-resolver = { path = "../../provider/" }
-nv-provider-env = { path = "../../../providers/providers/env" }
-nv-provider-aws-secrets-manager = { path = "../../../providers/providers/aws-secrets-manager" }
+nv-provider-env = { path = "../../../providers/providers/env/lib" }
+nv-provider-aws-secrets-manager = { path = "../../../providers/providers/aws-secrets-manager/lib" }
 futures = "0.3.30"

@@ -21,11 +21,13 @@ members = [
 
   "packages/providers/core",
 
-  "packages/providers/providers/env",
-  "packages/providers/providers/__examples/env",
+  "packages/providers/providers/env/lib",
+  "packages/providers/providers/env/server",
+  "packages/providers/providers/env/__examples",
 
-  "packages/providers/providers/aws-secrets-manager",
-  "packages/providers/providers/__examples/aws-secrets-manager",
+  "packages/providers/providers/aws-secrets-manager/lib",
+  "packages/providers/providers/aws-secrets-manager/server",
+  "packages/providers/providers/aws-secrets-manager/__examples",
 
   "testing/nvx-parsing",
   "testing/unit",

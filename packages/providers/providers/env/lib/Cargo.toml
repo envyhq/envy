@@ -5,4 +5,4 @@ edition = "2021"
 
 [dependencies]
 async-trait = "0.1.79"
-nv-provider-core = { path = "../../core" }
+nv-provider-core = { path = "../../../core" }

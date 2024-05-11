@@ -1152,6 +1152,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "nv-provider-aws-secrets-manager-server"
+version = "0.1.0"
+
+[[package]]
 name = "nv-provider-core"
 version = "0.1.0"
 dependencies = [
@@ -1166,6 +1170,10 @@ dependencies = [
  "async-trait",
  "nv-provider-core",
 ]
+
+[[package]]
+name = "nv-provider-env-server"
+version = "0.1.0"
 
 [[package]]
 name = "nv-provider-resolver"
