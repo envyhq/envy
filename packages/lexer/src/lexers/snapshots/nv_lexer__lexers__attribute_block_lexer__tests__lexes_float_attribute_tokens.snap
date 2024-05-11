@@ -1,0 +1,32 @@
+---
+source: packages/lexer/src/lexers/attribute_block_lexer.rs
+expression: lexer.tokens
+---
+- kind:
+    Identifier: attr
+  range:
+    from:
+      line: 0
+      column: 1
+    to:
+      line: 0
+      column: 4
+- kind:
+    Symbol: AttributeAssignmentEquals
+  range:
+    from:
+      line: 0
+      column: 6
+    to:
+      line: 0
+      column: 6
+- kind:
+    Literal:
+      Float: 1.23
+  range:
+    from:
+      line: 0
+      column: 8
+    to:
+      line: 0
+      column: 11

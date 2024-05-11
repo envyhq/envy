@@ -229,7 +229,7 @@ something = 4 }",
         let input = str_to_graphemes(
             "unique = true
 default = 2
-attribute = 3
+attribute = 3.3
 something = 4",
         );
 
@@ -240,6 +240,25 @@ something = 4",
         assert_eq!(count, input.len());
         assert_eq!(position, TokenPosition::new(3, 13));
         assert_eq!(lexer.tokens.len(), 15);
+
+        insta::assert_yaml_snapshot!(lexer.tokens);
+    }
+
+    #[test]
+    fn lexes_builtin_attribute_tokens() {
+        let input = str_to_graphemes(
+            "attr = true
+other = false
+another = nowt",
+        );
+
+        let mut lexer = AttributeBlockLexer::new(&input, TokenPosition::default());
+
+        let (count, position) = lexer.lex();
+
+        assert_eq!(count, input.len());
+        assert_eq!(position, TokenPosition::new(2, 14));
+        assert_eq!(lexer.tokens.len(), 11);
 
         insta::assert_yaml_snapshot!(lexer.tokens);
     }

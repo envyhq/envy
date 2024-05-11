@@ -3,141 +3,104 @@ source: packages/lexer/src/lexers/attribute_block_lexer.rs
 expression: lexer.tokens
 ---
 - kind:
-    Identifier: unique
+    Identifier: attr
   range:
     from:
       line: 0
       column: 1
     to:
       line: 0
-      column: 6
+      column: 4
 - kind:
     Symbol: AttributeAssignmentEquals
   range:
     from:
       line: 0
-      column: 8
+      column: 6
     to:
       line: 0
-      column: 8
+      column: 6
 - kind:
     Literal:
       Builtin: "True"
   range:
     from:
       line: 0
-      column: 10
+      column: 8
     to:
       line: 0
-      column: 13
+      column: 11
 - kind:
     Symbol: Newline
   range:
     from:
       line: 0
-      column: 14
+      column: 12
     to:
       line: 0
-      column: 14
+      column: 12
 - kind:
-    Identifier: default
+    Identifier: other
   range:
     from:
       line: 1
       column: 1
     to:
       line: 1
+      column: 5
+- kind:
+    Symbol: AttributeAssignmentEquals
+  range:
+    from:
+      line: 1
+      column: 7
+    to:
+      line: 1
+      column: 7
+- kind:
+    Literal:
+      Builtin: "False"
+  range:
+    from:
+      line: 1
+      column: 9
+    to:
+      line: 1
+      column: 13
+- kind:
+    Symbol: Newline
+  range:
+    from:
+      line: 1
+      column: 14
+    to:
+      line: 1
+      column: 14
+- kind:
+    Identifier: another
+  range:
+    from:
+      line: 2
+      column: 1
+    to:
+      line: 2
       column: 7
 - kind:
     Symbol: AttributeAssignmentEquals
   range:
     from:
-      line: 1
+      line: 2
       column: 9
     to:
-      line: 1
+      line: 2
       column: 9
 - kind:
     Literal:
-      Integer: 2
-  range:
-    from:
-      line: 1
-      column: 11
-    to:
-      line: 1
-      column: 11
-- kind:
-    Symbol: Newline
-  range:
-    from:
-      line: 1
-      column: 12
-    to:
-      line: 1
-      column: 12
-- kind:
-    Identifier: attribute
-  range:
-    from:
-      line: 2
-      column: 1
-    to:
-      line: 2
-      column: 9
-- kind:
-    Symbol: AttributeAssignmentEquals
+      Builtin: Nowt
   range:
     from:
       line: 2
       column: 11
     to:
       line: 2
-      column: 11
-- kind:
-    Literal:
-      Float: 3.3
-  range:
-    from:
-      line: 2
-      column: 13
-    to:
-      line: 2
-      column: 15
-- kind:
-    Symbol: Newline
-  range:
-    from:
-      line: 2
-      column: 16
-    to:
-      line: 2
-      column: 16
-- kind:
-    Identifier: something
-  range:
-    from:
-      line: 3
-      column: 1
-    to:
-      line: 3
-      column: 9
-- kind:
-    Symbol: AttributeAssignmentEquals
-  range:
-    from:
-      line: 3
-      column: 11
-    to:
-      line: 3
-      column: 11
-- kind:
-    Literal:
-      Integer: 4
-  range:
-    from:
-      line: 3
-      column: 13
-    to:
-      line: 3
-      column: 13
+      column: 14

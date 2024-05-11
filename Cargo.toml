@@ -3,10 +3,10 @@ resolver = "2"
 
 members = [
   "packages/parser",
-  "packages/parser/examples",
+  "packages/parser/__examples",
 
   "packages/lexer",
-  "packages/lexer/examples",
+  "packages/lexer/__examples",
 
   "packages/resolvers/var",
   "packages/resolvers/provider",

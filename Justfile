@@ -54,5 +54,5 @@ test:
 test-dev:
   cargo watch -x test
 test-coverage:
-  cargo tarpaulin --out html
-
+  cargo tarpaulin --out html --exclude-files '*/__examples/*'
+  open tarpaulin-report.html
