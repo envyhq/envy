@@ -1,4 +1,4 @@
-use nv_provider_core::{Server, SocketServer};
+use nv_provider_core::Server;
 
 #[tokio::main]
 async fn main() {

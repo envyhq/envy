@@ -19,7 +19,8 @@ members = [
   "packages/code-generation/javascript",
   "packages/code-generation/__examples/javascript",
 
-  "packages/providers/core",
+  "packages/providers/core/lib",
+  "packages/providers/core/load-testing",
 
   "packages/providers/providers/env/lib",
   "packages/providers/providers/env/server",

@@ -1,50 +1,34 @@
-use async_trait::async_trait;
+use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::fs::remove_file;
 use std::io::ErrorKind;
 use std::process::exit;
+use std::sync::{Arc, Mutex};
+use std::thread;
 use tokio::io::Interest;
 use tokio::net::{UnixListener, UnixStream};
 
 #[derive(Debug)]
+pub enum ServerError {
+    Write,
+    Read,
+    NoMessages,
+    SocketError,
+}
+
+#[derive(Debug)]
 pub struct Server {
     pub path: String,
-    pub handler: Handler,
 }
 
 impl Server {
     pub fn new(path: &str) -> Self {
         Self {
             path: path.to_owned(),
-            handler: Handler::default(),
         }
     }
-}
 
-#[derive(Debug, Clone, Default)]
-pub struct Handler {}
-
-#[async_trait]
-pub trait SocketHandler {
-    async fn handle_client(&self, stream: &UnixStream) -> Result<(), ServerError>;
-    fn read_message(&self, message: &UnixStream) -> Result<(), ServerError>;
-    fn write_message(&self, stream: &UnixStream) -> Result<(), ServerError>;
-}
-
-#[async_trait]
-pub trait SocketServer {
-    async fn start(&self) -> Result<(), ServerError>;
-}
-
-#[derive(Debug)]
-pub enum ServerError {
-    Write,
-    Read,
-}
-
-#[async_trait]
-impl SocketServer for Server {
-    async fn start(&self) -> Result<(), ServerError> {
+    pub async fn start(&self) -> Result<(), ServerError> {
         let path = self.path.clone();
         let clean_up = move || {
             let result = remove_file(path.clone());
@@ -78,8 +62,7 @@ impl SocketServer for Server {
 
             match socket {
                 Ok((stream, _addr)) => {
-                    let handler = self.handler.clone();
-                    tokio::spawn(async move { handler.handle_client(&stream).await });
+                    tokio::spawn(async move { Handler::new(&stream).handle().await });
                 }
                 Err(e) => {
                     log::error!("{:?}", e);
@@ -89,41 +72,72 @@ impl SocketServer for Server {
     }
 }
 
-#[async_trait]
-impl SocketHandler for Handler {
-    async fn handle_client(&self, stream: &UnixStream) -> Result<(), ServerError> {
+type Message = Vec<u8>;
+type Messages = Arc<Mutex<VecDeque<Message>>>;
+
+#[derive(Debug)]
+pub struct Handler<'a> {
+    pub stream: &'a UnixStream,
+
+    messages: Messages,
+}
+
+impl<'a> Handler<'a> {
+    fn new(stream: &'a UnixStream) -> Self {
+        Handler {
+            stream,
+            messages: Arc::new(Mutex::new(VecDeque::new())),
+        }
+    }
+    async fn handle(&mut self) -> Result<(), ServerError> {
         log::debug!("New client connected...");
 
         loop {
-            let ready = stream.ready(Interest::READABLE | Interest::WRITABLE).await;
+            let ready = self
+                .stream
+                .ready(Interest::READABLE | Interest::WRITABLE)
+                .await;
 
             log::debug!("Client ready resolved...");
             match ready {
                 Ok(ready) => {
                     log::debug!("Client is ready for...");
-                    if ready.is_readable() {
-                        log::debug!("Reading!");
-                        self.read_message(stream)?;
-                    }
 
-                    if ready.is_writable() {
-                        log::debug!("Writing!");
-                        self.write_message(stream)?;
-                    }
+                    thread::scope(|scope| {
+                        if ready.is_readable() {
+                            scope.spawn(|| {
+                                let _ = Handler::read_message(self.stream, self.messages.clone());
+                            });
+                        }
+
+                        if ready.is_writable() {
+                            scope.spawn(|| {
+                                let _ = Handler::write_message(self.stream, self.messages.clone());
+                            });
+                        }
+                    });
                 }
                 Err(e) => {
                     log::error!("Failed to read readiness; err = {:?}", e);
+                    break Err(ServerError::SocketError);
                 }
             }
         }
     }
 
-    fn read_message(&self, stream: &UnixStream) -> Result<(), ServerError> {
+    fn read_message(stream: &UnixStream, messages: Messages) -> Result<(), ServerError> {
         let mut message = vec![0; 1024];
         match stream.try_read(&mut message) {
             Ok(bytes_read) => {
                 message.truncate(bytes_read);
                 log::debug!("Message: {:?}", String::from_utf8(message.to_owned()));
+
+                log::debug!("enqueuing...");
+                messages
+                    .lock()
+                    .unwrap()
+                    .push_back("wow\n".as_bytes().into());
+                log::debug!("enqued!!");
 
                 Ok(())
             }
@@ -138,8 +152,17 @@ impl SocketHandler for Handler {
         }
     }
 
-    fn write_message(&self, stream: &UnixStream) -> Result<(), ServerError> {
-        match stream.try_write(b"hello world returned right back at you") {
+    fn write_message(stream: &UnixStream, messages: Messages) -> Result<(), ServerError> {
+        log::debug!("Checking messages");
+        let message = messages.lock().unwrap().pop_front();
+
+        if message.is_none() {
+            log::debug!("No messages");
+            return Err(ServerError::NoMessages);
+        }
+
+        log::debug!("Trying to write {:?}", message);
+        match stream.try_write(&message.unwrap()) {
             Ok(n) => {
                 log::debug!("Wrote {} bytes", n);
                 Ok(())
@@ -158,7 +181,7 @@ impl SocketHandler for Handler {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Server, SocketServer};
+    use crate::Server;
 
     #[tokio::test]
     async fn test_server() {
