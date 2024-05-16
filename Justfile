@@ -56,3 +56,6 @@ test-dev:
 test-coverage:
   cargo tarpaulin --out html --exclude-files '*/__examples/*'
   open tarpaulin-report.html
+
+release:
+  git cliff
