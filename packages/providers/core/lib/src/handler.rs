@@ -5,7 +5,7 @@ use std::fmt::Debug;
 use std::io::ErrorKind;
 use std::sync::Arc;
 use tokio::net::UnixStream;
-use tokio::sync::mpsc::{self};
+use tokio::sync::mpsc;
 use tokio::task::JoinHandle;
 
 #[derive(Debug)]

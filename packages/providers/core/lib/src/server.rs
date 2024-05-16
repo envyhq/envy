@@ -81,6 +81,10 @@ mod tests {
     use crate::{errors::ServerError, messages::Message, Server};
     use async_trait::async_trait;
     use std::sync::Arc;
+    use std::time::Duration;
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    use tokio::net::UnixStream;
+    use tokio::time::sleep;
 
     #[derive(Debug)]
     struct TestController {}
@@ -95,11 +99,25 @@ mod tests {
     #[tokio::test]
     async fn test_server() {
         let controller = Arc::new(TestController {});
+        let path = "/tmp/nv-provider.sock";
 
-        let server = Server::new("/tmp/test2.sock", controller);
+        let server = Server::new(path, controller);
 
-        let result = server.start().await;
+        tokio::spawn(async move {
+            let _ = server.start().await;
+        });
 
-        println!("Result: {:?}", result);
+        sleep(Duration::from_millis(100)).await;
+
+        let mut client = UnixStream::connect(path).await.unwrap();
+        let msg = b"who";
+        client.write_all(msg).await.unwrap();
+
+        let mut buf = [0; 1024];
+        let n = client.read(&mut buf).await.unwrap();
+
+        let response = String::from_utf8((buf[..n]).to_vec());
+
+        assert_eq!(response, Ok("wow\n".to_owned()));
     }
 }
