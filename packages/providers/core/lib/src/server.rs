@@ -1,5 +1,6 @@
 use crate::errors::ServerError;
 use crate::handler::Handler;
+use crate::messages::Message;
 use std::fmt::Debug;
 use std::fs::remove_file;
 use std::io::ErrorKind;
@@ -8,9 +9,19 @@ use std::sync::Arc;
 use tokio::net::UnixListener;
 use tokio::sync::RwLock;
 
+trait Writer {
+    fn write(&self, message: &Message);
+}
+
+trait Reader {
+    fn read(&self) -> Message;
+}
+
 #[derive(Debug)]
 pub struct Server {
     pub path: String,
+    pub writer: Writer,
+    pub reader: Writer,
 }
 
 impl Server {

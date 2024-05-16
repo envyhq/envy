@@ -22,21 +22,23 @@ impl Handler {
         log::debug!("New client connected...");
         // TODO: think about whether or not we need to authenticate/authorize
         // new clients in any way. It will probably go here.
-        let (req_tx, mut req_rx) = mpsc::channel(32);
-        // let (res_tx, mut res_rx) = mpsc::channel(32);
+        //
+        let (req_tx, req_rx) = mpsc::channel(16);
+        let (res_tx, res_rx) = mpsc::channel(16);
 
-        let read_tx = req_tx.clone();
+        let read_out = req_tx.clone();
         let read_stream = self.stream.clone();
         let read_thread: JoinHandle<Result<(), _>> = tokio::spawn(async move {
             loop {
                 let ready = read_stream.read().await.readable().await;
 
-                log::debug!("Client ready readable resolved...");
                 match ready {
                     Ok(_) => {
+                        log::debug!("Client readable...");
                         let request = Handler::read_message(read_stream.clone()).await;
                         if let Ok(request) = request {
-                            read_tx.send(request).await.unwrap();
+                            log::debug!("Sending request to write thread... {:?}", request);
+                            read_out.send(request).await.unwrap();
                         }
                     }
                     Err(e) => {
@@ -47,24 +49,42 @@ impl Handler {
             }
         });
 
+        let mut action_in = req_rx;
+        let action_out = res_tx;
+        let action_thread: JoinHandle<Result<(), _>> = tokio::spawn(async move {
+            loop {
+                while let Some(action) = action_in.recv().await {
+                    log::debug!("Processing action {:?} of {}...", action, action_in.len());
+
+                    if action == "quit\n".as_bytes() {
+                        log::debug!("Client requested to quit...");
+                        // TODO: we should exit gracefully here
+                        return Err(ServerError::SocketError);
+                    }
+
+                    let _ = action_out.send(action).await;
+                }
+            }
+        });
+
         let write_stream = self.stream.clone();
-        let mut write_rx = req_rx;
+        let mut write_in = res_rx;
         let write_thread: JoinHandle<Result<(), _>> = tokio::spawn(async move {
             loop {
-                while let Some(message) = write_rx.recv().await {
-                    println!("GOT = {:?}", String::from_utf8(message.clone()));
+                while let Some(message) = write_in.recv().await {
+                    log::debug!("Processing message {:?} of {}...", message, write_in.len());
 
                     let ready = write_stream.read().await.writable().await;
 
-                    log::debug!("Client ready writable resolved...");
                     match ready {
                         Ok(_) => {
+                            log::debug!("Client writable...");
                             let result =
                                 Handler::write_message(write_stream.clone(), message).await;
-                            println!("Result = {:?}", result);
+                            log::debug!("Wrote response {:?}", result);
                         }
                         Err(e) => {
-                            log::error!("Failed to read readiness; err = {:?}", e);
+                            log::error!("Failed to read readiness on write; err = {:?}", e);
                             return Err(ServerError::SocketError);
                         }
                     }
@@ -74,7 +94,11 @@ impl Handler {
 
         tokio::select! {
             _ = read_thread => {
-            log::debug!("Read thread exited");
+                log::debug!("Read thread exited");
+                    Ok(())
+            }
+            _ = action_thread => {
+                log::debug!("Action thread exited");
                     Ok(())
             }
             _ = write_thread => {
@@ -89,10 +113,7 @@ impl Handler {
         match stream.read().await.try_read(&mut message) {
             Ok(bytes_read) => {
                 message.truncate(bytes_read);
-                log::debug!("Message: {:?}", String::from_utf8(message.to_owned()));
-
-                log::debug!("enqueuing...");
-                log::debug!("enqued!!");
+                log::debug!("Read message: {:?}", String::from_utf8(message.to_owned()));
 
                 Ok("wow\n".as_bytes().into())
             }
