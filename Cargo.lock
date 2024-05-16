@@ -1622,6 +1622,7 @@ dependencies = [
 name = "nv-provider-env-server"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "env_logger",
  "log",
  "nv-provider-core",

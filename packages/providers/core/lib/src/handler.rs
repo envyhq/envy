@@ -1,24 +1,25 @@
 use crate::errors::ServerError;
 use crate::messages::Message;
+use crate::Controller;
 use std::fmt::Debug;
 use std::io::ErrorKind;
 use std::sync::Arc;
 use tokio::net::UnixStream;
 use tokio::sync::mpsc::{self};
-use tokio::sync::RwLock;
 use tokio::task::JoinHandle;
 
 #[derive(Debug)]
 pub struct Handler {
-    pub stream: Arc<RwLock<UnixStream>>,
+    pub stream: Arc<UnixStream>,
+    pub controller: Arc<dyn Controller>,
 }
 
 impl Handler {
-    pub fn new(stream: Arc<RwLock<UnixStream>>) -> Self {
-        Handler { stream }
+    pub fn new(stream: Arc<UnixStream>, controller: Arc<dyn Controller>) -> Self {
+        Handler { stream, controller }
     }
 
-    pub async fn handle(&mut self) -> Result<(), ServerError> {
+    pub async fn handle(&self) -> Result<(), ServerError> {
         log::debug!("New client connected...");
         // TODO: think about whether or not we need to authenticate/authorize
         // new clients in any way. It will probably go here.
@@ -30,7 +31,7 @@ impl Handler {
         let read_stream = self.stream.clone();
         let read_thread: JoinHandle<Result<(), _>> = tokio::spawn(async move {
             loop {
-                let ready = read_stream.read().await.readable().await;
+                let ready = read_stream.readable().await;
 
                 match ready {
                     Ok(_) => {
@@ -51,6 +52,7 @@ impl Handler {
 
         let mut action_in = req_rx;
         let action_out = res_tx;
+        let controller = self.controller.clone();
         let action_thread: JoinHandle<Result<(), _>> = tokio::spawn(async move {
             loop {
                 while let Some(action) = action_in.recv().await {
@@ -62,7 +64,9 @@ impl Handler {
                         return Err(ServerError::SocketError);
                     }
 
-                    let _ = action_out.send(action).await;
+                    let response = controller.action(&action).await.unwrap();
+
+                    let _ = action_out.send(response).await;
                 }
             }
         });
@@ -74,7 +78,9 @@ impl Handler {
                 while let Some(message) = write_in.recv().await {
                     log::debug!("Processing message {:?} of {}...", message, write_in.len());
 
-                    let ready = write_stream.read().await.writable().await;
+                    // Only lock for read (no mutex behaviour) as unix sockets are full duplex per client
+                    // and nv doesnt require managing strict ordering of messages
+                    let ready = write_stream.writable().await;
 
                     match ready {
                         Ok(_) => {
@@ -108,9 +114,9 @@ impl Handler {
         }
     }
 
-    async fn read_message(stream: Arc<RwLock<UnixStream>>) -> Result<Message, ServerError> {
+    async fn read_message(stream: Arc<UnixStream>) -> Result<Message, ServerError> {
         let mut message = vec![0; 1024];
-        match stream.read().await.try_read(&mut message) {
+        match stream.try_read(&mut message) {
             Ok(bytes_read) => {
                 message.truncate(bytes_read);
                 log::debug!("Read message: {:?}", String::from_utf8(message.to_owned()));
@@ -128,12 +134,9 @@ impl Handler {
         }
     }
 
-    async fn write_message(
-        stream: Arc<RwLock<UnixStream>>,
-        message: Message,
-    ) -> Result<(), ServerError> {
+    async fn write_message(stream: Arc<UnixStream>, message: Message) -> Result<(), ServerError> {
         log::debug!("Trying to write {:?}", message);
-        match stream.read().await.try_write(&message) {
+        match stream.try_write(&message) {
             Ok(n) => {
                 log::debug!("Wrote {} bytes", n);
                 Ok(())

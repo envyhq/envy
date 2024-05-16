@@ -4,5 +4,7 @@ mod messages;
 mod provider;
 mod server;
 
+pub use errors::ServerError;
+pub use messages::Message;
 pub use provider::{Provider, ProviderValueError};
-pub use server::Server;
+pub use server::{Controller, Server};

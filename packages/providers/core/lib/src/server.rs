@@ -1,33 +1,30 @@
 use crate::errors::ServerError;
 use crate::handler::Handler;
 use crate::messages::Message;
+use async_trait::async_trait;
 use std::fmt::Debug;
 use std::fs::remove_file;
 use std::io::ErrorKind;
 use std::process::exit;
 use std::sync::Arc;
 use tokio::net::UnixListener;
-use tokio::sync::RwLock;
 
-trait Writer {
-    fn write(&self, message: &Message);
-}
-
-trait Reader {
-    fn read(&self) -> Message;
+#[async_trait]
+pub trait Controller: Sync + Send + Debug {
+    async fn action(&self, message: &Message) -> Result<Message, ServerError>;
 }
 
 #[derive(Debug)]
 pub struct Server {
     pub path: String,
-    pub writer: Writer,
-    pub reader: Writer,
+    pub controller: Arc<dyn Controller>,
 }
 
 impl Server {
-    pub fn new(path: &str) -> Self {
+    pub fn new(path: &str, controller: Arc<dyn Controller>) -> Self {
         Self {
             path: path.to_owned(),
+            controller,
         }
     }
 
@@ -65,8 +62,9 @@ impl Server {
 
             match socket {
                 Ok((stream, _addr)) => {
+                    let controller = self.controller.clone();
                     tokio::spawn(async move {
-                        Handler::new(Arc::new(RwLock::new(stream))).handle().await
+                        Handler::new(Arc::new(stream), controller).handle().await
                     });
                 }
                 Err(e) => {
@@ -79,11 +77,26 @@ impl Server {
 
 #[cfg(test)]
 mod tests {
-    use crate::Server;
+    use super::Controller;
+    use crate::{errors::ServerError, messages::Message, Server};
+    use async_trait::async_trait;
+    use std::sync::Arc;
+
+    #[derive(Debug)]
+    struct TestController {}
+
+    #[async_trait]
+    impl Controller for TestController {
+        async fn action(&self, message: &Message) -> Result<Message, ServerError> {
+            Ok(message.clone())
+        }
+    }
 
     #[tokio::test]
     async fn test_server() {
-        let server = Server::new("/tmp/test2.sock");
+        let controller = Arc::new(TestController {});
+
+        let server = Server::new("/tmp/test2.sock", controller);
 
         let result = server.start().await;
 
