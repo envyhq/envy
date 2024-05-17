@@ -1,8 +1,16 @@
+use nv_provider_core::ServerError;
+
 mod charts;
 mod load;
 mod types;
 
-fn main() {
-    let (time, count, duration) = load::generate();
+#[tokio::main]
+async fn main() -> Result<(), ServerError> {
+    env_logger::init();
+
+    let (time, count, duration) = load::generate().await?;
+
     charts::generate(&time, &count, &duration);
+
+    Ok(())
 }

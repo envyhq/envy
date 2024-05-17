@@ -1353,6 +1353,10 @@ name = "load-testing"
 version = "0.1.0"
 dependencies = [
  "charming",
+ "env_logger",
+ "log",
+ "nv-provider-core",
+ "tokio",
 ]
 
 [[package]]

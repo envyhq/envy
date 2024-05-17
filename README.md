@@ -1,5 +1,7 @@
 # nv
 
+![CI workflow - test.yml](https://github.com/lbennett-stacki/nv/actions/workflows/test.yml/badge.svg?branch=main)
+
 A language for configuration.
 
 |                                                          |                                                                                                        |
