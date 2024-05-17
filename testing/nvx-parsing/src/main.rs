@@ -137,7 +137,6 @@ fn main() {
         while a_avg_tick_inner.lock().unwrap().is_none()
             || b_avg_tick_inner.lock().unwrap().is_none()
         {
-            thread::sleep(Duration::from_millis(100));
             print!("\x1B[2J\x1B[1;1H");
             log::info!("Elapsed: {:?}", start.elapsed());
         }

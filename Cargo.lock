@@ -1349,17 +1349,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "01cda141df6706de531b6c46c3a33ecca755538219bd484262fa09410c13539c"
 
 [[package]]
-name = "load-testing"
-version = "0.1.0"
-dependencies = [
- "charming",
- "env_logger",
- "log",
- "nv-provider-core",
- "tokio",
-]
-
-[[package]]
 name = "lock_api"
 version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1611,6 +1600,17 @@ dependencies = [
  "async-trait",
  "ctrlc",
  "log",
+ "tokio",
+]
+
+[[package]]
+name = "nv-provider-core-load-testing"
+version = "0.1.0"
+dependencies = [
+ "charming",
+ "env_logger",
+ "log",
+ "nv-provider-core",
  "tokio",
 ]
 

@@ -106,6 +106,7 @@ mod tests {
         tokio::spawn(async move {
             let _ = server.start().await;
         });
+        // TODO: no sleepy
         sleep(Duration::from_millis(100)).await;
 
         let mut client = UnixStream::connect(path).await.unwrap();

@@ -39,7 +39,7 @@ impl Handler {
                         let request = Handler::read_message(read_stream.clone()).await;
                         if let Ok(request) = request {
                             log::debug!("Sending request to write thread... {:?}", request);
-                            read_out.send(request).await.unwrap();
+                            let _ = read_out.send(request).await;
                         }
                     }
                     Err(e) => {

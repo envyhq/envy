@@ -15,6 +15,9 @@ impl Controller for TestController {
     }
 }
 
+pub static Y_DURATION_UNIT: &str = "µs";
+pub static X_DURATION_UNIT: &str = "s";
+
 pub async fn generate() -> Result<DataCollection, ServerError> {
     // let time = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     // let count = vec![100, 243, 123, 222, 312, 100, 243, 123, 222, 312];
@@ -30,32 +33,41 @@ pub async fn generate() -> Result<DataCollection, ServerError> {
     tokio::spawn(async move {
         let _ = server.start().await;
     });
+    // TODO: no sleepy
     sleep(Duration::from_millis(100)).await;
 
     let mut client = UnixStream::connect(path).await.unwrap();
     let msg = b"who";
 
-    let start = Instant::now();
+    let mut time = vec![];
+    let mut count = vec![];
+    let mut duration = vec![];
 
-    client.write_all(msg).await.unwrap();
+    let root_start = Instant::now();
 
-    let mut buf = [0; 1024];
-    let n = client.read(&mut buf).await.unwrap();
+    while root_start.elapsed() <= Duration::from_secs(10) {
+        let start = Instant::now();
 
-    let response = String::from_utf8((buf[..n]).to_vec());
+        client.write_all(msg).await.unwrap();
 
-    if response.unwrap() != "wow\n" {
-        return Err(ServerError::SocketError);
+        let mut buf = [0; 1024];
+        let n = client.read(&mut buf).await.unwrap();
+
+        let response = String::from_utf8((buf[..n]).to_vec());
+
+        if response.unwrap() != "wow\n" {
+            return Err(ServerError::SocketError);
+        }
+
+        let root_elapsed = root_start.elapsed().as_secs_f64().round() as i64;
+
+        let elapsed = start.elapsed().as_micros();
+        let elapsed = i64::try_from(elapsed).unwrap();
+
+        time.push(root_elapsed);
+        duration.push(elapsed);
+        count.push(count.len() as i64);
     }
-
-    let elapsed = start.elapsed().as_millis();
-    let elapsed = i64::try_from(elapsed).unwrap();
-
-    let time = vec![0];
-    let count = vec![1];
-    let duration = vec![elapsed];
-
-    println!("Elapsed time: {}ms", elapsed);
 
     Ok((time, count, duration))
 }
