@@ -10,7 +10,11 @@ async fn main() -> Result<(), ServerError> {
 
     let (time, count, duration) = load::generate().await?;
 
-    charts::generate(&time, &count, &duration);
+    charts::generate(
+        &time.lock().await,
+        &count.lock().await,
+        &duration.lock().await,
+    );
 
     Ok(())
 }

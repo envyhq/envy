@@ -6,4 +6,5 @@ pub enum ServerError {
     Read,
     NoMessages,
     SocketError,
+    WouldBlock,
 }
