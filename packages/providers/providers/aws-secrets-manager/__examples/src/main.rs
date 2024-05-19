@@ -8,7 +8,7 @@ async fn async_main() {
 
     let value = provider.get_value("TEST_SECRET").await;
 
-    log::debug!("provider value: {:#?}", value);
+    log::info!("provider value: {:#?}", value);
 }
 
 fn main() {

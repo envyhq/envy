@@ -72,8 +72,6 @@ impl Handler<TextDocumentHover> for TextDocumentHoverHandler {
             }
         }
 
-        log::debug!("Hover found no node");
-
         Ok(json!({
             "jsonrpc": "2.0",
             "id": req.base.id,

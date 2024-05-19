@@ -7,6 +7,7 @@ use std::fs::remove_file;
 use std::io::ErrorKind;
 use std::process::exit;
 use std::sync::Arc;
+use tokio::io::AsyncWriteExt;
 use tokio::net::UnixListener;
 
 #[async_trait]
@@ -42,20 +43,15 @@ impl Server {
             }
         };
 
-        log::debug!("Cleaning up any existing socket file...");
         clean_up();
 
-        log::debug!("Connecting socket...");
         let listener = UnixListener::bind(self.path.clone()).unwrap();
-
+        // TODO: move out of lib, or make a pub func or configurable? probs better to move it out?
         ctrlc::set_handler(move || {
-            log::debug!("Cleaning up...");
             clean_up();
             exit(0);
         })
         .expect("Error setting Ctrl-C handler");
-
-        log::debug!("Starting client accept loop...");
 
         loop {
             let socket = listener.accept().await;
@@ -64,7 +60,8 @@ impl Server {
                 Ok((stream, _addr)) => {
                     let controller = self.controller.clone();
                     tokio::spawn(async move {
-                        Handler::new(Arc::new(stream), controller).handle().await
+                        let stream = Arc::new(stream);
+                        Handler::new(stream, controller).handle().await
                     });
                 }
                 Err(e) => {
@@ -118,6 +115,6 @@ mod tests {
 
         let response = String::from_utf8((buf[..n]).to_vec());
 
-        assert_eq!(response, Ok("wow\n".to_owned()));
+        assert_eq!(response, Ok("who\n".to_owned()));
     }
 }

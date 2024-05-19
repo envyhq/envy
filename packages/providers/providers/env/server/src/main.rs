@@ -21,5 +21,5 @@ async fn main() {
 
     let result = server.start().await;
 
-    println!("Result: {:?}", result);
+    log::info!("Result: {:?}", result);
 }

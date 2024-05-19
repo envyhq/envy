@@ -46,7 +46,6 @@ impl<'de> serde::de::Visitor<'de> for LspMessageVisitor {
                     .and_then(Value::as_str)
                     .ok_or_else(|| serde::de::Error::missing_field("method"))?;
 
-                log::debug!("Found a request - {:?} {:?}", method, json_map);
                 match method {
                     "initialize" => {
                         let req: Initialize = serde_json::from_value(Value::Object(json_map))
@@ -72,8 +71,6 @@ impl<'de> serde::de::Visitor<'de> for LspMessageVisitor {
                     .get("method")
                     .and_then(Value::as_str)
                     .ok_or_else(|| serde::de::Error::missing_field("method"))?;
-
-                log::debug!("Found a notif - {:?} {:?}", method, json_map);
 
                 match method {
                     "initialized" => {
