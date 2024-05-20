@@ -75,9 +75,9 @@ impl Handler {
                                             break Err::<(), ServerError>(ServerError::SocketError);
                                         }
                                     }
-                                        Ok(_)  => {
-                                            break Ok(());
-                                        }
+                                    Ok(_)  => {
+                                        break Ok(());
+                                    }
                                      Err(ServerError::WouldBlock) => {
                                         continue;
                                     }
