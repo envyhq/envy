@@ -4,9 +4,9 @@ mod messages;
 mod provider;
 mod server;
 
-pub use errors::ServerError;
+pub use errors::{ProviderError, ProviderRetrievalError, ServerError};
 pub use messages::Message;
-pub use provider::{Provider, ProviderValueError};
+pub use provider::Provider;
 pub use server::{Controller, Server};
 
 pub use async_trait::async_trait;

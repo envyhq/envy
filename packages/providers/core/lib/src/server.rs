@@ -1,6 +1,7 @@
 use crate::errors::ServerError;
 use crate::handler::Handler;
 use crate::messages::Message;
+use crate::ProviderError;
 use async_trait::async_trait;
 use std::fmt::Debug;
 use std::fs::remove_file;
@@ -11,7 +12,7 @@ use tokio::net::UnixListener;
 
 #[async_trait]
 pub trait Controller: Sync + Send + Debug {
-    async fn action(&self, message: &Message) -> Result<Message, ServerError>;
+    async fn action(&self, message: &Message) -> Result<Message, ProviderError>;
 }
 
 #[derive(Debug)]
@@ -42,29 +43,26 @@ impl Server {
             }
         };
 
-        log::debug!("Cleaning up any existing socket file...");
         clean_up();
 
-        log::debug!("Connecting socket...");
         let listener = UnixListener::bind(self.path.clone()).unwrap();
-
+        // TODO: move out of lib
         ctrlc::set_handler(move || {
-            log::debug!("Cleaning up...");
             clean_up();
             exit(0);
         })
         .expect("Error setting Ctrl-C handler");
 
-        log::debug!("Starting client accept loop...");
-
         loop {
             let socket = listener.accept().await;
+            log::debug!("New client connected {:?}", socket);
 
             match socket {
                 Ok((stream, _addr)) => {
                     let controller = self.controller.clone();
                     tokio::spawn(async move {
-                        Handler::new(Arc::new(stream), controller).handle().await
+                        let stream = Arc::new(stream);
+                        Handler::new(stream, controller).handle().await
                     });
                 }
                 Err(e) => {
@@ -78,7 +76,8 @@ impl Server {
 #[cfg(test)]
 mod tests {
     use super::Controller;
-    use crate::{errors::ServerError, messages::Message, Server};
+    use crate::ProviderError;
+    use crate::{messages::Message, Server};
     use async_trait::async_trait;
     use std::sync::Arc;
     use std::time::Duration;
@@ -91,7 +90,7 @@ mod tests {
 
     #[async_trait]
     impl Controller for TestController {
-        async fn action(&self, message: &Message) -> Result<Message, ServerError> {
+        async fn action(&self, message: &Message) -> Result<Message, ProviderError> {
             Ok(message.clone())
         }
     }
@@ -118,6 +117,6 @@ mod tests {
 
         let response = String::from_utf8((buf[..n]).to_vec());
 
-        assert_eq!(response, Ok("wow\n".to_owned()));
+        assert_eq!(response, Ok("who".to_owned()));
     }
 }

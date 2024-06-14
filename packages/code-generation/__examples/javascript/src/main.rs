@@ -24,7 +24,7 @@ fn main() {
 
     let (processed_count, ast) = SourceFileParser::parse(&path, &lexer.tokens);
 
-    log::debug!("ast: {:#?} - processed_count: {}", ast, processed_count);
+    log::info!("ast: {:#?} - processed_count: {}", ast, processed_count);
 
     let generated_source = generate_javascript_source(nv_parser::AbstractSyntaxTree {
         root: Some(ast.as_ref().to_owned()),
