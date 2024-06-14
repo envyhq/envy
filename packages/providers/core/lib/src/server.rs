@@ -117,6 +117,6 @@ mod tests {
 
         let response = String::from_utf8((buf[..n]).to_vec());
 
-        assert_eq!(response, Ok("who\n".to_owned()));
+        assert_eq!(response, Ok("who".to_owned()));
     }
 }
