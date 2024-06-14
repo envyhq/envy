@@ -1,9 +1,6 @@
 use std::fmt::Debug;
 
-#[derive(Debug, Default)]
-pub struct ProviderValueError {
-    pub message: Option<String>,
-}
+use crate::ProviderError;
 
 #[async_trait::async_trait]
 pub trait Provider: Sync + Debug {
@@ -11,5 +8,5 @@ pub trait Provider: Sync + Debug {
     fn destroy(&self);
     fn name(&self) -> &'static str;
 
-    async fn get_value(&self, key: &str) -> Result<String, ProviderValueError>;
+    async fn get_value(&self, key: &str) -> Result<Vec<u8>, ProviderError>;
 }

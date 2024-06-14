@@ -19,5 +19,6 @@ Message: [HEADER][PAYLOAD]
     OPCODE: 1 byte
     CHECKSUM: 1 byte
     PAYLOAD_LENGTH: 4 bytes
+  PAYLOAD: ...
 
 ```

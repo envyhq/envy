@@ -1,6 +1,7 @@
 use crate::types::DataCollection;
-use nv_provider_core::{async_trait, Controller, Message, ServerError};
-use std::{sync::Arc, time::Duration};
+use nv_provider_core::{async_trait, Controller, Message, ProviderError, ServerError};
+use std::sync::Arc;
+use std::time::Duration;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::UnixStream;
 use tokio::sync::Mutex;
@@ -11,7 +12,7 @@ struct TestController {}
 
 #[async_trait]
 impl Controller for TestController {
-    async fn action(&self, message: &Message) -> Result<Message, ServerError> {
+    async fn action(&self, message: &Message) -> Result<Message, ProviderError> {
         Ok(message.clone())
     }
 }
@@ -22,68 +23,62 @@ pub static X_DURATION_UNIT: &str = "ms";
 pub async fn generate() -> Result<DataCollection, ServerError> {
     let path = "/tmp/env.provider.nv.sock";
 
-    let msg = b"who";
+    let msg = b"HOME";
+
+    let req_per_client = 10;
+    let clients = Arc::new(Mutex::new(vec![]));
 
     let time = Arc::new(Mutex::new(vec![]));
-    let count = Arc::new(Mutex::new(vec![]));
+    let req_count = Arc::new(Mutex::new(vec![]));
+    let client_count = Arc::new(Mutex::new(vec![]));
     let duration = Arc::new(Mutex::new(vec![]));
 
     let root_start = Instant::now();
 
     while root_start.elapsed() <= Duration::from_secs(10) {
-        println!("WTF");
         let start = Instant::now();
 
-        let client = UnixStream::connect(path).await;
+        let req_count_num = req_count.clone().lock().await.len() as i64;
+        if req_count_num == 0 || req_count_num % req_per_client == 0 {
+            let client = UnixStream::connect(path).await;
+            if client.is_err() {
+                log::debug!("BREAKING, stream err. {:?}", client);
+                break;
+            }
 
-        if client.is_err() {
-            continue;
-            // return Err(ServerError::SocketError);
+            let client = client.unwrap();
+            clients.lock().await.push(Arc::new(Mutex::new(client)));
         }
-        let mut client = client.unwrap();
 
-        println!("TICK");
-        let count = count.clone();
-        let time = time.clone();
-        let duration = duration.clone();
-        println!("TOCK");
-        client
-            .write_all(format!("{}{}", String::from_utf8(msg.to_vec()).unwrap(), 12345).as_bytes())
-            .await
-            .unwrap();
+        let client_count_num = clients.lock().await.len() as i64;
+        client_count.lock().await.push(client_count_num);
 
-        println!("TOCK 0");
+        let clients = clients.lock().await;
+        let client = clients.first().unwrap();
+        let mut client = client.lock().await;
+
+        client.write_all(msg).await.unwrap();
 
         let mut buf = [0; 1024];
         let n = client.read(&mut buf).await.unwrap();
 
-        println!("TOCK 1");
-
-        let _response = String::from_utf8((buf[..n]).to_vec());
+        let response = String::from_utf8((buf[..n]).to_vec());
+        log::debug!("Response received: {:?}", response);
 
         let root_elapsed = root_start.elapsed().as_millis() as i64;
 
         let elapsed = start.elapsed().as_micros();
         let elapsed = i64::try_from(elapsed).unwrap();
 
-        println!("TOCK 1.5");
-
         time.lock().await.push(root_elapsed);
-        println!("TOCK 2");
         duration.lock().await.push(elapsed);
-        println!("TOCK 3");
-        let count_num = count.clone().lock().await.len() as i64;
-        println!("TOCK 4");
-        count.clone().lock().await.push(count_num);
 
-        println!("TOCK DONE");
-
-        client.shutdown().await.unwrap();
-
-        println!("JOINY DONE");
+        req_count.lock().await.push(req_count_num);
     }
 
-    println!("DONE");
+    for client in clients.lock().await.iter() {
+        let _ = client.lock().await.shutdown().await;
+    }
 
-    Ok((time, count, duration))
+    Ok((time, req_count, client_count, duration))
 }

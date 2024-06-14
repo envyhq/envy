@@ -1586,6 +1586,7 @@ dependencies = [
  "async-trait",
  "aws-config",
  "aws-sdk-secretsmanager",
+ "log",
  "nv-provider-core",
 ]
 
@@ -1621,6 +1622,7 @@ name = "nv-provider-env"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "log",
  "nv-provider-core",
 ]
 
@@ -1632,6 +1634,7 @@ dependencies = [
  "env_logger",
  "log",
  "nv-provider-core",
+ "nv-provider-env",
  "tokio",
 ]
 

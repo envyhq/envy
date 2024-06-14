@@ -1,18 +1,18 @@
 use crate::errors::ServerError;
 use crate::handler::Handler;
 use crate::messages::Message;
+use crate::ProviderError;
 use async_trait::async_trait;
 use std::fmt::Debug;
 use std::fs::remove_file;
 use std::io::ErrorKind;
 use std::process::exit;
 use std::sync::Arc;
-use tokio::io::AsyncWriteExt;
 use tokio::net::UnixListener;
 
 #[async_trait]
 pub trait Controller: Sync + Send + Debug {
-    async fn action(&self, message: &Message) -> Result<Message, ServerError>;
+    async fn action(&self, message: &Message) -> Result<Message, ProviderError>;
 }
 
 #[derive(Debug)]
@@ -46,7 +46,7 @@ impl Server {
         clean_up();
 
         let listener = UnixListener::bind(self.path.clone()).unwrap();
-        // TODO: move out of lib, or make a pub func or configurable? probs better to move it out?
+        // TODO: move out of lib
         ctrlc::set_handler(move || {
             clean_up();
             exit(0);
@@ -55,6 +55,7 @@ impl Server {
 
         loop {
             let socket = listener.accept().await;
+            log::debug!("New client connected {:?}", socket);
 
             match socket {
                 Ok((stream, _addr)) => {
@@ -75,7 +76,8 @@ impl Server {
 #[cfg(test)]
 mod tests {
     use super::Controller;
-    use crate::{errors::ServerError, messages::Message, Server};
+    use crate::ProviderError;
+    use crate::{messages::Message, Server};
     use async_trait::async_trait;
     use std::sync::Arc;
     use std::time::Duration;
@@ -88,7 +90,7 @@ mod tests {
 
     #[async_trait]
     impl Controller for TestController {
-        async fn action(&self, message: &Message) -> Result<Message, ServerError> {
+        async fn action(&self, message: &Message) -> Result<Message, ProviderError> {
             Ok(message.clone())
         }
     }

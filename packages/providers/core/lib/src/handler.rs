@@ -1,9 +1,8 @@
-use crate::errors::ServerError;
+use crate::errors::{ServerError, ServerResult};
 use crate::messages::Message;
-use crate::Controller;
+use crate::{Controller, ProviderError};
 use std::fmt::Debug;
 use std::io::ErrorKind;
-use std::process::exit;
 use std::sync::Arc;
 use tokio::net::UnixStream;
 use tokio::sync::mpsc;
@@ -24,7 +23,7 @@ impl Handler {
     // In parallel, we read and write from the full duplex stream when its ready for such op.
     // "Actions" are also processed in their own green thread to allow for actions of varying
     // durations to be processed concurrently without blocking queue I/O.
-    pub async fn handle(&self) -> Result<(), ServerError> {
+    pub async fn handle(&self) -> Result<ServerResult, ServerError> {
         // TODO: think about whether or not we need to authenticate/authorize
         // new clients in any way. It will probably go here.
         // Had a thought today that the root problem is how to share a secret with both
@@ -50,10 +49,10 @@ impl Handler {
         let read_out = req_tx.clone();
         let read_stream = self.stream.clone();
         let read_cancel = cancel_token.clone();
-        let read_thread: JoinHandle<Result<(), ServerError>> = tokio::spawn(async move {
+        let read_thread: JoinHandle<Result<ServerResult, ServerError>> = tokio::spawn(async move {
             tokio::select! {
                 _ = read_cancel.cancelled() => {
-                    Ok(())
+                    Ok(ServerResult::ClientDisconnected)
                 }
                 result = async {
                     loop {
@@ -63,8 +62,7 @@ impl Handler {
                             Ok(_) => {
                                 let request = Handler::read_message(read_stream.clone()).await;
 
-                                    log::debug!("Read message; request = {:?}", request);
-
+                                log::debug!("Read message; request = {:?}", request);
 
                                 match request {
                                     Ok(request) if !request.is_empty() => {
@@ -72,12 +70,13 @@ impl Handler {
 
                                         if let Err(e) = result {
                                             log::error!("{:?} Failed to send out read response; err = {:?}", String::from_utf8(request), e);
-                                            break Err::<(), ServerError>(ServerError::SocketError);
+                                            break Err(ServerError::SocketError);
                                         }
                                     }
-                                    Ok(_)  => {
-                                        break Ok(());
-                                    }
+                                    Ok(_) => {
+                                        // Empty message means client shutdown
+                                        break Ok(ServerResult::ClientDisconnected);
+                                    },
                                      Err(ServerError::WouldBlock) => {
                                         continue;
                                     }
@@ -93,7 +92,6 @@ impl Handler {
                             }
                         }
                     }
-
                 } => {
                     result
                 }
@@ -101,111 +99,109 @@ impl Handler {
         });
 
         let mut action_in = req_rx;
-        let action_out = res_tx;
+        let action_out = res_tx.clone();
         let controller = self.controller.clone();
         let action_cancel = cancel_token.clone();
-        let action_thread: JoinHandle<Result<(), ServerError>> = tokio::spawn(async move {
-            tokio::select! {
-                _ = action_cancel.cancelled() => {
-                    Ok(())
-                }
-                result = async {
-                    let res: Result<(), ServerError> = loop {
-                        let message = action_in.recv().await;
-                        if message.is_none() {
-                            continue;
-                        }
-
-                        let action = message.unwrap();
-
-                        if action == "quit\n".as_bytes() {
-                            break Err(ServerError::SocketError);
-                        }
-
-                        let response = controller.action(&action).await.unwrap();
-
-                        let result = action_out.send(response).await;
-
-                        if result.is_err() {
-                            log::error!("Failed to action message; action = {:?} err = {:?}", String::from_utf8(action), result);
-                            break Err(ServerError::SocketError);
-                        }
-                    };
-
-                    res
-                } => {
-                    result
-                }
-            }
-        });
-
-        let write_stream = self.stream.clone();
-        let mut write_in = res_rx;
-        let write_cancel = cancel_token.clone();
-        let write_thread: JoinHandle<Result<(), ServerError>> = tokio::spawn(async move {
-            tokio::select! {
-                _ = write_cancel.cancelled() => {
-                    Ok(())
-                }
-                result = async {
-                    loop {
-                        let message = write_in.recv().await;
-
-                        if message.is_none() {
-                            continue;
-                        }
-
-                        let message = message.unwrap();
-
-
-                        let ready = write_stream.writable().await;
-
-                        let result: Result<(), ServerError> = match ready {
-                            Ok(_) => {
-                                let result = Handler::write_message(write_stream.clone(), message).await;
-
-                                    match result {
-                                        Err(ServerError::WouldBlock) => {
-                                            continue;
-                                        }
-                                        Err(e) => {
-                                            log::error!("Failed to write response; err = {:?}", e);
-                                            Err(e)
-                                        }
-                                        Ok(_) => { continue; }
-                                    }
+        let action_thread: JoinHandle<Result<ServerResult, ServerError>> = tokio::spawn(
+            async move {
+                tokio::select! {
+                    _ = action_cancel.cancelled() => {
+                        Ok(ServerResult::CancelledGracefully)
+                    }
+                    result = async {
+                        let res: Result<ServerResult, ServerError> = loop {
+                            let message = action_in.recv().await;
+                            if message.is_none() {
+                                continue;
                             }
-                            Err(e) => {
-                                log::error!("Failed to read readiness on write; err = {:?}", e);
-                                Err(ServerError::SocketError)
+
+                            let action = message.unwrap();
+
+                            let response = controller.action(&action).await;
+
+                            let result = action_out.send(response).await;
+
+                            if result.is_err() {
+                                log::error!("Failed to action message; action = {:?} err = {:?}", String::from_utf8(action), result);
+                                break Err(ServerError::SocketError);
                             }
                         };
 
-                        if result.is_err() {
-                            break Err::<(), ServerError>(ServerError::SocketError);
-                        }
-
+                        res
+                    } => {
+                        result
                     }
-                } => {
-                    result
                 }
+            },
+        );
 
-            }
-        });
+        let write_stream = self.stream.clone();
+        let mut write_in = res_rx;
+        let action_out_recover = res_tx;
+        let write_cancel = cancel_token.clone();
+        let write_thread: JoinHandle<Result<ServerResult, ServerError>> = tokio::spawn(
+            async move {
+                tokio::select! {
+                    _ = write_cancel.cancelled() => {
+                        Ok(ServerResult::CancelledGracefully)
+                    }
+                    result = async {
+                        loop {
+                            let message = write_in.recv().await;
+
+                            if message.is_none() {
+                                continue;
+                            }
+
+                            let message = message.unwrap();
+
+
+                            let ready = write_stream.writable().await;
+
+                            match ready {
+                                Ok(_) => {
+                                    let result = Handler::write_message(write_stream.clone(), message.clone()).await;
+
+                                        match result {
+                                            Err(ServerError::WouldBlock) => {
+                                                // TODO: test that this is required
+                                                let _ = action_out_recover.send(message).await;
+                                                continue;
+                                            }
+                                            Err(e) => {
+                                                log::error!("Failed to write response; err = {:?}", e);
+                                                break Err(e)
+                                            }
+                                            Ok(_) => { continue; }
+                                        }
+                                }
+                                Err(e) => {
+                                    log::error!("Failed to read readiness on write; err = {:?}", e);
+                                    break Err(ServerError::SocketError)
+                                }
+                            }
+                        }
+                    } => {
+                        result
+                    }
+
+                }
+            },
+        );
 
         tokio::select! {
                 result = read_thread => {
-                    log::error!("Read thread failed; err = {:?}", result);
+                    log::debug!("Read thread cancelled; result = {:?}", result);
                     cancel_token.cancel();
                     result.unwrap_or(Err(ServerError::SocketError))
                 }
                 result = action_thread => {
-                    log::error!("Action thread failed; err = {:?}", result);
+                    log::debug!("Action thread cancelled; result = {:?}", result);
                     cancel_token.cancel();
                     result.unwrap_or(Err(ServerError::SocketError))
                 }
                 result = write_thread => {
-                    log::error!("Write thread failed; err = {:?}", result);
+                    log::debug!("Write thread cancelled; result = {:?}", result);
                     cancel_token.cancel();
                     result.unwrap_or(Err(ServerError::SocketError))
                 }
@@ -228,7 +224,13 @@ impl Handler {
         }
     }
 
-    async fn write_message(stream: Arc<UnixStream>, message: Message) -> Result<(), ServerError> {
+    async fn write_message(
+        stream: Arc<UnixStream>,
+        res: Result<Message, ProviderError>,
+    ) -> Result<(), ServerError> {
+        // TODO: serialize properly, dev only
+        let message = res.unwrap_or("nout".as_bytes().into());
+
         match stream.try_write(&message) {
             Ok(_) => Ok(()),
             Err(ref e) if e.kind() == ErrorKind::WouldBlock => Err(ServerError::Write),

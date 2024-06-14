@@ -13,7 +13,7 @@ pub enum ResolutionError {
 #[derive(Debug, Clone)]
 pub struct ResolvedValue {
     pub key: String,
-    pub value: Option<String>,
+    pub value: Option<Vec<u8>>,
     pub provider: String,
 }
 

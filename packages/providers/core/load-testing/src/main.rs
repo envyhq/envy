@@ -8,11 +8,12 @@ mod types;
 async fn main() -> Result<(), ServerError> {
     env_logger::init();
 
-    let (time, count, duration) = load::generate().await?;
+    let (time, count, clients, duration) = load::generate().await?;
 
     charts::generate(
         &time.lock().await,
         &count.lock().await,
+        &clients.lock().await,
         &duration.lock().await,
     );
 

@@ -65,7 +65,7 @@ impl Handler<TextDocumentHover> for TextDocumentHoverHandler {
                     "result": {
                         "contents": format!("|Provider|Key|Value|
 |---|---|---|
-|{}|{}|{}|", resolved.provider, resolved.key, resolved.value.clone().unwrap_or("Not set".to_owned()))
+|{}|{}|{}|", resolved.provider, resolved.key, resolved.value.as_ref().map(|v| String::from_utf8(v.clone()).unwrap()).unwrap_or("Not set".to_owned()))
 
                 }
                 }));
