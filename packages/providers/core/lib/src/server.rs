@@ -60,10 +60,9 @@ impl Server {
             match socket {
                 Ok((stream, _addr)) => {
                     let controller = self.controller.clone();
-                    tokio::spawn(async move {
-                        let stream = Arc::new(stream);
-                        Handler::new(stream, controller).handle().await
-                    });
+                    let stream = Arc::new(stream);
+                    let handler = Arc::new(Handler::new(stream, controller));
+                    tokio::spawn(async move { handler.handle().await });
                 }
                 Err(e) => {
                     log::error!("{:?}", e);

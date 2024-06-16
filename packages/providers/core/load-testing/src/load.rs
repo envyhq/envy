@@ -1,8 +1,11 @@
 use crate::types::DataCollection;
-use nv_provider_core::{async_trait, Controller, Message, ProviderError, ServerError};
+use nv_provider_core::{
+    async_trait, Controller, Message, MessageDeserializer, MessageStreamReader, ProviderError,
+    ServerError,
+};
 use std::sync::Arc;
 use std::time::Duration;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;
 use tokio::sync::Mutex;
 use tokio::time::Instant;
@@ -21,6 +24,8 @@ pub static Y_DURATION_UNIT: &str = "µs";
 pub static X_DURATION_UNIT: &str = "ms";
 
 pub async fn generate() -> Result<DataCollection, ServerError> {
+    log::warn!("Please ensure the OS ulimit is increased for load testing. `ulimit -n 1048576`");
+
     let path = "/tmp/env.provider.nv.sock";
 
     let msg = b"HOME";
@@ -35,7 +40,13 @@ pub async fn generate() -> Result<DataCollection, ServerError> {
 
     let root_start = Instant::now();
 
-    while root_start.elapsed() <= Duration::from_secs(10) {
+    let max_runs = 1.0; // or std::f32::INFINITY
+    let mut runs_count = 0.0;
+
+    while runs_count < max_runs && root_start.elapsed() <= Duration::from_secs(10) {
+        runs_count += 1.0;
+        log::debug!("Tick {} {:?}", runs_count, root_start.elapsed());
+
         let start = Instant::now();
 
         let req_count_num = req_count.clone().lock().await.len() as i64;
@@ -55,15 +66,40 @@ pub async fn generate() -> Result<DataCollection, ServerError> {
 
         let clients = clients.lock().await;
         let client = clients.first().unwrap();
-        let mut client = client.lock().await;
+        let writable_client = client.clone();
+        let mut writable_client = writable_client.lock().await;
 
-        client.write_all(msg).await.unwrap();
+        log::debug!("Writing msg... {:?}", msg);
+        writable_client.write_all(msg).await.unwrap();
 
-        let mut buf = [0; 1024];
-        let n = client.read(&mut buf).await.unwrap();
+        std::mem::drop(writable_client);
 
-        let response = String::from_utf8((buf[..n]).to_vec());
-        log::debug!("Response received: {:?}", response);
+        log::debug!("Reading response...");
+        let message = MessageStreamReader::read_message(client).await.unwrap();
+
+        log::debug!("Message read: {:?}", message);
+        log::debug!("Length read: {:?}", message.len());
+
+        let deserialized = MessageDeserializer::deserialize(&message);
+
+        match deserialized {
+            Ok(res) => {
+                log::debug!("Deserialized header {:?}", res.0);
+                log::debug!("Deserialized payload {:?}", res.1);
+                log::debug!(
+                    "Deserialized payload encoded UTF8 {:?}",
+                    String::from_utf8(res.1)
+                );
+                // TODO: assert utf8 success?
+            }
+
+            Err(err) => {
+                log::error!(
+                    "Error deserializing message response in load test {:?}",
+                    err
+                );
+            }
+        }
 
         let root_elapsed = root_start.elapsed().as_millis() as i64;
 

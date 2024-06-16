@@ -1,5 +1,6 @@
 use crate::errors::{ServerError, ServerResult};
 use crate::messages::Message;
+use crate::protocol::MessageSerializer;
 use crate::{Controller, ProviderError};
 use std::fmt::Debug;
 use std::io::ErrorKind;
@@ -13,17 +14,22 @@ use tokio_util::sync::CancellationToken;
 pub struct Handler {
     pub stream: Arc<UnixStream>,
     pub controller: Arc<dyn Controller>,
+    pub serializer: MessageSerializer,
 }
 
 impl Handler {
     pub fn new(stream: Arc<UnixStream>, controller: Arc<dyn Controller>) -> Self {
-        Handler { stream, controller }
+        Handler {
+            stream,
+            controller,
+            serializer: MessageSerializer {},
+        }
     }
 
     // In parallel, we read and write from the full duplex stream when its ready for such op.
     // "Actions" are also processed in their own green thread to allow for actions of varying
     // durations to be processed concurrently without blocking queue I/O.
-    pub async fn handle(&self) -> Result<ServerResult, ServerError> {
+    pub async fn handle(self: Arc<Self>) -> Result<ServerResult, ServerError> {
         // TODO: think about whether or not we need to authenticate/authorize
         // new clients in any way. It will probably go here.
         // Had a thought today that the root problem is how to share a secret with both
@@ -139,6 +145,7 @@ impl Handler {
         let mut write_in = res_rx;
         let action_out_recover = res_tx;
         let write_cancel = cancel_token.clone();
+        let handler: Arc<Handler> = Arc::clone(&self);
         let write_thread: JoinHandle<Result<ServerResult, ServerError>> = tokio::spawn(
             async move {
                 tokio::select! {
@@ -160,7 +167,7 @@ impl Handler {
 
                             match ready {
                                 Ok(_) => {
-                                    let result = Handler::write_message(write_stream.clone(), message.clone()).await;
+                                    let result = handler.write_message(write_stream.clone(), message.clone()).await;
 
                                         match result {
                                             Err(ServerError::WouldBlock) => {
@@ -225,13 +232,14 @@ impl Handler {
     }
 
     async fn write_message(
+        &self,
         stream: Arc<UnixStream>,
         res: Result<Message, ProviderError>,
     ) -> Result<(), ServerError> {
-        // TODO: serialize properly, dev only
         let message = res.unwrap_or("nout".as_bytes().into());
+        let serialized = self.serializer.serialize(message);
 
-        match stream.try_write(&message) {
+        match stream.try_write(&serialized) {
             Ok(_) => Ok(()),
             Err(ref e) if e.kind() == ErrorKind::WouldBlock => Err(ServerError::Write),
             Err(e) => {
