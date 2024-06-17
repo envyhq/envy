@@ -17,7 +17,7 @@ impl Provider for EnvProvider {
     async fn get_value(&self, key: &str) -> Result<Vec<u8>, ProviderError> {
         log::debug!("Getting EnvProvider value for key {}", key);
         let result = env::var(key).map_err(|error| {
-            log::error!("ENV PROV ERR {:?}", error);
+            log::error!("Env prov err {:?}", error);
 
             match error {
                 env::VarError::NotPresent => ProviderError::NoValueForKey,

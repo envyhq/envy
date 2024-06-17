@@ -1601,6 +1601,8 @@ dependencies = [
  "async-trait",
  "bytes",
  "ctrlc",
+ "env_logger",
+ "insta",
  "log",
  "tokio",
  "tokio-util",

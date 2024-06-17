@@ -84,13 +84,12 @@ pub async fn generate() -> Result<DataCollection, ServerError> {
 
         match deserialized {
             Ok(res) => {
-                log::debug!("Deserialized header {:?}", res.0);
-                log::debug!("Deserialized payload {:?}", res.1);
+                log::debug!("Deserialized header {:?}", res.header);
+                log::debug!("Deserialized payload {:?}", res.payload);
                 log::debug!(
                     "Deserialized payload encoded UTF8 {:?}",
-                    String::from_utf8(res.1)
+                    String::from_utf8(res.payload)
                 );
-                // TODO: assert utf8 success?
             }
 
             Err(err) => {

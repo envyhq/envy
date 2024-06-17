@@ -7,7 +7,7 @@ use tokio::{io, net::UnixStream};
 use crate::{messages::MessageSlice, Message};
 
 #[repr(u8)]
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Opcode {
     Initialize = 0x1,
     Destroy = 0x2,
@@ -17,10 +17,22 @@ pub enum Opcode {
 
 impl Opcode {
     fn as_byte(&self) -> u8 {
-        self as *const _ as u8
+        log::debug!("Converting opcode {:?} to opcode byte", self);
+        let byte = self.clone() as u8;
+
+        log::debug!(
+            "TEMP self:{:?} ---- getvalue:{:?} ---- static0x3:{:?} ---- byte:{:?}",
+            self,
+            Opcode::GetValue,
+            0x3,
+            byte
+        );
+
+        byte
     }
 
     fn from_byte(byte: u8) -> Result<Opcode, ProtocolError> {
+        log::debug!("Converting opcode byte {} to opcode", byte);
         // TODO: has to be a better way, also see similar conversions to improve in LSP, lexer and parser
         match byte {
             0x1 => Ok(Opcode::Initialize),
@@ -40,10 +52,10 @@ type Payload = Vec<u8>;
 
 #[derive(Debug)]
 pub struct Header {
-    version: u8,
-    opcode: Opcode,
-    checksum: u16,
-    payload_length: u32,
+    pub version: u8,
+    pub opcode: Opcode,
+    pub checksum: u16,
+    pub payload_length: u32,
 }
 
 impl Header {
@@ -53,6 +65,12 @@ impl Header {
 
         let checksum_bytes = self.checksum.to_be_bytes();
         let payload_length_bytes = self.payload_length.to_be_bytes();
+
+        log::debug!(
+            "HeaderBytes to Header, found payload length {:?} from {:?}",
+            payload_length_bytes,
+            self.payload_length
+        );
 
         bytes = bytes
             .iter()
@@ -66,17 +84,25 @@ impl Header {
 
     fn from_message(message: MessageSlice) -> Result<Header, ProtocolError> {
         let version = *message.first().ok_or(ProtocolError::InvalidHeader)?;
+        log::debug!("Header from message, version:{:?}", version);
         let opcode = *message.get(1).ok_or(ProtocolError::InvalidHeader)?;
+        log::debug!("Header from message, opcode:{:?}", opcode);
         let checksum: [u8; 2] = message
-            .get(1..3)
+            .get(2..=3)
             .ok_or(ProtocolError::InvalidHeader)?
             .try_into()
             .or(Err(ProtocolError::InvalidHeader))?;
+        log::debug!("Header from message, checksum:{:?}", checksum);
         let payload_length: [u8; 4] = message
-            .get(3..7)
+            .get(4..=7)
             .ok_or(ProtocolError::InvalidHeader)?
             .try_into()
             .or(Err(ProtocolError::InvalidHeader))?;
+        log::debug!("Header from message, payload_length:{:?}", payload_length);
+        log::debug!(
+            "Header from message, payload_length AS BE BYTES:{:?}",
+            u32::from_be_bytes(payload_length)
+        );
 
         Ok(Header {
             version,
@@ -89,6 +115,8 @@ impl Header {
 
 impl MessageSerializer {
     pub fn serialize(&self, payload: Payload) -> Message {
+        log::debug!("Serializing payload {:?}", payload);
+
         let header = self.generate_header(&payload);
 
         header.iter().chain(payload.iter()).copied().collect()
@@ -117,20 +145,37 @@ pub enum ProtocolError {
 
 pub struct MessageDeserializer {}
 
+pub struct DeserializedMessage {
+    pub header: Header,
+    pub payload: Payload,
+}
+
 impl MessageDeserializer {
-    pub fn deserialize(message: MessageSlice) -> Result<(Header, Payload), ProtocolError> {
+    // TODO: use a struct to return instead of tuple
+    pub fn deserialize(message: MessageSlice) -> Result<DeserializedMessage, ProtocolError> {
+        log::debug!("Deserialize on message called: {:?}", message);
+
         let header = Header::from_message(message)?;
-        let max_payload_index: usize = (7 + header.payload_length)
+        let max_payload_index: usize = (8 + header.payload_length)
             .try_into()
             .or(Err(ProtocolError::UnreadableStream))?;
-        let payload: &[u8] = message
-            .get(7..max_payload_index)
-            .ok_or(ProtocolError::InvalidPayload)?;
+
+        let payload = message.get(8..max_payload_index);
+        log::debug!("TEMP Payload check {:?}", payload);
+
+        let payload: Vec<u8> = payload.ok_or(ProtocolError::InvalidPayload)?.to_vec();
+
+        log::debug!(
+            "Deserialize found a payload of len {}: {:?} between indexes 7..{}",
+            payload.len(),
+            payload,
+            max_payload_index
+        );
 
         // TODO: message may have left over bytes from another/the next message.
         // We need to handle this.
 
-        Ok((header, payload.to_vec()))
+        Ok(DeserializedMessage { header, payload })
     }
 }
 
