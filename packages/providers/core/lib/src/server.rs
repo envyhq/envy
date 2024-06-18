@@ -60,10 +60,9 @@ impl Server {
             match socket {
                 Ok((stream, _addr)) => {
                     let controller = self.controller.clone();
-                    tokio::spawn(async move {
-                        let stream = Arc::new(stream);
-                        Handler::new(stream, controller).handle().await
-                    });
+                    let stream = Arc::new(stream);
+                    let handler = Arc::new(Handler::new(stream, controller));
+                    tokio::spawn(async move { handler.handle().await });
                 }
                 Err(e) => {
                     log::error!("{:?}", e);
@@ -76,13 +75,16 @@ impl Server {
 #[cfg(test)]
 mod tests {
     use super::Controller;
-    use crate::ProviderError;
+    use crate::protocol::Opcode;
     use crate::{messages::Message, Server};
+    use crate::{MessageDeserializer, MessageStreamReader, ProviderError};
     use async_trait::async_trait;
+    use insta::assert_snapshot;
     use std::sync::Arc;
     use std::time::Duration;
-    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    use tokio::io::AsyncWriteExt;
     use tokio::net::UnixStream;
+    use tokio::sync::Mutex;
     use tokio::time::sleep;
 
     #[derive(Debug)]
@@ -91,12 +93,16 @@ mod tests {
     #[async_trait]
     impl Controller for TestController {
         async fn action(&self, message: &Message) -> Result<Message, ProviderError> {
-            Ok(message.clone())
+            log::debug!("TestController received message {:?}", message);
+            let response = "nout".as_bytes().to_vec();
+            Ok(response)
         }
     }
 
     #[tokio::test]
     async fn test_server() {
+        env_logger::init();
+
         let controller = Arc::new(TestController {});
         let path = "/tmp/nv-provider.sock";
 
@@ -105,18 +111,46 @@ mod tests {
         tokio::spawn(async move {
             let _ = server.start().await;
         });
-        // TODO: no sleepy
+        // TODO: no sleepy, receive signal that server is ready instead
         sleep(Duration::from_millis(100)).await;
 
-        let mut client = UnixStream::connect(path).await.unwrap();
+        let client = Arc::new(Mutex::new(UnixStream::connect(path).await.unwrap()));
         let msg = b"who";
-        client.write_all(msg).await.unwrap();
 
-        let mut buf = [0; 1024];
-        let n = client.read(&mut buf).await.unwrap();
+        let writable_client = client.clone();
+        let mut writable_client = writable_client.lock().await;
+        writable_client.write_all(msg).await.unwrap();
+        std::mem::drop(writable_client);
 
-        let response = String::from_utf8((buf[..n]).to_vec());
+        log::debug!("Reading response...");
+        let message = MessageStreamReader::read_message(&client).await.unwrap();
 
-        assert_eq!(response, Ok("who".to_owned()));
+        log::debug!("Message read: {:?}", message);
+        log::debug!("Length read: {:?}", message.len());
+
+        let deserialized = MessageDeserializer::deserialize(&message);
+
+        match deserialized {
+            Ok(res) => {
+                log::debug!("Deserialized header {:?}", res.header);
+                log::debug!("Deserialized payload {:?}", res.payload);
+
+                let header = res.header;
+                let payload = res.payload;
+                assert_eq!(header.version, 0x0);
+                assert_eq!(header.opcode, Opcode::GetValue);
+                assert_snapshot!(header.checksum);
+                assert_eq!(header.payload_length, 4);
+                assert_eq!(String::from_utf8(payload), Ok("nout".to_owned()));
+            }
+
+            Err(err) => {
+                log::error!(
+                    "Error deserializing message response in server test {:?}",
+                    err
+                );
+                panic!("Deserialize should not error");
+            }
+        }
     }
 }
