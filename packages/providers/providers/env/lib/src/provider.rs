@@ -21,7 +21,6 @@ impl Provider for EnvProvider {
 
             match error {
                 env::VarError::NotPresent => ProviderError::NoValueForKey,
-                // TODO: do it properly
                 _ => ProviderError::ExplodeyProvider,
             }
         });

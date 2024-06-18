@@ -33,7 +33,6 @@ impl Opcode {
 
     fn from_byte(byte: u8) -> Result<Opcode, ProtocolError> {
         log::debug!("Converting opcode byte {} to opcode", byte);
-        // TODO: has to be a better way, also see similar conversions to improve in LSP, lexer and parser
         match byte {
             0x1 => Ok(Opcode::Initialize),
             0x2 => Ok(Opcode::Destroy),
@@ -85,24 +84,23 @@ impl Header {
     fn from_message(message: MessageSlice) -> Result<Header, ProtocolError> {
         let version = *message.first().ok_or(ProtocolError::InvalidHeader)?;
         log::debug!("Header from message, version:{:?}", version);
+
         let opcode = *message.get(1).ok_or(ProtocolError::InvalidHeader)?;
         log::debug!("Header from message, opcode:{:?}", opcode);
+
         let checksum: [u8; 2] = message
             .get(2..=3)
             .ok_or(ProtocolError::InvalidHeader)?
             .try_into()
             .or(Err(ProtocolError::InvalidHeader))?;
         log::debug!("Header from message, checksum:{:?}", checksum);
+
         let payload_length: [u8; 4] = message
             .get(4..=7)
             .ok_or(ProtocolError::InvalidHeader)?
             .try_into()
             .or(Err(ProtocolError::InvalidHeader))?;
         log::debug!("Header from message, payload_length:{:?}", payload_length);
-        log::debug!(
-            "Header from message, payload_length AS BE BYTES:{:?}",
-            u32::from_be_bytes(payload_length)
-        );
 
         Ok(Header {
             version,
@@ -114,23 +112,66 @@ impl Header {
 }
 
 impl MessageSerializer {
-    pub fn serialize(&self, payload: Payload) -> Message {
+    pub fn serialize(&self, payload: Payload) -> Result<Message, ProtocolError> {
         log::debug!("Serializing payload {:?}", payload);
 
-        let header = self.generate_header(&payload);
+        let header = MessageSerializer::generate_header(&payload)?;
 
-        header.iter().chain(payload.iter()).copied().collect()
+        Ok(header.iter().chain(payload.iter()).copied().collect())
     }
 
-    fn generate_header(&self, payload: &Payload) -> Vec<u8> {
-        let header = Header {
-            version: 0x0, // TODO: get from git tags at compile time??
+    fn generate_header(payload: &Payload) -> Result<Vec<u8>, ProtocolError> {
+        let mut header = Header {
+            version: 0x1,
             opcode: Opcode::GetValue,
             checksum: 0x0,
-            payload_length: payload.len() as u32, // TODO: try from
+            payload_length: payload
+                .len()
+                .try_into()
+                .map_err(|_| ProtocolError::InvalidPayload)?,
         };
 
-        header.to_bytes()
+        let header_bytes = header.to_bytes();
+
+        header.checksum = MessageSerializer::generate_checksum(&header_bytes, payload)?;
+
+        Ok(header.to_bytes())
+    }
+
+    fn generate_checksum(header_bytes: &[u8], payload: &Payload) -> Result<u16, ProtocolError> {
+        let mut res: u16 = 0;
+
+        let all_bytes: Vec<u8> = header_bytes.iter().chain(payload.iter()).copied().collect();
+
+        for chunk in all_bytes.chunks(2) {
+            let pad_count = 2 - chunk.len();
+
+            let mut padding = vec![0; pad_count];
+            padding.fill(0);
+
+            let word: Vec<_> = chunk.iter().chain(padding.iter()).copied().collect();
+            let word: [u8; 2] = word
+                .get(0..=1)
+                .ok_or(ProtocolError::UngeneratableChecksum)?
+                .try_into()
+                .or(Err(ProtocolError::UngeneratableChecksum))?;
+            let word = u16::from_be_bytes(word);
+
+            res = res.wrapping_add(word);
+        }
+
+        Ok(res)
+    }
+
+    fn verify_checksum(message: Message) -> Result<(), ProtocolError> {
+        let header = message.get(0..=7).ok_or(ProtocolError::CorruptChecksum)?;
+        let payload = message.get(8..);
+
+        let checksum = header.get(1..=3);
+
+        // TODO: you must perform error detection on checksum to complete
+
+        Ok(())
     }
 }
 
@@ -141,6 +182,8 @@ pub enum ProtocolError {
     InvalidPayload,
     UnreadableStream,
     InvalidOpcode,
+    UngeneratableChecksum,
+    CorruptChecksum,
 }
 
 pub struct MessageDeserializer {}
@@ -151,7 +194,6 @@ pub struct DeserializedMessage {
 }
 
 impl MessageDeserializer {
-    // TODO: use a struct to return instead of tuple
     pub fn deserialize(message: MessageSlice) -> Result<DeserializedMessage, ProtocolError> {
         log::debug!("Deserialize on message called: {:?}", message);
 

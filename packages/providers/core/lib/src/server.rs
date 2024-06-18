@@ -111,7 +111,6 @@ mod tests {
         tokio::spawn(async move {
             let _ = server.start().await;
         });
-        // TODO: no sleepy, receive signal that server is ready instead
         sleep(Duration::from_millis(100)).await;
 
         let client = Arc::new(Mutex::new(UnixStream::connect(path).await.unwrap()));
@@ -137,11 +136,13 @@ mod tests {
 
                 let header = res.header;
                 let payload = res.payload;
-                assert_eq!(header.version, 0x0);
+                assert_eq!(header.version, 0x1);
                 assert_eq!(header.opcode, Opcode::GetValue);
                 assert_snapshot!(header.checksum);
                 assert_eq!(header.payload_length, 4);
                 assert_eq!(String::from_utf8(payload), Ok("nout".to_owned()));
+
+                // TODO: verify checksum
             }
 
             Err(err) => {
