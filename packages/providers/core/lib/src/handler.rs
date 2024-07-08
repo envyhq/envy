@@ -30,24 +30,6 @@ impl Handler {
     // "Actions" are also processed in their own green thread to allow for actions of varying
     // durations to be processed concurrently without blocking queue I/O.
     pub async fn handle(self: Arc<Self>) -> Result<ServerResult, ServerError> {
-        // TODO: think about whether or not we need to authenticate/authorize
-        // new clients in any way. It will probably go here.
-        // Had a thought today that the root problem is how to share a secret with both
-        // the client app and the nv unix system. I thought about setting at compile/build time for
-        // both but I feel like its essentially the same as saving to FS just w/ obfuscation.
-        // We need a dynamic way to auth a client with server, that the server is actually the
-        // inteded app. Maybe look into code signing for inspo?
-        // .......
-        // Lots more thinking today. Another idea...
-        // We leave most of the auth to the providers. e.g. locally setting AWS creds in env vars
-        // and conforming to AWS idea of identity on their machines.
-        // Another potential to maybe harden is to write some secret token at startup or build time
-        // that is consumed by the server and client once. This means only the first claim of the
-        // container will have access for the rest of the duration of the container?
-        // Also, we could ignore all the above and have some other agent/server that is
-        // completely separate and private. This would essentially be stepping into the role of the providers
-        // to some degree. For example, hashicorpt vault is secret management server that auths and comms with clients.
-
         let (req_tx, req_rx) = mpsc::channel(16);
         let (res_tx, res_rx) = mpsc::channel(16);
         let cancel_token = CancellationToken::new();
@@ -171,7 +153,7 @@ impl Handler {
 
                                         match result {
                                             Err(ServerError::WouldBlock) => {
-                                                // TODO: test that this is required
+                                                // Re-queue received message if blocking
                                                 let _ = action_out_recover.send(message).await;
                                                 continue;
                                             }
@@ -237,7 +219,10 @@ impl Handler {
         res: Result<Message, ProviderError>,
     ) -> Result<(), ServerError> {
         let message = res.unwrap_or("nout".as_bytes().into());
-        let serialized = self.serializer.serialize(message);
+        let serialized = self
+            .serializer
+            .serialize(message)
+            .map_err(|_| ServerError::Write)?;
 
         match stream.try_write(&serialized) {
             Ok(_) => Ok(()),
