@@ -11,7 +11,7 @@ table "organisation_members" {
   }
 
   column "is_owner" {
-    type = bool
+    type = boolean
   }
 
   column "user_id" {

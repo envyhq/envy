@@ -10,6 +10,10 @@ table "project_members" {
     ]
   }
 
+  column "is_owner" {
+    type = boolean
+  }
+
   column "user_id" {
     type = uuid
   }

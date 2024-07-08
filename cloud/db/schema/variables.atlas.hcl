@@ -19,7 +19,7 @@ table "variables" {
   }
 
   column "is_private" {
-    type = bool
+    type = boolean
   }
 
   column "project_id" {

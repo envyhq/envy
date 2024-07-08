@@ -4,9 +4,9 @@
 
 Run migrations:
 
-- `atlas migrate diff`
-- `atlas migrate lint`
-- `atlas schema apply`
+- `atlas migrate diff` (`just db-diff`)
+- `atlas migrate lint` (`just db-lint`)
+- `atlas schema apply` (`just db-migrate`)
 
 ```
 
