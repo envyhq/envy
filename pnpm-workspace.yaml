@@ -1,3 +1,0 @@
-packages:
-  # - extensions/vscode-nv          # VSCode doesnt support pnpm - https://github.com/microsoft/vscode-vsce/issues/421
-  - extensions/tree-sitter-nv
