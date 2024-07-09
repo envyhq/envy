@@ -2,7 +2,6 @@
 
 NAME := "envy"
 ENV := "development"
-DATABASE_DIR := "db"
 DATABASE_SCHEMA_DIR := "schema"
 
 # Database
@@ -23,12 +22,9 @@ db-login:
   turso auth login
   atlas login
 db-migrate:
-  cd {{DATABASE_DIR}} && \
   atlas schema apply -u "$(just db-url)?authToken=$(just db-token)" \
   --to file://{{DATABASE_SCHEMA_DIR}} --exclude '_litestream_seq,_litestream_lock'
 db-lint:
-  cd {{DATABASE_DIR}} && \
   atlas migrate lint --dev-url "sqlite://dev?mode=memory" -w
 db-diff:
-  cd {{DATABASE_DIR}} && \
   atlas migrate diff --to file://{{DATABASE_SCHEMA_DIR}} --dev-url "sqlite://dev?mode=memory"
