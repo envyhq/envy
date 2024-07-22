@@ -1,20 +1,22 @@
 package usersRoutes
 
-import "github.com/gofiber/fiber/v2"
+import (
+	usersDatabase "envy-api/users/database"
 
-type User struct {
-	ID int `json:"id"`
-}
+	"github.com/gofiber/fiber/v2"
+)
 
 func CreateUser(c *fiber.Ctx) error {
-	user := CreateUserLib()
+	user, err := usersDatabase.CreateUser()
+	if err != nil {
+		return c.Status(500).JSON(&fiber.Map{
+			"success": false,
+			"error":   err.Error(),
+		})
+	}
 
 	return c.Status(201).JSON(&fiber.Map{
 		"success": true,
 		"user":    user,
 	})
-}
-
-func CreateUserLib() User {
-	return User{ID: 1}
 }

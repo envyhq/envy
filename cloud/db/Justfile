@@ -7,24 +7,26 @@ DATABASE_SCHEMA_DIR := "schema"
 # Database
 
 ## Database - Private
-db-name:
+name:
   @echo {{NAME}}-{{ENV}}
-db-url:
-  @turso db show $(just db-name) --url
-db-create:
-  turso db create $(just db-name)
-db-token:
-  @turso db tokens create $(just db-name)
+url:
+  @turso db show $(just name) --url
+create:
+  turso db create $(just name)
+token:
+  @turso db tokens create $(just name)
+connection-string:
+  @echo "$(just url)?authToken=$(just token)"
 
 ## Database - Public
 
-db-login:
+login:
   turso auth login
   atlas login
-db-migrate:
-  atlas schema apply -u "$(just db-url)?authToken=$(just db-token)" \
+migrate:
+  atlas schema apply -u "$(just url)?authToken=$(just token)" \
   --to file://{{DATABASE_SCHEMA_DIR}} --exclude '_litestream_seq,_litestream_lock'
-db-lint:
+lint:
   atlas migrate lint --dev-url "sqlite://dev?mode=memory" -w
-db-diff:
+diff:
   atlas migrate diff --to file://{{DATABASE_SCHEMA_DIR}} --dev-url "sqlite://dev?mode=memory"
