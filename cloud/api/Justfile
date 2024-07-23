@@ -1,2 +1,5 @@
-dev:
+start:
   go run .
+
+dev:
+  air

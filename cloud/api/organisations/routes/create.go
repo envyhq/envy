@@ -7,6 +7,7 @@ type Organisation struct {
 }
 
 func CreateOrganisation(c *fiber.Ctx) error {
+	// TODO: fetch from db
 	organisation := CreateOrganisationLib()
 
 	return c.Status(201).JSON(&fiber.Map{
