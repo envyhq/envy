@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { config } from "../config";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Envy",
-  description:
-    ".env for teams - Stop chasing the loose ends of sensitive values",
+  title: config.brand.name,
+  description: config.brand.tagline,
 };
 
 export default function RootLayout({
