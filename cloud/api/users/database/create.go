@@ -25,6 +25,7 @@ func CreateUser() (User, error) {
 		return User{}, err
 	}
 
+	// TODO: take from req
 	user := User{
 		ID:        uuid.New().String(),
 		FirstName: "John",

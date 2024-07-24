@@ -21,6 +21,10 @@ table "users" {
   column "email" {
     type = varchar(255)
   }
+  index "email" {
+    columns = [column.email]
+    unique = true
+  }
 
   column "password" {
     type = varchar(255)
