@@ -1,0 +1,10 @@
+[package]
+name = "nv-examples-parser-api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+env_logger = "0.11.2"
+log = "0.4.20"
+nv-parser = { path = "../lib" }
+nv-lexer = { path = "../../lexer/lib" }

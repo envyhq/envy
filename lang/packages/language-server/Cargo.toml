@@ -15,7 +15,7 @@ tokio = { version = "1.38.0", features = [
   "macros",
   "net",
 ] }
-nv-parser = { path = "../parser" }
-nv-lexer = { path = "../lexer" }
+nv-parser = { path = "../parser/lib" }
+nv-lexer = { path = "../lexer/lib" }
 nv-position-indexer = { path = "../position_indexer" }
-nv-var-resolver = { path = "../resolvers/var" }
+nv-var-resolver = { path = "../resolvers/var/lib" }

@@ -1,6 +1,10 @@
 use std::fmt::Debug;
 
-use crate::ProviderError;
+#[derive(Debug)]
+pub enum ProviderError {
+    NotFound,
+    Unknown(String),
+}
 
 #[async_trait::async_trait]
 pub trait Provider: Sync + Debug {

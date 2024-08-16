@@ -2,33 +2,25 @@
 resolver = "2"
 
 members = [
-  "packages/parser",
-  "packages/parser/__examples",
+  "packages/parser/lib",
+  "packages/parser/examples",
+  "packages/lexer/lib",
+  "packages/lexer/examples",
 
-  "packages/lexer",
-  "packages/lexer/__examples",
+  "packages/resolvers/var/lib",
+  "packages/resolvers/var/examples",
+  "packages/resolvers/provider/lib",
 
-  "packages/resolvers/var",
-  "packages/resolvers/provider",
-  "packages/resolvers/__examples/var",
+  "packages/code-generation/javascript/lib",
+  "packages/code-generation/javascript/examples",
 
-  "packages/position_indexer",
+  "packages/providers/env/lib",
+  "packages/providers/env/examples",
+  "packages/providers/aws-secrets-manager/lib",
+  "packages/providers/aws-secrets-manager/examples",
 
   "packages/language-server",
-
-  "packages/code-generation/javascript",
-  "packages/code-generation/__examples/javascript",
-
-  "packages/providers/core/lib",
-  "packages/providers/core/load-testing",
-
-  "packages/providers/providers/env/lib",
-  "packages/providers/providers/env/server",
-  "packages/providers/providers/env/__examples",
-
-  "packages/providers/providers/aws-secrets-manager/lib",
-  "packages/providers/providers/aws-secrets-manager/server",
-  "packages/providers/providers/aws-secrets-manager/__examples",
+  "packages/position_indexer",
 
   "testing/nvx-parsing",
   "testing/unit",
