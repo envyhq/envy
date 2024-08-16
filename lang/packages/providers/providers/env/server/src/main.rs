@@ -29,6 +29,8 @@ async fn main() {
 
     let server = Server::new("/tmp/env.provider.nv.sock", controller);
 
+    log::info!("Starting server...");
+
     let result = server.start().await;
 
     log::info!("Result: {:?}", result);

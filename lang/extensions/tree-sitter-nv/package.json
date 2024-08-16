@@ -1,5 +1,5 @@
 {
-  "name": "@nv/tree-sitter",
+  "name": "@envy/tree-sitter",
   "version": "0.0.1",
   "description": "",
   "main": "bindings/node",
