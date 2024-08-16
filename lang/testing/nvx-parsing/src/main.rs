@@ -1,11 +1,6 @@
 use rayon::iter::IntoParallelRefIterator;
 use rayon::prelude::*;
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-    thread,
-    time::Duration,
-};
+use std::{collections::HashMap, time::Duration};
 
 type Output = HashMap<String, String>;
 
@@ -92,60 +87,43 @@ fn generate_fixtures() {
 }
 
 fn main() {
+    env_logger::init();
+
     if std::env::args().nth(1).unwrap_or_default() == "regen" {
+        log::info!("Regenerating fixtures");
         generate_fixtures();
         return;
     }
 
-    let test_cases = (0..1000).collect::<Vec<_>>();
+    let iterations = (0..100).collect::<Vec<_>>();
 
-    let a_avg = Arc::new(Mutex::new(None));
-    let a_avg_inner = a_avg.clone();
-    let test_cases_a = test_cases.clone();
+    log::info!("Starting test - Running {} iterations", iterations.len());
 
-    let b_avg = Arc::new(Mutex::new(None));
-    let b_avg_inner = Arc::downgrade(&b_avg);
-    let test_cases_b = test_cases.clone();
-
-    let a = thread::spawn(move || {
-        let nvx = read_fixture("test.generated.nvx");
-        let results = test_cases_a
-            .par_iter()
-            .map(|_| test_nvx(&nvx))
-            .collect::<Vec<_>>();
-        a_avg_inner.lock().unwrap().replace(Some(
-            results.iter().sum::<Duration>() / results.len() as u32,
-        ));
-    });
-
-    let b = thread::spawn(move || {
-        let json = read_fixture("test.generated.json");
-        let results = test_cases_b
-            .par_iter()
-            .map(|_| test_json(&json))
-            .collect::<Vec<_>>();
-        b_avg_inner.upgrade().unwrap().lock().unwrap().replace(Some(
-            results.iter().sum::<Duration>() / results.len() as u32,
-        ));
-    });
+    let mut a_avg = None;
 
     let start = std::time::Instant::now();
 
-    let a_avg_tick_inner = a_avg.clone();
-    let b_avg_tick_inner = b_avg.clone();
-    let c = thread::spawn(move || {
-        while a_avg_tick_inner.lock().unwrap().is_none()
-            || b_avg_tick_inner.lock().unwrap().is_none()
-        {
-            print!("\x1B[2J\x1B[1;1H");
-            log::info!("Elapsed: {:?}", start.elapsed());
-        }
-    });
+    let nvx = read_fixture("test.generated.nvx");
+    let results = iterations
+        .par_iter()
+        .map(|_| test_nvx(&nvx))
+        .collect::<Vec<_>>();
+    a_avg = Some(results.iter().sum::<Duration>() / results.len() as u32);
 
-    a.join().unwrap();
-    b.join().unwrap();
-    c.join().unwrap();
+    print!("nvx done.");
+    log::info!("nvx avg: {:?}", a_avg);
 
-    log::info!("nvx avg: {:?}", a_avg.lock().unwrap().unwrap().unwrap());
-    log::info!("json avg: {:?}", b_avg.lock().unwrap().unwrap().unwrap());
+    let start = std::time::Instant::now();
+
+    let mut b_avg = None;
+
+    let json = read_fixture("test.generated.json");
+    let results = iterations
+        .par_iter()
+        .map(|_| test_json(&json))
+        .collect::<Vec<_>>();
+    b_avg = Some(results.iter().sum::<Duration>() / results.len() as u32);
+
+    print!("json done.");
+    log::info!("json avg: {:?}", b_avg);
 }
