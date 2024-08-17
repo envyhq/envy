@@ -13,7 +13,7 @@ mod visitor;
 async fn main() -> Result<(), anyhow::Error> {
     env_logger::init();
 
-    let socket_path = "/tmp/nv_language_server.socket";
+    let socket_path = "/tmp/envy_language_server.socket";
     let _ = std::fs::remove_file(socket_path); // Remove the socket file if it exists
 
     let listener = UnixListener::bind(socket_path)?;

@@ -4,7 +4,7 @@ use crate::{
     vars::{PartialVarDeclarationNode, VarDeclarationNode},
     Parser,
 };
-use nv_lexer::{
+use envy_lexer::{
     tokens::{LexerSymbol, LexerToken},
     LexerKeyword, LexerTokenKind,
 };
@@ -118,8 +118,8 @@ impl Parser<Option<AbstractSyntaxNode>> for VarDeclarationParser {
 #[cfg(test)]
 mod tests {
     use crate::parsers::var_declaration_parser::{Parser, VarDeclarationParser};
-    use nv_lexer::{Lexer, TokenPosition, VarDeclarationLexer};
-    use nv_unit_testing::str_to_graphemes;
+    use envy_lexer::{Lexer, TokenPosition, VarDeclarationLexer};
+    use envy_unit_testing::str_to_graphemes;
     use std::sync::Weak;
 
     #[test]

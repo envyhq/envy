@@ -1,5 +1,5 @@
 [package]
-name = "nv-provider-core"
+name = "envy-provider-core"
 version = "0.1.0"
 edition = "2021"
 

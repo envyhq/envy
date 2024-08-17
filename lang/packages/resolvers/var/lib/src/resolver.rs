@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use futures::{stream, StreamExt};
-use nv_parser::{AbstractSyntaxNode, DeclarationNode, VarDeclarationNode};
-use nv_provider_resolver::ProviderResolver;
+use envy_parser::{AbstractSyntaxNode, DeclarationNode, VarDeclarationNode};
+use envy_provider_resolver::ProviderResolver;
 use std::{error::Error, fmt};
 
 #[derive(Debug)]

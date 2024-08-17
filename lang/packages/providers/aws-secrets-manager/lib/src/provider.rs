@@ -1,4 +1,4 @@
-use nv_provider_core::{Provider, ProviderError};
+use envy_provider_core::{Provider, ProviderError};
 
 #[derive(Debug)]
 pub struct AwsSecretsManagerProvider {}
@@ -23,7 +23,7 @@ impl Provider for AwsSecretsManagerProvider {
             .map_err(|err| {
                 log::error!("Aws env provider error: {:?}", err);
 
-                if let Ok(source) = err.into_source() {
+                if let Ok(_) = err.into_source() {
                     return ProviderError::Unknown("explodey".to_owned());
                 }
 

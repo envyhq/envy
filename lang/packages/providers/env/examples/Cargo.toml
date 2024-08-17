@@ -1,10 +1,10 @@
 [package]
-name = "nv-examples-provider-env"
+name = "envy-examples-provider-env"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 env_logger = "0.11.2"
 log = "0.4.20"
-nv-provider-env = { path = "../lib" }
+envy-provider-env = { path = "../lib" }
 futures = "0.3.30"

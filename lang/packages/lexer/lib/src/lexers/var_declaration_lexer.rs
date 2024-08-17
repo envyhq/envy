@@ -180,7 +180,7 @@ impl<'a> Lexer for VarDeclarationLexer<'a> {
 #[cfg(test)]
 mod tests {
     use crate::{lexers::var_declaration_lexer::VarDeclarationLexer, Lexer, TokenPosition};
-    use nv_unit_testing::str_to_graphemes;
+    use envy_unit_testing::str_to_graphemes;
 
     #[test]
     fn lexes_var_tokens() {

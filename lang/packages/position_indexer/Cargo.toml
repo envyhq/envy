@@ -1,9 +1,8 @@
 [package]
-name = "nv-position-indexer"
+name = "envy-position-indexer"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 log = "0.4.21"
-nv-parser = { path = "../parser/lib" }
-
+envy-parser = { path = "../parser/lib" }

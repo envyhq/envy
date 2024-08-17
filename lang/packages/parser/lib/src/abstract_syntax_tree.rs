@@ -3,7 +3,7 @@ use crate::{
     providers::ProviderDeclarationNode, vars::VarDeclarationNode,
 };
 use core::fmt;
-use nv_lexer::{
+use envy_lexer::{
     tokens::{LexerLiteral, TokenRange},
     LexerType, LexerVarModifierKeyword,
 };

@@ -1,6 +1,6 @@
 # Envy UI
 
-Client web app for Envy
+Client web app for Envy (NV)
 
 ## Getting Started
 

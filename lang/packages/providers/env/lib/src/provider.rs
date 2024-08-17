@@ -1,6 +1,6 @@
 use std::env;
 
-use nv_provider_core::{Provider, ProviderError};
+use envy_provider_core::{Provider, ProviderError};
 
 #[derive(Debug, Default)]
 pub struct EnvProvider {}

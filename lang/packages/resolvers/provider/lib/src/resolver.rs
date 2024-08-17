@@ -1,5 +1,5 @@
-use nv_parser::{AbstractSyntaxNode, DeclarationNode, ProviderDeclarationNode};
-use nv_provider_core::Provider;
+use envy_parser::{AbstractSyntaxNode, DeclarationNode, ProviderDeclarationNode};
+use envy_provider_core::Provider;
 use std::sync::Arc;
 
 pub type ResolverProvider = Arc<dyn Provider + Sync + Send>;

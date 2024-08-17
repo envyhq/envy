@@ -171,7 +171,7 @@ impl<'a> Lexer for ModuleDeclarationLexer<'a> {
 #[cfg(test)]
 mod tests {
     use crate::{lexers::module_declaration_lexer::ModuleDeclarationLexer, Lexer, TokenPosition};
-    use nv_unit_testing::str_to_graphemes;
+    use envy_unit_testing::str_to_graphemes;
 
     #[test]
     fn lexes_module_tokens() {

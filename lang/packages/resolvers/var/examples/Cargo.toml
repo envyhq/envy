@@ -1,15 +1,15 @@
 [package]
-name = "nv-examples-var-resolver-api"
+name = "envy-examples-var-resolver-api"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 env_logger = "0.11.2"
 log = "0.4.20"
-nv-parser = { path = "../../../parser/lib" }
-nv-lexer = { path = "../../../lexer/lib" }
-nv-var-resolver = { path = "../../var/lib" }
-nv-provider-resolver = { path = "../../provider/lib" }
-nv-provider-env = { path = "../../../providers/env/lib" }
-nv-provider-aws-secrets-manager = { path = "../../../providers/aws-secrets-manager/lib" }
+envy-parser = { path = "../../../parser/lib" }
+envy-lexer = { path = "../../../lexer/lib" }
+envy-var-resolver = { path = "../../var/lib" }
+envy-provider-resolver = { path = "../../provider/lib" }
+envy-provider-env = { path = "../../../providers/env/lib" }
+envy-provider-aws-secrets-manager = { path = "../../../providers/aws-secrets-manager/lib" }
 futures = "0.3.30"

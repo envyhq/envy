@@ -1,14 +1,14 @@
 [package]
-name = "nv-parser"
+name = "envy-parser"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 env_logger = "0.11.2"
 log = "0.4.20"
-nv-lexer = { path = "../../lexer/lib" }
+envy-lexer = { path = "../../lexer/lib" }
 serde = { version = "1.0.199", features = ["derive", "rc"] }
 
 [dev-dependencies]
 insta = { version = "1.38.0", features = ["yaml"] }
-nv-unit-testing = { path = "../../../testing/unit" }
+envy-unit-testing = { path = "../../../testing/unit" }

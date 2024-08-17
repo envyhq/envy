@@ -1,8 +1,7 @@
 [package]
-name = "nv-codegen-javascript"
+name = "envy-codegen-javascript"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-nv-parser = { path = "../../../parser/lib" }
-
+envy-parser = { path = "../../../parser/lib" }

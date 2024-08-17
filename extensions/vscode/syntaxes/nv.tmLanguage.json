@@ -1,0 +1,136 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "nv",
+  "scopeName": "source.nv",
+
+  "patterns": [
+    {
+      "include": "#literals"
+    },
+    {
+      "include": "#modifiers"
+    },
+    {
+      "include": "#var-declarations"
+    },
+    {
+      "include": "#attributes"
+    },
+    {
+      "include": "#module-declarations"
+    },
+    {
+      "include": "#provider-declarations"
+    },
+    {
+      "include": "#storage-keywords"
+    },
+    {
+      "include": "#types"
+    }
+  ],
+
+  "repository": {
+    "literals": {
+      "patterns": [
+        { "include": "#strings" },
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#booleans"
+        }
+      ]
+    },
+
+    "strings": {
+      "name": "string.quoted.double.nv",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [{ "name": "constant.character.escape.nv", "match": "\\\\." }]
+    },
+
+    "numbers": {
+      "name": "constant.numeric.nv",
+      "match": "\\d"
+    },
+
+    "booleans": {
+      "name": "constant.language.bool.nv",
+      "match": "\\b(true|false)\\b"
+    },
+
+    "modifiers": {
+      "name": "storage.modifier.nv",
+      "match": "\\b(pub)\\b"
+    },
+
+    "storage-keywords": {
+      "name": "storage.type.nv",
+      "match": "\\b(var|module|provider)\\b"
+    },
+
+    "var-declarations": {
+      "name": "meta.declarations.var.nv",
+      "match": "\\b(var)\\b\\s*([a-zA-Z0-9_]+):?\\s*{?",
+      "patterns": [],
+      "captures": {
+        "1": {
+          "patterns": [{ "include": "#storage-keywords" }]
+        },
+        "2": {
+          "name": "entity.name.function.var_name.nv"
+        }
+      }
+    },
+
+    "attributes": {
+      "name": "meta.declarations.attributes.nv",
+      "match": "([a-z_]+)\\s*=\\s*(.+)",
+      "captures": {
+        "1": {
+          "name": "variable.parameter"
+        },
+        "2": {
+          "patterns": [{ "include": "#literals" }]
+        }
+      }
+    },
+
+    "module-declarations": {
+      "name": "meta.declarations.module.nv",
+      "match": "\\b(module)\\b\\s*([A-Z]{1,}[a-zA-Z]+):?\\s*{?",
+      "patterns": [{ "include": "#storage-keywords" }],
+      "captures": {
+        "1": {
+          "patterns": [{ "include": "#storage-keywords" }]
+        },
+        "2": {
+          "name": "entity.name.type.module_name.nv"
+        }
+      }
+    },
+
+    "provider-declarations": {
+      "name": "meta.declarations.var.nv",
+      "match": "\\b(provider)\\b\\s*([a-zA-Z_]+):?\\s*([a-z_]+)s*{?",
+      "patterns": [],
+      "captures": {
+        "1": {
+          "patterns": [{ "include": "#storage-keywords" }]
+        },
+        "2": {
+          "name": "entity.name.function.provider_name.nv"
+        },
+        "3": {
+          "name": "support.type.provider_type.nv"
+        }
+      }
+    },
+
+    "types": {
+      "name": "support.type.nv",
+      "match": "\\b(str|url|int|float|bool|nowt)\\b"
+    }
+  }
+}

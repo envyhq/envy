@@ -16,12 +16,12 @@ setup:
 dev-install:
     just pueue-init
     pueue add "pnpm -r dev:install"
-    pueue add "cd extensions/vscode-nv && npm run dev:install"
+    pueue add "cd extensions/vscode && npm run dev:install"
     just pueue-result
 install:
     just pueue-init
     pueue add "pnpm install"
-    pueue add "cd extensions/vscode-nv && npm i"
+    pueue add "cd extensions/vscode && npm i"
     just pueue-result
     just dev-install
 
@@ -39,7 +39,7 @@ build:
     pnpm i
     just pueue-init
     pueue add "pnpm -r build"
-    pueue add "cd extensions/vscode-nv && npm run build"
+    pueue add "cd extensions/vscode && npm run build"
     pueue add "cargo build"
     just pueue-result
 build-release:
@@ -47,7 +47,7 @@ build-release:
 
 lsp:
   cd packages/language-server
-  cargo watch -x "run --bin nv-language-server"
+  cargo watch -x "run --bin envy-language-server"
 
 test:
   cargo insta test --review --unreferenced=auto

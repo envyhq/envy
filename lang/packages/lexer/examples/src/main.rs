@@ -1,4 +1,4 @@
-use nv_lexer::{Lexer, SourceFileLexer};
+use envy_lexer::{Lexer, SourceFileLexer};
 use std::{env, fs};
 
 fn main() {

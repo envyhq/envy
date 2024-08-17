@@ -1,5 +1,5 @@
 [package]
-name = "nv-language-server"
+name = "envy-language-server"
 version = "0.1.0"
 edition = "2021"
 
@@ -15,7 +15,7 @@ tokio = { version = "1.38.0", features = [
   "macros",
   "net",
 ] }
-nv-parser = { path = "../parser/lib" }
-nv-lexer = { path = "../lexer/lib" }
-nv-position-indexer = { path = "../position_indexer" }
-nv-var-resolver = { path = "../resolvers/var/lib" }
+envy-parser = { path = "../parser/lib" }
+envy-lexer = { path = "../lexer/lib" }
+envy-position-indexer = { path = "../position_indexer" }
+envy-var-resolver = { path = "../resolvers/var/lib" }

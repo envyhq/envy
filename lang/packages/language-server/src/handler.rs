@@ -5,9 +5,9 @@ use crate::{
     types::{Initialize, LspNotification, LspRequest, TextDocumentHover},
     visitor::LspMessage,
 };
-use nv_lexer::TokenPosition;
-use nv_parser::{AbstractSyntaxNode, DeclarationNode};
-use nv_var_resolver::TreeResolver;
+use envy_lexer::TokenPosition;
+use envy_parser::{AbstractSyntaxNode, DeclarationNode};
+use envy_var_resolver::TreeResolver;
 use serde_json::{json, Value};
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;

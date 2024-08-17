@@ -1,5 +1,5 @@
 [package]
-name = "nv-unit-testing"
+name = "envy-unit-testing"
 version = "0.1.0"
 edition = "2021"
 

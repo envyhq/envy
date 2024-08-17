@@ -1,6 +1,6 @@
-use nv_codegen_javascript::generate_javascript_source;
-use nv_lexer::{Lexer, SourceFileLexer};
-use nv_parser::SourceFileParser;
+use envy_codegen_javascript::generate_javascript_source;
+use envy_lexer::{Lexer, SourceFileLexer};
+use envy_parser::SourceFileParser;
 use std::{env, fs};
 
 fn main() {
@@ -26,7 +26,7 @@ fn main() {
 
     log::info!("ast: {:#?} - processed_count: {}", ast, processed_count);
 
-    let generated_source = generate_javascript_source(nv_parser::AbstractSyntaxTree {
+    let generated_source = generate_javascript_source(envy_parser::AbstractSyntaxTree {
         root: Some(ast.as_ref().to_owned()),
     });
 

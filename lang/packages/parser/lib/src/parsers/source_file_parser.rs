@@ -8,7 +8,7 @@ use crate::{
     parsers::var_declaration_parser::VarDeclarationParser,
     Parser,
 };
-use nv_lexer::{
+use envy_lexer::{
     tokens::{LexerDeclarationKeyword, LexerToken},
     LexerKeyword, LexerTokenKind, LexerVarModifierKeyword,
 };
@@ -99,7 +99,7 @@ impl SourceFileParser {
 #[cfg(test)]
 mod tests {
     use crate::parsers::source_file_parser::SourceFileParser;
-    use nv_lexer::{Lexer, SourceFileLexer};
+    use envy_lexer::{Lexer, SourceFileLexer};
 
     #[test]
     fn parses_source_file_nodes() {

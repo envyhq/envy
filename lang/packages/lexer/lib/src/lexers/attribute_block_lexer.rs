@@ -181,7 +181,7 @@ impl<'a> Lexer for AttributeBlockLexer<'a> {
 #[cfg(test)]
 mod tests {
     use crate::{lexers::attribute_block_lexer::AttributeBlockLexer, Lexer, TokenPosition};
-    use nv_unit_testing::str_to_graphemes;
+    use envy_unit_testing::str_to_graphemes;
 
     #[test]
     fn lexes_attribute_tokens() {

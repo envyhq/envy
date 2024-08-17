@@ -1,11 +1,11 @@
 [package]
-name = "nv-examples-codegen-javascript"
+name = "envy-examples-codegen-javascript"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 env_logger = "0.11.2"
 log = "0.4.20"
-nv-codegen-javascript = { path = "../../javascript/lib" }
-nv-parser = { path = "../../../parser/lib" }
-nv-lexer = { path = "../../../lexer/lib" }
+envy-codegen-javascript = { path = "../../javascript/lib" }
+envy-parser = { path = "../../../parser/lib" }
+envy-lexer = { path = "../../../lexer/lib" }

@@ -1,7 +1,7 @@
 use futures::executor;
-use nv_lexer::{Lexer, SourceFileLexer};
-use nv_parser::SourceFileParser;
-use nv_var_resolver::{TreeResolver, VarResolver};
+use envy_lexer::{Lexer, SourceFileLexer};
+use envy_parser::SourceFileParser;
+use envy_var_resolver::{TreeResolver, VarResolver};
 use std::{env, fs};
 
 async fn async_main() -> Result<(), ()> {

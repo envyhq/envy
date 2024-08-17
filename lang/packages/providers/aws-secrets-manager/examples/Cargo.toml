@@ -1,10 +1,10 @@
 [package]
-name = "nv-examples-provider-aws-secrets-manager"
+name = "envy-examples-provider-aws-secrets-manager"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 env_logger = "0.11.2"
 log = "0.4.20"
-nv-provider-aws-secrets-manager = { path = "../lib" }
+envy-provider-aws-secrets-manager = { path = "../lib" }
 futures = "0.3.30"

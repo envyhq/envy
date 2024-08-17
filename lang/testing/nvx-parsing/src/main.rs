@@ -4,12 +4,6 @@ use std::{collections::HashMap, time::Duration};
 
 type Output = HashMap<String, String>;
 
-// parses the following into hashmap
-//
-// name:wow
-// again:cool
-// why:not
-//
 fn parse_nvx(contents: &str) -> Output {
     let mut output = HashMap::new();
 
@@ -99,30 +93,23 @@ fn main() {
 
     log::info!("Starting test - Running {} iterations", iterations.len());
 
-    let mut a_avg = None;
-
-    let start = std::time::Instant::now();
-
     let nvx = read_fixture("test.generated.nvx");
     let results = iterations
         .par_iter()
         .map(|_| test_nvx(&nvx))
         .collect::<Vec<_>>();
-    a_avg = Some(results.iter().sum::<Duration>() / results.len() as u32);
+    let a_avg = results.iter().sum::<Duration>() / results.len() as u32;
 
     print!("nvx done.");
     log::info!("nvx avg: {:?}", a_avg);
 
-    let start = std::time::Instant::now();
-
-    let mut b_avg = None;
-
     let json = read_fixture("test.generated.json");
+
     let results = iterations
         .par_iter()
         .map(|_| test_json(&json))
         .collect::<Vec<_>>();
-    b_avg = Some(results.iter().sum::<Duration>() / results.len() as u32);
+    let b_avg = results.iter().sum::<Duration>() / results.len() as u32;
 
     print!("json done.");
     log::info!("json avg: {:?}", b_avg);

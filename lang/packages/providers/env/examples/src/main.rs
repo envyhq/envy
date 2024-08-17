@@ -1,5 +1,5 @@
 use futures::executor;
-use nv_provider_env::{EnvProvider, Provider};
+use envy_provider_env::{EnvProvider, Provider};
 
 async fn async_main() -> Result<(), ()> {
     env_logger::init();

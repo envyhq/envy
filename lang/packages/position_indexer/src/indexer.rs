@@ -1,4 +1,4 @@
-use nv_parser::{AbstractSyntaxNode, DeclarationNode, TokenPosition, VarDeclarationNode};
+use envy_parser::{AbstractSyntaxNode, DeclarationNode, TokenPosition, VarDeclarationNode};
 use std::{
     collections::HashMap,
     sync::{Arc, Weak},

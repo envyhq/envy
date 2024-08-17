@@ -1,5 +1,5 @@
 use crate::{abstract_syntax_tree::AbstractSyntaxNode, parser::ParserResult, Parser};
-use nv_lexer::{
+use envy_lexer::{
     tokens::{LexerDeclarationKeyword, LexerToken},
     LexerKeyword, LexerTokenKind, LexerVarModifierKeyword,
 };
@@ -63,8 +63,8 @@ impl Parser<Vec<AbstractSyntaxNode>> for VarBlockParser {
 #[cfg(test)]
 mod tests {
     use crate::parsers::var_block_parser::{Parser, VarBlockParser};
-    use nv_lexer::{Lexer, ModuleDeclarationLexer, TokenPosition};
-    use nv_unit_testing::str_to_graphemes;
+    use envy_lexer::{Lexer, ModuleDeclarationLexer, TokenPosition};
+    use envy_unit_testing::str_to_graphemes;
     use std::sync::Weak;
 
     #[test]

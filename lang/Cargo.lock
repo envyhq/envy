@@ -622,6 +622,184 @@ dependencies = [
 ]
 
 [[package]]
+name = "envy-codegen-javascript"
+version = "0.1.0"
+dependencies = [
+ "envy-parser",
+]
+
+[[package]]
+name = "envy-examples-codegen-javascript"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "envy-codegen-javascript",
+ "envy-lexer",
+ "envy-parser",
+ "log",
+]
+
+[[package]]
+name = "envy-examples-lexer-api"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "envy-lexer",
+ "log",
+]
+
+[[package]]
+name = "envy-examples-parser-api"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "envy-lexer",
+ "envy-parser",
+ "log",
+]
+
+[[package]]
+name = "envy-examples-provider-aws-secrets-manager"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "envy-provider-aws-secrets-manager",
+ "futures",
+ "log",
+]
+
+[[package]]
+name = "envy-examples-provider-env"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "envy-provider-env",
+ "futures",
+ "log",
+]
+
+[[package]]
+name = "envy-examples-var-resolver-api"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "envy-lexer",
+ "envy-parser",
+ "envy-provider-aws-secrets-manager",
+ "envy-provider-env",
+ "envy-provider-resolver",
+ "envy-var-resolver",
+ "futures",
+ "log",
+]
+
+[[package]]
+name = "envy-language-server"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "env_logger",
+ "envy-lexer",
+ "envy-parser",
+ "envy-position-indexer",
+ "envy-var-resolver",
+ "log",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "envy-lexer"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "envy-unit-testing",
+ "insta",
+ "log",
+ "serde",
+ "strum",
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "envy-parser"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "envy-lexer",
+ "envy-unit-testing",
+ "insta",
+ "log",
+ "serde",
+]
+
+[[package]]
+name = "envy-position-indexer"
+version = "0.1.0"
+dependencies = [
+ "envy-parser",
+ "log",
+]
+
+[[package]]
+name = "envy-provider-aws-secrets-manager"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "aws-config",
+ "aws-sdk-secretsmanager",
+ "envy-provider-core",
+ "log",
+]
+
+[[package]]
+name = "envy-provider-core"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+]
+
+[[package]]
+name = "envy-provider-env"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "envy-provider-core",
+ "log",
+]
+
+[[package]]
+name = "envy-provider-resolver"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "envy-parser",
+ "envy-provider-core",
+ "futures",
+ "log",
+]
+
+[[package]]
+name = "envy-unit-testing"
+version = "0.1.0"
+dependencies = [
+ "insta",
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "envy-var-resolver"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "envy-parser",
+ "envy-provider-resolver",
+ "futures",
+ "log",
+]
+
+[[package]]
 name = "equivalent"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1018,184 +1196,6 @@ checksum = "4161fcb6d602d4d2081af7c3a45852d875a03dd337a6bfdd6e06407b61342a43"
 dependencies = [
  "hermit-abi",
  "libc",
-]
-
-[[package]]
-name = "nv-codegen-javascript"
-version = "0.1.0"
-dependencies = [
- "nv-parser",
-]
-
-[[package]]
-name = "nv-examples-codegen-javascript"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "log",
- "nv-codegen-javascript",
- "nv-lexer",
- "nv-parser",
-]
-
-[[package]]
-name = "nv-examples-lexer-api"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "log",
- "nv-lexer",
-]
-
-[[package]]
-name = "nv-examples-parser-api"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "log",
- "nv-lexer",
- "nv-parser",
-]
-
-[[package]]
-name = "nv-examples-provider-aws-secrets-manager"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "futures",
- "log",
- "nv-provider-aws-secrets-manager",
-]
-
-[[package]]
-name = "nv-examples-provider-env"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "futures",
- "log",
- "nv-provider-env",
-]
-
-[[package]]
-name = "nv-examples-var-resolver-api"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "futures",
- "log",
- "nv-lexer",
- "nv-parser",
- "nv-provider-aws-secrets-manager",
- "nv-provider-env",
- "nv-provider-resolver",
- "nv-var-resolver",
-]
-
-[[package]]
-name = "nv-language-server"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "env_logger",
- "log",
- "nv-lexer",
- "nv-parser",
- "nv-position-indexer",
- "nv-var-resolver",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "nv-lexer"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "insta",
- "log",
- "nv-unit-testing",
- "serde",
- "strum",
- "unicode-segmentation",
-]
-
-[[package]]
-name = "nv-parser"
-version = "0.1.0"
-dependencies = [
- "env_logger",
- "insta",
- "log",
- "nv-lexer",
- "nv-unit-testing",
- "serde",
-]
-
-[[package]]
-name = "nv-position-indexer"
-version = "0.1.0"
-dependencies = [
- "log",
- "nv-parser",
-]
-
-[[package]]
-name = "nv-provider-aws-secrets-manager"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "aws-config",
- "aws-sdk-secretsmanager",
- "log",
- "nv-provider-core",
-]
-
-[[package]]
-name = "nv-provider-core"
-version = "0.1.0"
-dependencies = [
- "async-trait",
-]
-
-[[package]]
-name = "nv-provider-env"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "log",
- "nv-provider-core",
-]
-
-[[package]]
-name = "nv-provider-resolver"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "futures",
- "log",
- "nv-parser",
- "nv-provider-core",
-]
-
-[[package]]
-name = "nv-unit-testing"
-version = "0.1.0"
-dependencies = [
- "insta",
- "unicode-segmentation",
-]
-
-[[package]]
-name = "nv-var-resolver"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "futures",
- "log",
- "nv-parser",
- "nv-provider-resolver",
 ]
 
 [[package]]

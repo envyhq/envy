@@ -163,7 +163,7 @@ mod tests {
     use crate::{
         lexers::provider_declaration_lexer::ProviderDeclarationLexer, Lexer, TokenPosition,
     };
-    use nv_unit_testing::str_to_graphemes;
+    use envy_unit_testing::str_to_graphemes;
 
     #[test]
     fn lexes_provider_tokens() {

@@ -1,4 +1,4 @@
-use nv_parser::{AbstractSyntaxNode, AbstractSyntaxTree, DeclarationNode};
+use envy_parser::{AbstractSyntaxNode, AbstractSyntaxTree, DeclarationNode};
 
 fn traverse_ast(ast: &AbstractSyntaxTree) -> String {
     traverse_nodes(ast.root.as_ref().unwrap())

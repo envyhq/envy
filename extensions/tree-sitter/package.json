@@ -1,0 +1,34 @@
+{
+  "name": "@envy/tree-sitter",
+  "version": "0.0.1",
+  "description": "",
+  "main": "bindings/node",
+  "scripts": {
+    "build": "tree-sitter generate",
+    "dev:install": "echo warning: dev:install not implemented for @envy/tree-sitter",
+    "parse": "npm run build && tree-sitter parse",
+    "highlight": "npm run build && tree-sitter highlight",
+    "test": "npm run build && npm run test:example",
+    "test:example": "npm run parse -- example.nv && npm run highlight -- example.nv",
+    "format": "prettier --write ."
+  },
+  "author": "",
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "tree-sitter-cli": "^0.21.0"
+  },
+  "dependencies": {
+    "nan": "^2.18.0"
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.nv",
+      "file-types": [
+        "nv"
+      ],
+      "highlights": [
+        "queries/highlights.scm"
+      ]
+    }
+  ]
+}

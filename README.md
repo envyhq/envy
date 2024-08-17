@@ -1,14 +1,14 @@
-# nv
+# Envy
 
-![CI workflow - test.yml](https://github.com/lbennett-stacki/nv/actions/workflows/test.yml/badge.svg?branch=main)
+![CI workflow - test.yml](https://github.com/lbennett-stacki/envy/actions/workflows/test.yml/badge.svg?branch=main)
 
 A language for configuration.
 
-|                                                          |                                                                                                        |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| ![nv logo](./docs/assets/images/discord-server-logo.png) | ![nv syntax highlighting](./extensions/vscode-nv/docs/assets/images/vscode-nv-syntax-highlighting.png) |
+|                                                            |                                                                                                             |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| ![Envy logo](./docs/assets/images/discord-server-logo.png) | ![Envy (.nv) syntax highlighting](./extensions/vscode/docs/assets/images/vscode-nv-syntax-highlighting.png) |
 
-[nv FigJam discovery board](https://www.figma.com/file/YLWiYaLvchfUlrbmr4P0M2/NV-Discovery?type=whiteboard&node-id=0%3A1&t=7aag2YKaHTLDS4lW-1)
+[Envy FigJam discovery board](https://www.figma.com/file/YLWiYaLvchfUlrbmr4P0M2/NV-Discovery?type=whiteboard&node-id=0%3A1&t=7aag2YKaHTLDS4lW-1)
 
 ## Packages
 
@@ -48,8 +48,8 @@ A language for configuration.
 
 ## Extensions
 
-- VSCode - [README](./extensions/vscode-nv/README.md) [Grammar](./extensions/vscode-nv/syntaxes/nv.tmLanguage.json) [Language Server Client Source](./extensions/vscode-nv/language-server-client/extension.ts)
-- treesitter - [README](./extensions/tree-sitter-nv/README.md) [Grammar](./extensions/tree-sitter-nv/grammar.js)
+- VSCode - [README](./extensions/vscode/README.md) [Grammar](./extensions/vscode/syntaxes/nv.tmLanguage.json) [Language Server Client Source](./extensions/vscode/language-server-client/extension.ts)
+- treesitter - [README](./extensions/tree-sitter/README.md) [Grammar](./extensions/tree-sitter/grammar.js)
 - github-linguist - **TODO**
 
 ## Examples
@@ -58,4 +58,4 @@ A lot of packages have an examples/ directory to show simple usage of the packag
 
 ## LSP
 
-https://github.com/lbennett-stacki/nv/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8](https://github.com/lbennett-stacki/nv/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8
+<https://github.com/lbennett-stacki/envy/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8>](<https://github.com/lbennett-stacki/envy/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8>

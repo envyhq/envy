@@ -30,7 +30,7 @@ func CreateUser() (User, error) {
 		ID:        uuid.New().String(),
 		FirstName: "John",
 		LastName:  "Doe",
-		Email:     "john.doe@envy.io",
+		Email:     "john.doe@useenvy.cloud",
 		Password:  "password",
 		Language:  "en",
 		Currency:  "usd",

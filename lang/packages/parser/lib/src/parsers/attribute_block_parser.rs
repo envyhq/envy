@@ -3,7 +3,7 @@ use crate::{
     attributes::{AttributeDeclarationNode, PartialAttributeDeclarationNode},
     Parser,
 };
-use nv_lexer::{
+use envy_lexer::{
     tokens::{LexerSymbol, LexerToken},
     LexerTokenKind,
 };

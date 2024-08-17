@@ -1,9 +1,9 @@
 [package]
-name = "nv-provider-env"
+name = "envy-provider-env"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 async-trait = "0.1.79"
-nv-provider-core = { path = "../../core/lib" }
+envy-provider-core = { path = "../../core/lib" }
 log = "0.4.21"

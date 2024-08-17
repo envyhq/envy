@@ -4,7 +4,7 @@ use crate::{
     providers::{PartialProviderDeclarationNode, ProviderDeclarationNode},
     Parser,
 };
-use nv_lexer::{
+use envy_lexer::{
     tokens::{LexerSymbol, LexerToken},
     LexerTokenKind,
 };
@@ -116,8 +116,8 @@ impl Parser<Option<AbstractSyntaxNode>> for ProviderDeclarationParser {
 #[cfg(test)]
 mod tests {
     use crate::parsers::provider_declaration_parser::{Parser, ProviderDeclarationParser};
-    use nv_lexer::{Lexer, ProviderDeclarationLexer, TokenPosition};
-    use nv_unit_testing::str_to_graphemes;
+    use envy_lexer::{Lexer, ProviderDeclarationLexer, TokenPosition};
+    use envy_unit_testing::str_to_graphemes;
     use std::sync::Weak;
 
     #[test]

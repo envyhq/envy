@@ -1,5 +1,5 @@
-use nv_lexer::{Lexer, SourceFileLexer};
-use nv_parser::SourceFileParser;
+use envy_lexer::{Lexer, SourceFileLexer};
+use envy_parser::SourceFileParser;
 use std::{env, fs};
 
 fn main() {

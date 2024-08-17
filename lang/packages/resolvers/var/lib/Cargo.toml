@@ -1,11 +1,11 @@
 [package]
-name = "nv-var-resolver"
+name = "envy-var-resolver"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 log = "0.4.21"
-nv-parser = { path = "../../../parser/lib" }
-nv-provider-resolver = { path = "../../provider/lib" }
+envy-parser = { path = "../../../parser/lib" }
+envy-provider-resolver = { path = "../../provider/lib" }
 futures = "0.3.30"
 async-trait = "0.1.79"

@@ -1,5 +1,5 @@
 use crate::abstract_syntax_tree::AbstractSyntaxNode;
-use nv_lexer::tokens::LexerToken;
+use envy_lexer::tokens::LexerToken;
 use std::sync::Weak;
 
 pub trait Parser<O> {

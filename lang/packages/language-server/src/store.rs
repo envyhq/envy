@@ -1,7 +1,7 @@
-use nv_lexer::{Lexer, SourceFileLexer};
-use nv_parser::{AbstractSyntaxNode, SourceFileParser};
-use nv_position_indexer::Indexer;
-use nv_var_resolver::VarResolver;
+use envy_lexer::{Lexer, SourceFileLexer};
+use envy_parser::{AbstractSyntaxNode, SourceFileParser};
+use envy_position_indexer::Indexer;
+use envy_var_resolver::VarResolver;
 use std::{collections::HashMap, sync::Arc};
 
 #[derive(Debug, Clone)]
@@ -13,10 +13,10 @@ pub enum FileStoreError {
 
 #[derive(Debug, Clone)]
 pub struct StoredFile {
-    pub path: String,
-    pub content: String,
+    // pub path: String,
+    // pub content: String,
     pub position_indexer: Indexer,
-    pub root: Arc<AbstractSyntaxNode>,
+    // pub root: Arc<AbstractSyntaxNode>,
     pub resolver: VarResolver,
 }
 
@@ -67,9 +67,9 @@ impl FileStore {
         self.files.insert(
             file_path.to_owned(),
             StoredFile {
-                root: node.clone(),
-                content,
-                path: file_path.to_owned(),
+                // root: node.clone(),
+                // content,
+                // path: file_path.to_owned(),
                 position_indexer: Self::init_position_indexer(&node),
                 resolver: Self::init_resolver(&node),
             },
