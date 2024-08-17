@@ -3,7 +3,7 @@
   "displayName": "nv",
   "description": "Language support for the Envy (.nv) configration language",
   "version": "0.0.1",
-  "repository": "https://github.com/lbennett-stacki/envy",
+  "repository": "https://github.com/envyhq/envy",
   "engines": {
     "vscode": "^1.86.0"
   },

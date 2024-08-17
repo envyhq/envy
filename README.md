@@ -1,6 +1,6 @@
 # Envy
 
-![CI workflow - test.yml](https://github.com/lbennett-stacki/envy/actions/workflows/test.yml/badge.svg?branch=main)
+![CI workflow - test.yml](https://github.com/envyhq/envy/actions/workflows/test.yml/badge.svg?branch=main)
 
 A language for configuration.
 
@@ -58,4 +58,4 @@ A lot of packages have an examples/ directory to show simple usage of the packag
 
 ## LSP
 
-<https://github.com/lbennett-stacki/envy/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8>](<https://github.com/lbennett-stacki/envy/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8>
+<https://github.com/envyhq/envy/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8>](<https://github.com/envyhq/envy/assets/5678671/e2fd9685-4905-41f7-8cf5-e948d3d7ccb8>
