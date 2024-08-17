@@ -23,5 +23,5 @@ members = [
   "packages/position_indexer",
 
   "testing/nvx-parsing",
-  "testing/unit",
+  "testing/unit", "packages/cli",
 ]
