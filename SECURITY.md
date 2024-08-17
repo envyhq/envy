@@ -8,4 +8,4 @@
 
 ## Reporting a Vulnerability
 
-To report a vulnerability please email <a href="mailto:core@useenvy.cloud">core@useenvy.cloud</a>.
+To report a vulnerability please email <a href="mailto:support@useenvy.cloud">support@useenvy.cloud</a>.
