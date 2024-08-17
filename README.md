@@ -10,10 +10,15 @@ A language for configuration.
 
 [Envy FigJam discovery board](https://www.figma.com/file/YLWiYaLvchfUlrbmr4P0M2/NV-Discovery?type=whiteboard&node-id=0%3A1&t=7aag2YKaHTLDS4lW-1)
 
+Ask a question in GitHub
+[discussions](https://github.com/envyhq/envy/discussions),
+[issues](https://github.com/envyhq/envy/issues),
+[discord](https://discord.gg/tRmdFySx) or email [support@useenvy.cloud](mailto:support@useenvy.cloud)
+
 ## Packages
 
 - Lexer - [Source](./packages/lexer/src/lib.rs)
-- Parser - [README](./packages/parser/README.md) [Source](./packages/parser/src/lib.rs)
+- Parser - [README](./lang/packages/parser/README.md) [Source](./packages/parser/src/lib.rs)
 - Resolvers
   - Variable Resolver - [Source](./packages/resolvers/var/src/lib.rs)
   - Provider Resolver - [Source](./packages/resolvers/provider/lib.rs)
@@ -48,13 +53,17 @@ A language for configuration.
 
 ## Extensions
 
-- VSCode - [README](./extensions/vscode/README.md) [Grammar](./extensions/vscode/syntaxes/nv.tmLanguage.json) [Language Server Client Source](./extensions/vscode/language-server-client/extension.ts)
+- VSCode
+  - [README](./extensions/vscode/README.md)
+  - [Grammar](./extensions/vscode/syntaxes/nv.tmLanguage.json)
+  - [Language Server Client Source](./extensions/vscode/language-server-client/extension.ts)
 - treesitter - [README](./extensions/tree-sitter/README.md) [Grammar](./extensions/tree-sitter/grammar.js)
 - github-linguist - **TODO**
 
 ## Examples
 
-A lot of packages have an examples/ directory to show simple usage of the packages API.
+A lot of packages have an examples/ directory to show
+simple usage of the packages API.
 
 ## LSP
 
