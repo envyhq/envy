@@ -1,7 +1,7 @@
 {
-  "name": "@envy/vscode",
+  "name": "vscode-envy",
   "displayName": "nv",
-  "description": "Language support for the nv configration language",
+  "description": "Language support for the Envy (.nv) configration language",
   "version": "0.0.1",
   "repository": "https://github.com/lbennett-stacki/envy",
   "engines": {
@@ -18,7 +18,7 @@
     "clean": "rm -rf language-server-client/dist",
     "dev:install": "npm run build && npm run vscode:install",
     "vscode:uninstall": "code --uninstall-extension undefined_publisher.vscode",
-    "vscode:install": "npm run vscode:uninstall; npm run build && code --install-extension ./vscode-0.0.1.vsix"
+    "vscode:install": "npm run vscode:uninstall; npm run build && code --install-extension ./vscode-envy-0.0.1.vsix"
   },
   "categories": [
     "Programming Languages"
@@ -78,6 +78,7 @@
   "devDependencies": {
     "@types/node": "^20.12.4",
     "@types/vscode": "^1.86.0",
+    "@vscode/vsce": "^3.0.0",
     "typescript": "^5.4.4"
   }
 }
