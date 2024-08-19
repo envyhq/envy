@@ -56,7 +56,7 @@ impl Handler<TextDocumentHover> for TextDocumentHoverHandler {
             if let Some(node) = node.upgrade() {
                 let resolve_node =
                     AbstractSyntaxNode::Declaration(DeclarationNode::VarDeclaration(node));
-                let resolved = file.resolver.resolve(&resolve_node).await?;
+                let resolved = file.resolver.resolve_node(&resolve_node).await?;
                 let resolved = resolved.first().unwrap();
 
                 return Ok(json!({

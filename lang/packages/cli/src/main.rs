@@ -1,4 +1,10 @@
+mod commands;
+
 use clap::{Parser, Subcommand};
+use commands::{
+    build::{build, BuildOpts},
+    dev::{lex::lex, parse::parse, resolve::resolve},
+};
 
 #[derive(Parser, Debug)]
 #[command(name = "my_cli_tool")]
@@ -21,6 +27,9 @@ enum Commands {
 
     #[command(about = "Generate an encrypted nvx file")]
     Build {
+        #[arg()]
+        target_config: String,
+
         #[arg(short, long)]
         force: bool,
     },
@@ -42,18 +51,54 @@ enum Commands {
         #[arg(short, long)]
         force: String,
     },
+
+    #[command(about = "Commands used for development purposes")]
+    Dev {
+        #[command(subcommand)]
+        subcommand: DevSubcommands,
+    },
 }
 
-fn main() {
+#[derive(Subcommand, Debug)]
+enum DevSubcommands {
+    #[command(about = "Lex the tokens of a config file")]
+    Lex {
+        #[arg()]
+        target_config: String,
+    },
+
+    #[command(about = "Parse the AST of a config file")]
+    Parse {
+        #[arg()]
+        target_config: String,
+    },
+
+    #[command(about = "Resolve the values of a config file")]
+    Resolve {
+        #[arg()]
+        target_config: String,
+    },
+}
+
+#[tokio::main]
+async fn main() {
+    env_logger::init();
+
     let cli = Cli::parse();
 
     match &cli.command {
         Commands::New { force, name } => {
             println!("Creating new config with name:{} and force:{}", name, force);
         }
-        Commands::Build { force } => {
-            println!("Building force:{}", force);
-        }
+        Commands::Build {
+            force,
+            target_config,
+        } => build(BuildOpts {
+            force,
+            target_config,
+        })
+        .await
+        .expect("Failed to build"),
         Commands::Burn { force } => {
             println!("Burning force:{}", force);
         }
@@ -63,5 +108,12 @@ fn main() {
         Commands::Pull { force } => {
             println!("Pulling force:{}", force);
         }
+        Commands::Dev { subcommand } => match subcommand {
+            DevSubcommands::Lex { target_config } => lex(target_config),
+            DevSubcommands::Parse { target_config } => parse(target_config),
+            DevSubcommands::Resolve { target_config } => {
+                let _ = resolve(target_config).await.expect("Failed to resolve");
+            }
+        },
     }
 }

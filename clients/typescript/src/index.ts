@@ -1,52 +1,38 @@
-import { Socket } from "net";
+import { promises as fs } from "fs";
+import { type Config, parseConfig } from "@envyhq/config";
 
-export interface EnvyClient {
-  socket: Socket;
-  HOME: () => Promise<string>;
+export async function loadConfig(pathInput: string) {
+  const path = pathInput ?? `.nv/config.nvx`;
+  const contents = await fs.readFile(path, "utf8");
+
+  return contents;
 }
 
-export function createEnvySocketClient() {
-  return new Promise<EnvyClient>((resolve, reject) => {
-    const socket = new Socket();
+export async function test() {
+  const configName = "../../lang/packages/cli/.nv/simple-vars.nvx";
 
-    socket.connect("/tmp/env.provider.nv.sock");
+  const result = await loadConfig(configName);
 
-    const getValue = (key: string) => {
-      return new Promise<string>((resolve, reject) => {
-        socket.write(key, (error) => {
-          if (error) {
-            reject(error);
-          }
-        });
-        socket.on("data", (data) => {
-          resolve(data.toString());
-        });
-      });
-    };
+  const lines = result.split("\n");
+  const config = lines.reduce(
+    (acc, line) => {
+      const [key, value] = line.split(":");
+      acc[key] = value;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 
-    socket.on("connect", () => {
-      resolve({ socket, HOME: () => getValue("HOME") });
-    });
+  const parsedConfig: Config = parseConfig(config);
 
-    socket.on("error", (error) => {
-      reject(error);
-    });
-  });
+  console.log(
+    config.my_cool_var, // "wow"
+    config.my_other_var, // 1234
+
+    parsedConfig.my_cool_var, // "wow"
+    parsedConfig.my_other_var, // 1234
+    parsedConfig.what, // error
+  );
 }
-
-const test = async () => {
-  const client = await createEnvySocketClient();
-
-  console.log({ client });
-
-  client.socket.on("data", (data) => {
-    console.log("data", data.toString());
-  });
-
-  console.log("waiting to write...");
-  console.log("writing");
-  const result = await client.HOME();
-  console.log("wrote", { result });
-};
 
 test();

@@ -10,7 +10,7 @@ use crate::{
 };
 use envy_lexer::{
     tokens::{LexerDeclarationKeyword, LexerToken},
-    LexerKeyword, LexerTokenKind, LexerVarModifierKeyword,
+    Lexer, LexerKeyword, LexerTokenKind, LexerVarModifierKeyword, SourceFileLexer,
 };
 use std::sync::{Arc, Mutex};
 
@@ -18,6 +18,12 @@ use std::sync::{Arc, Mutex};
 pub struct SourceFileParser;
 
 impl SourceFileParser {
+    pub fn from_file(path: &str) -> (usize, Arc<AbstractSyntaxNode>) {
+        let mut lexer = SourceFileLexer::from_file(path);
+        lexer.lex();
+        Self::parse(path, &lexer.tokens)
+    }
+
     pub fn parse(path: &str, tokens: &[LexerToken]) -> (usize, Arc<AbstractSyntaxNode>) {
         let root = Arc::new(AbstractSyntaxNode::SourceFile(Arc::new(SourceFileNode {
             path: path.to_owned(),

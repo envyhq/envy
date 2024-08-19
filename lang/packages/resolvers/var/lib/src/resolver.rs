@@ -1,8 +1,13 @@
 use async_trait::async_trait;
-use futures::{stream, StreamExt};
+use envy_lexer::LexerType;
 use envy_parser::{AbstractSyntaxNode, DeclarationNode, VarDeclarationNode};
 use envy_provider_resolver::ProviderResolver;
-use std::{error::Error, fmt};
+use futures::{stream, StreamExt};
+use std::{
+    error::Error,
+    fmt::{self, Display},
+    sync::Arc,
+};
 
 #[derive(Debug)]
 pub enum ResolutionError {
@@ -13,7 +18,27 @@ pub enum ResolutionError {
 pub struct ResolvedValue {
     pub key: String,
     pub value: Option<Vec<u8>>,
+    pub deserialized_value: Option<DeserializedValue>,
     pub provider: String,
+}
+
+#[derive(Debug, Clone)]
+pub enum DeserializedValue {
+    String(String),
+    Int(i32),
+    Float(f32),
+    Url(String),
+}
+
+impl Display for DeserializedValue {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            DeserializedValue::String(s) => write!(f, "{}", s),
+            DeserializedValue::Int(i) => write!(f, "{}", i),
+            DeserializedValue::Float(fl) => write!(f, "{}", fl),
+            DeserializedValue::Url(u) => write!(f, "{}", u),
+        }
+    }
 }
 
 impl Error for ResolutionError {}
@@ -36,21 +61,11 @@ pub trait TreeResolver {
         &self,
         ast: &AbstractSyntaxNode,
     ) -> Result<Vec<ResolvedValue>, ResolutionError>;
-    async fn resolve(
-        &self,
-        ast: &AbstractSyntaxNode,
-    ) -> Result<Vec<ResolvedValue>, ResolutionError>;
 }
 
 #[derive(Debug, Default, Clone)]
 pub struct VarResolver {
     pub provider_resolver: ProviderResolver,
-}
-
-impl VarResolver {
-    pub fn init(&mut self, node: &AbstractSyntaxNode) {
-        self.provider_resolver.resolve(node);
-    }
 }
 
 #[async_trait]
@@ -59,16 +74,34 @@ impl TreeResolver for VarResolver {
         &self,
         node: &VarDeclarationNode,
     ) -> Result<ResolvedValue, ResolutionError> {
-        // TODO: Should use something like self.provider_resolver.providers.find(|p| p.identifier.value == node.provider).unwrap();...
-        // Need to link var nodes to their provider nodes, then resolve the provider, then resolve the var
-        // And then should rly make self.providers a hashmap across all resolver types
-        let provider = self.provider_resolver.providers.first().unwrap();
+        let provider = self
+            .provider_resolver
+            .resolve_node(&AbstractSyntaxNode::Declaration(
+                DeclarationNode::VarDeclaration(Arc::new(node.clone())),
+            ))
+            .unwrap();
 
-        let value = provider.get_value(&node.identifier.value).await;
+        let value = provider
+            .get_value(&node.identifier.value)
+            .await
+            .map_err(|_| ResolutionError::ProviderError)?;
+
+        let string_value = String::from_utf8(value.clone()).unwrap();
+
+        let deserialized_value = match node.type_value.value {
+            LexerType::String => Some(DeserializedValue::String(string_value)),
+            LexerType::Int => string_value.parse::<i32>().ok().map(DeserializedValue::Int),
+            LexerType::Float => string_value
+                .parse::<f32>()
+                .ok()
+                .map(DeserializedValue::Float),
+            LexerType::Url => Some(DeserializedValue::Url(string_value)),
+        };
 
         Ok(ResolvedValue {
             key: node.identifier.value.clone(),
-            value: value.ok(),
+            value: Some(value),
+            deserialized_value,
             provider: provider.name().to_owned(),
         })
     }
@@ -114,7 +147,7 @@ impl TreeResolver for VarResolver {
             .collect::<Vec<_>>()
             .await
             .iter()
-            .filter_map(|d| {
+            .filter_map(|d: &Result<Vec<ResolvedValue>, ResolutionError>| {
                 if d.is_ok() {
                     Some(d.as_ref().unwrap().clone())
                 } else {
@@ -127,14 +160,5 @@ impl TreeResolver for VarResolver {
                 self.resolve_declaration(declaration).await
             }
         }
-    }
-
-    async fn resolve(
-        &self,
-        ast: &AbstractSyntaxNode,
-    ) -> Result<Vec<ResolvedValue>, ResolutionError> {
-        let resolved_values = self.resolve_node(ast).await?;
-
-        Ok(resolved_values)
     }
 }

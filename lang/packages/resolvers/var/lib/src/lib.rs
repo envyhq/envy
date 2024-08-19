@@ -1,3 +1,3 @@
 mod resolver;
 
-pub use resolver::{TreeResolver, VarResolver};
+pub use resolver::{DeserializedValue, ResolutionError, ResolvedValue, TreeResolver, VarResolver};

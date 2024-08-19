@@ -1,9 +1,9 @@
-use envy_provider_core::{Provider, ProviderError};
+use envy_provider_core::{async_trait, Provider, ProviderError};
 
 #[derive(Debug)]
 pub struct AwsSecretsManagerProvider {}
 
-#[async_trait::async_trait]
+#[async_trait]
 impl Provider for AwsSecretsManagerProvider {
     fn name(&self) -> &'static str {
         "aws-secrets-manager"
@@ -23,7 +23,7 @@ impl Provider for AwsSecretsManagerProvider {
             .map_err(|err| {
                 log::error!("Aws env provider error: {:?}", err);
 
-                if let Ok(_) = err.into_source() {
+                if err.into_source().is_ok() {
                     return ProviderError::Unknown("explodey".to_owned());
                 }
 

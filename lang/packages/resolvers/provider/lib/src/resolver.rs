@@ -1,5 +1,6 @@
 use envy_parser::{AbstractSyntaxNode, DeclarationNode, ProviderDeclarationNode};
-use envy_provider_core::Provider;
+use envy_provider_core::{Provider, ProviderError};
+use envy_provider_env::EnvProvider;
 use std::sync::Arc;
 
 pub type ResolverProvider = Arc<dyn Provider + Sync + Send>;
@@ -10,15 +11,17 @@ pub struct ProviderResolver {
 }
 
 impl ProviderResolver {
-    pub fn resolve(&self, node: &AbstractSyntaxNode) {
-        let nodes = self.find_provider_nodes(node);
+    pub fn resolve_node(
+        &self,
+        ast: &AbstractSyntaxNode,
+    ) -> Result<ResolverProvider, ProviderError> {
+        let nodes = self.find_provider_nodes(ast);
 
         for node in nodes {
             println!("Adding provider: {:?}", node);
-            // TODO: node is a provider declaration node, we need to create a real provider from
-            // it like Arc::new(EnvProvider {}) for example..
-            // then we add that provider to self.providers and return it
         }
+
+        Ok(Arc::new(EnvProvider::default()))
     }
 
     fn find_provider_nodes(&self, node: &AbstractSyntaxNode) -> Vec<ProviderDeclarationNode> {

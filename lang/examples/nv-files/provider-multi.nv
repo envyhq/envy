@@ -1,9 +1,17 @@
-provider env: env
-
+default provider env: env
 provider aws_sm: aws_sm
 
 var EDITOR: str
 var USER: str
 var TEST_SECRET: str
 
-@env var AWS_ACCESS_KEY_ID: str
+@aws_sm var AWS_ACCESS_KEY_ID: str
+
+module Something {
+  default provider @aws_sm
+
+  var SECRET: str
+
+  @env var SECRET_OTHER: str
+  @env var SECRET_OTHER_TWO: str
+}

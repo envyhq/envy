@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-log = "0.4.21"
+log = "0.4.22"
 envy-parser = { path = "../../../parser/lib" }
 envy-provider-core = { path = "../../../providers/core/lib" }
+envy-provider-env = { path = "../../../providers/env/lib" }
 futures = "0.3.30"
-async-trait = "0.1.79"

@@ -1,3 +1,5 @@
 pub var my_cool_var: str
 
 pub var my_other_var: int
+
+pub var HOME: str

@@ -47,14 +47,6 @@ impl FileStore {
         indexer
     }
 
-    fn init_resolver(node: &Arc<AbstractSyntaxNode>) -> VarResolver {
-        let mut resolver = VarResolver::default();
-
-        resolver.init(node);
-
-        resolver
-    }
-
     fn store(&mut self, file_path: &str) -> Result<(), FileStoreError> {
         if self.files.contains_key(file_path) {
             return Ok(());
@@ -71,7 +63,7 @@ impl FileStore {
                 // content,
                 // path: file_path.to_owned(),
                 position_indexer: Self::init_position_indexer(&node),
-                resolver: Self::init_resolver(&node),
+                resolver: VarResolver::default(),
             },
         );
 

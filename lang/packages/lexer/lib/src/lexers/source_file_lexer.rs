@@ -1,4 +1,4 @@
-use std::{iter::Enumerate, slice::Iter};
+use std::{fs::read_to_string, iter::Enumerate, slice::Iter};
 
 use super::{utils::lookbehind_raw_token, var_declaration_lexer::VarDeclarationLexer};
 use crate::{
@@ -36,6 +36,12 @@ impl SourceFileLexer {
             tokens: vec![],
             buffer: vec![],
         }
+    }
+
+    pub fn from_file(path: &str) -> Self {
+        let config = read_to_string(path).unwrap();
+
+        Self::new(config.as_str())
     }
 
     fn buffer_to_keyword(&self, buffer: &Option<Vec<String>>) -> Option<LexerKeyword> {

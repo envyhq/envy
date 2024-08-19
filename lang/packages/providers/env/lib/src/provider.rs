@@ -1,11 +1,10 @@
+use envy_provider_core::{async_trait, Provider, ProviderError};
 use std::env;
-
-use envy_provider_core::{Provider, ProviderError};
 
 #[derive(Debug, Default)]
 pub struct EnvProvider {}
 
-#[async_trait::async_trait]
+#[async_trait]
 impl Provider for EnvProvider {
     fn name(&self) -> &'static str {
         "env"
