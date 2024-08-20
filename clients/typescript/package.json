@@ -1,5 +1,5 @@
 {
-  "name": "@envyhq/typescript",
+  "name": "@envyhq/client",
   "version": "1.0.0",
   "description": "Envy TypeScript client",
   "main": "dist/index.js",
